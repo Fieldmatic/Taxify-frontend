@@ -20,6 +20,13 @@
     "@angular/platform-browser": "^14.2.0",
     "@angular/platform-browser-dynamic": "^14.2.0",
     "@angular/router": "^14.2.0",
+    "@ngrx/effects": "^14.3.2",
+    "@ngrx/router-store": "^14.3.2",
+    "@ngrx/store": "^14.3.2",
+    "sockjs-client": "^1.6.1",
+    "@stomp/stompjs": "^6.1.2",
+    "ol": "^7.1.0",
+    "proj4": "^2.8.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -28,13 +35,17 @@
     "@angular-devkit/build-angular": "^14.2.8",
     "@angular/cli": "~14.2.8",
     "@angular/compiler-cli": "^14.2.0",
+    "@ngrx/store-devtools": "^14.3.2",
+    "@types/geojson": "^7946.0.10",
     "@types/jasmine": "~4.0.0",
+    "@types/proj4": "^2.5.2",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
+    "prettier": "2.8.0",
     "typescript": "~4.7.2"
   }
 }

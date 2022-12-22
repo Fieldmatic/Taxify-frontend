@@ -6,7 +6,7 @@ import { Stomp } from '@stomp/stompjs';
   providedIn: 'root',
 })
 export class StompService {
-  socket = new SockJS('http://localhost:8080/api/vehicles');
+  socket = new SockJS('http://localhost:8080/api/ws');
   stompClient = Stomp.over(this.socket);
 
   constructor() {}
@@ -24,7 +24,6 @@ export class StompService {
   }
 
   private subscribeToTopic(topic: string, callback: any) {
-    console.log('Subscribe to topic ' + topic);
     this.stompClient.subscribe(topic, (): any => {
       callback();
     });

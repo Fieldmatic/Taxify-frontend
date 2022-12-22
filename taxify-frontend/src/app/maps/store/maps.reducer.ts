@@ -1,13 +1,10 @@
-import { Vehicle } from '../../shared/vehicle.model';
 import { MapData } from '../mapData.model';
 import * as MapUtils from '../mapUtils';
-import * as VehiclesActions from './vehicles.actions';
+import * as MapsActions from './maps.actions';
 
 export interface State {
   mapData: MapData;
   loading: boolean;
-  vehicles: Vehicle[];
-  error: number;
 }
 
 const createInitialState = function (): State {
@@ -23,33 +20,20 @@ const createInitialState = function (): State {
   return {
     mapData: MapUtils.getMapData(MapUtils.creatInitialMap(mapCenter)),
     loading: false,
-    vehicles: [],
-    error: null,
   };
 };
 
-export function vehiclesReducer(
+export function mapsReducer(
   state = createInitialState(),
-  action: VehiclesActions.VehiclesActions
+  action: MapsActions.MapsActions
 ) {
   switch (action.type) {
-    case VehiclesActions.SET_VEHICLES:
-      return {
-        ...state,
-        error: null,
-        vehicles: [...action.payload],
-      };
-    case VehiclesActions.FETCH_VEHICLES_FAIL:
-      return {
-        ...state,
-        error: action.payload,
-      };
-    case VehiclesActions.MAP_LOAD_START:
+    case MapsActions.MAP_LOAD_START:
       return {
         ...state,
         loading: true,
       };
-    case VehiclesActions.MAP_LOAD_END:
+    case MapsActions.MAP_LOAD_END:
       return {
         ...state,
         loading: false,

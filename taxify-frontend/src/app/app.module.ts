@@ -1,42 +1,36 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar/navbar.component';
-import { VehiclesComponent } from './vehicles/vehicles.component';
 import { StompService } from './stomp.service';
 import { HttpClientModule } from '@angular/common/http';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { VehiclesEffects } from './vehicles/store/vehicles.effects';
+import { DriversEffects } from './drivers/store/drivers.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { ReactiveFormsModule } from '@angular/forms';
 import * as fromApp from './store/app.reducer';
+import { SharedModule } from './shared/shared.module';
+import { MapsModule } from './maps/maps.module';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, VehiclesComponent],
+  declarations: [AppComponent, NavbarComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
     HttpClientModule,
-    MatProgressSpinnerModule,
-    MatGridListModule,
+    SharedModule,
     StoreModule.forRoot(fromApp.appReducer),
-    EffectsModule.forRoot([VehiclesEffects]),
+    EffectsModule.forRoot([DriversEffects]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
-    BrowserAnimationsModule,
+    AppRoutingModule,
+    MapsModule,
   ],
   providers: [StompService],
   bootstrap: [AppComponent],

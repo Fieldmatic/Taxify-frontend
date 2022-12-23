@@ -1,5 +1,5 @@
 import { Coordinate } from 'ol/coordinate';
-import { Feature, Map, View } from 'ol';
+import { Feature, Map, Overlay, View } from 'ol';
 import { Point } from 'ol/geom';
 import * as olProj from 'ol/proj';
 import { Icon, Style } from 'ol/style';
@@ -38,6 +38,7 @@ export const createVehicleFeatures = function (vehicles: Vehicle[]): Feature[] {
   for (let vehicle of vehicles) {
     let marker = new Feature({
       geometry: new Point(olProj.fromLonLat(vehicle.location)),
+      id: vehicles.indexOf(vehicle),
     });
     marker.setStyle(
       new Style({
@@ -65,6 +66,20 @@ export const createMapVehicleLayer = function (
 
   return new VectorLayer({
     source: vectorSource,
+  });
+};
+
+export const createMapDriversOverlay = function (
+  container: HTMLElement
+): Overlay {
+  return new Overlay({
+    element: container,
+    autoPan: {
+      animation: {
+        duration: 250,
+      },
+    },
+    id: 'drivers',
   });
 };
 

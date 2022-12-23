@@ -1,4 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Map } from 'ol';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -17,7 +24,9 @@ import { Vehicle } from '../../shared/vehicle.model';
   templateUrl: './active-drivers-map.component.html',
   styleUrls: ['./active-drivers-map.component.scss'],
 })
-export class ActiveDriversMapComponent implements OnInit, OnDestroy {
+export class ActiveDriversMapComponent
+  implements OnInit, OnDestroy, AfterViewInit
+{
   map: Map;
   drivers: Driver[] = [];
   vehicles: Vehicle[] = [];
@@ -25,6 +34,8 @@ export class ActiveDriversMapComponent implements OnInit, OnDestroy {
   loading: boolean;
   mapsSubscription: Subscription;
   driversSubscription: Subscription;
+  driver: Driver;
+  @ViewChild('popup') popup: ElementRef;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -40,7 +51,13 @@ export class ActiveDriversMapComponent implements OnInit, OnDestroy {
     this.subscribeToWebSocket();
     this.subscribeToDriversStore();
     this.subscribeToMapsStore();
-    this.addMapLoadEvents();
+    this.addMapEvents();
+  }
+
+  ngAfterViewInit(): void {
+    this.map.addOverlay(
+      MapUtils.createMapDriversOverlay(this.popup.nativeElement as HTMLElement)
+    );
   }
 
   subscribeToWebSocket() {
@@ -57,12 +74,14 @@ export class ActiveDriversMapComponent implements OnInit, OnDestroy {
         this.vehicles = this.getVehiclesFromDrivers(driversState.drivers);
         this.error = driversState.error;
         this.updateMapVehicleLayer();
+        this.updateOverlay();
       });
   }
 
   subscribeToMapsStore() {
     this.mapsSubscription = this.store.select('maps').subscribe((mapsState) => {
       this.loading = mapsState.loading;
+      this.driver = mapsState.driver;
       if (this.map) {
         this.updateMapVehicleLayer();
       } else {
@@ -71,7 +90,7 @@ export class ActiveDriversMapComponent implements OnInit, OnDestroy {
     });
   }
 
-  addMapLoadEvents() {
+  addMapEvents() {
     this.map.on('loadstart', () => {
       this.store.dispatch(new MapActions.MapLoadStart());
     });
@@ -80,6 +99,26 @@ export class ActiveDriversMapComponent implements OnInit, OnDestroy {
         new MapActions.MapLoadEnd(MapUtils.getMapData(event.map))
       );
     });
+    this.map.on('click', (event) => {
+      const feature = this.map.forEachFeatureAtPixel(
+        event.pixel,
+        function (feature) {
+          return feature;
+        }
+      );
+      if (feature) {
+        this.store.dispatch(
+          new MapActions.DriverSelected(this.drivers[feature.get('id')])
+        );
+        const geometry = feature.getGeometry();
+        const extent = geometry.getExtent();
+        const coordinate = [
+          (extent[0] + extent[2]) / 2,
+          (extent[1] + extent[3]) / 2,
+        ];
+        this.map.getOverlayById('drivers').setPosition(coordinate);
+      }
+    });
   }
 
   initMap(mapCenter: Coordinate) {
@@ -87,10 +126,13 @@ export class ActiveDriversMapComponent implements OnInit, OnDestroy {
   }
 
   updateMapVehicleLayer() {
-    let vectorSource = <VectorSource>this.map.getAllLayers()[1].getSource();
-    vectorSource.clear();
-    vectorSource.addFeatures(MapUtils.createVehicleFeatures(this.vehicles));
-    vectorSource.changed();
+    if (this.map) {
+      let vectorSource = <VectorSource>this.map.getAllLayers()[1].getSource();
+      vectorSource.clear();
+      vectorSource.addFeatures(MapUtils.createVehicleFeatures(this.vehicles));
+      vectorSource.changed();
+      this.map.getOverlayById('drivers').setPosition(undefined);
+    }
   }
 
   getVehiclesFromDrivers(drivers: Driver[]): Vehicle[] {
@@ -99,5 +141,11 @@ export class ActiveDriversMapComponent implements OnInit, OnDestroy {
       vehicles.push(driver.vehicle);
     }
     return vehicles;
+  }
+
+  updateOverlay() {
+    if (!this.driver) {
+      this.map?.getOverlayById('drivers').setPosition(undefined);
+    }
   }
 }

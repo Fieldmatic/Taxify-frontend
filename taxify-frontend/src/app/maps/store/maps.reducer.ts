@@ -1,10 +1,12 @@
 import { MapData } from '../mapData.model';
 import * as MapUtils from '../mapUtils';
 import * as MapsActions from './maps.actions';
+import { Driver } from '../../shared/driver.model';
 
 export interface State {
   mapData: MapData;
   loading: boolean;
+  driver: Driver;
 }
 
 const createInitialState = function (): State {
@@ -20,6 +22,7 @@ const createInitialState = function (): State {
   return {
     mapData: MapUtils.getMapData(MapUtils.creatInitialMap(mapCenter)),
     loading: false,
+    driver: null,
   };
 };
 
@@ -38,6 +41,16 @@ export function mapsReducer(
         ...state,
         loading: false,
         mapData: action.payload,
+      };
+    case MapsActions.DRIVER_SELECTED:
+      return {
+        ...state,
+        driver: action.payload,
+      };
+    case MapsActions.POPUP_CLOSE:
+      return {
+        ...state,
+        driver: null,
       };
     default:
       return state;

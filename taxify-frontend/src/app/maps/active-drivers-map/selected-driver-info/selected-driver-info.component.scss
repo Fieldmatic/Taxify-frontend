@@ -1,0 +1,22 @@
+.ol-popup-closer {
+  text-decoration: none;
+  position: absolute;
+  top: 2px;
+  right: 8px;
+}
+
+.ol-popup-closer:after {
+  content: "✖";
+  color: black;
+}
+
+.info-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+mat-icon {
+  padding-left: 0.3em;
+  margin-right: 0.6em;
+}

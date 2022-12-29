@@ -1,9 +1,5 @@
 export class LoggedInUser {
-  constructor(
-    public email: string,
-    private _token: string,
-    private _tokenExpirationDate: Date
-  ) {}
+  constructor(private _token: string, private _tokenExpirationDate: Date) {}
 
   get token() {
     if (!this._tokenExpirationDate || new Date() > this._tokenExpirationDate) {

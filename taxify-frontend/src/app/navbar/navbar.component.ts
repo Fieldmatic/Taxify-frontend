@@ -18,7 +18,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.userSub = this.authService.user.subscribe((user) => {
       //!!user
       this.isAuthenticated = !user ? false : true;
-      if (user) this.loggedInUser = user.email;
     });
   }
 

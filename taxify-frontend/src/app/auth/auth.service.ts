@@ -5,7 +5,9 @@ import { AppConfig } from './../appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from './../appConfig/appconfig.service';
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { FacebookSignupRequest } from '../model/login/facebook-signup-request';
+import { GoogleSignUpRequest } from '../model/login/google-signup-request';
 
 @Injectable({
   providedIn: 'root',
@@ -26,21 +28,14 @@ export class AuthService {
         email: email,
         password: password,
       })
-      .pipe(
-        catchError(this.handleError),
-        tap((resData) => {
-          this.handleAuthentication(email, resData.token, resData.expiresIn);
-        })
-      );
+      .subscribe((resData) => {
+        this.handleAuthentication(resData.token, resData.expiresIn);
+      });
   }
 
-  private handleAuthentication(
-    email: string,
-    token: string,
-    expiresIn: number
-  ) {
+  private handleAuthentication(token: string, expiresIn: number) {
     const expirationDate = new Date(new Date().getTime() + expiresIn);
-    const user = new LoggedInUser(email, token, expirationDate);
+    const user = new LoggedInUser(token, expirationDate);
     this.user.next(user);
     this.autoLogout(expiresIn);
     localStorage.setItem('userData', JSON.stringify(user));
@@ -63,7 +58,6 @@ export class AuthService {
     }
 
     const loadedUser = new LoggedInUser(
-      userData.email,
       userData._token,
       new Date(userData._tokenExpirationDate)
     );
@@ -84,5 +78,49 @@ export class AuthService {
 
   private handleError(errorResp: HttpErrorResponse) {
     return throwError(errorResp.message);
+  }
+
+  LoginWithGoogle(credentials: string) {
+    return this.http
+      .post<LoginResponseData>(
+        this.config.apiEndpoint + `auth/login-google/${credentials}`,
+        {}
+      )
+      .subscribe((resData) => {
+        this.handleAuthentication(resData.token, resData.expiresIn);
+      });
+  }
+
+  SignUpFacebook(facebookSignupRequest: FacebookSignupRequest) {
+    return this.http
+      .post<LoginResponseData>(
+        this.config.apiEndpoint + `passenger/facebook-signup`,
+        facebookSignupRequest
+      )
+      .subscribe((resData) => {
+        this.handleAuthentication(resData.token, resData.expiresIn);
+      });
+  }
+
+  SignUpGoogle(googleSignUpRequest: GoogleSignUpRequest) {
+    return this.http
+      .post<LoginResponseData>(
+        this.config.apiEndpoint + `passenger/google-signup`,
+        googleSignUpRequest
+      )
+      .subscribe((resData) => {
+        this.handleAuthentication(resData.token, resData.expiresIn);
+      });
+  }
+  UserExists(email: string) {
+    return this.http.get<Observable<boolean>>(
+      this.config.apiEndpoint + `auth/user-exists/${email}`
+    );
+  }
+  UserSignedWithGoogleExists(credentials: string) {
+    return this.http.get<Observable<boolean>>(
+      this.config.apiEndpoint +
+        `auth/user-signed-with-google-exists/${credentials}`
+    );
   }
 }

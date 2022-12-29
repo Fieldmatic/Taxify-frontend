@@ -5,9 +5,15 @@
     </div>
     <p>{{ loggedInUser }}</p>
     <div class="authentication">
-      <a mat-button routerLink="/login" *ngIf="!isAuthenticated">Log in</a>
+      <a
+        mat-button
+        routerLink="/login/login"
+        *ngIf="!isAuthenticated"
+        id="loginBtn"
+        >Log in</a
+      >
       <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
-      <a mat-raised-button>Sign up</a>
+      <a mat-raised-button routerLink="/login/signup">Sign up</a>
     </div>
   </div>
 </mat-toolbar>

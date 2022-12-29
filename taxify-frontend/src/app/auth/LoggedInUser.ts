@@ -1,6 +1,7 @@
 export class LoggedInUser {
   constructor(
     public email: string,
+    public role: string,
     private _token: string,
     private _tokenExpirationDate: Date
   ) {}

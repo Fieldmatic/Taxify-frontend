@@ -20,7 +20,7 @@ export class AuthService {
     private router: Router
   ) {}
 
-  login(email: string, password: string) {
+  logIn(email: string, password: string) {
     return this.http
       .post<LoginResponseData>(this.config.apiEndpoint + 'auth/login', {
         email: email,
@@ -29,18 +29,48 @@ export class AuthService {
       .pipe(
         catchError(this.handleError),
         tap((resData) => {
-          this.handleAuthentication(email, resData.token, resData.expiresIn);
+          this.handleAuthentication(
+            email,
+            resData.token,
+            resData.expiresIn,
+            resData.role
+          );
         })
       );
+  }
+
+  signUp({
+    email,
+    password,
+    repeatPassword,
+    firstName,
+    lastName,
+    city,
+    phoneNumber,
+    profilePicture,
+  }) {
+    return this.http.post<{ email: string; name: string; surname: string }>(
+      this.config.apiEndpoint + 'passenger/create',
+      {
+        email: email,
+        password: password,
+        name: firstName,
+        surname: lastName,
+        city: city,
+        phoneNumber: phoneNumber,
+        profilePicture: profilePicture,
+      }
+    );
   }
 
   private handleAuthentication(
     email: string,
     token: string,
-    expiresIn: number
+    expiresIn: number,
+    role: string
   ) {
     const expirationDate = new Date(new Date().getTime() + expiresIn);
-    const user = new LoggedInUser(email, token, expirationDate);
+    const user = new LoggedInUser(email, role, token, expirationDate);
     this.user.next(user);
     this.autoLogout(expiresIn);
     localStorage.setItem('userData', JSON.stringify(user));
@@ -64,6 +94,7 @@ export class AuthService {
 
     const loadedUser = new LoggedInUser(
       userData.email,
+      userData.role,
       userData._token,
       new Date(userData._tokenExpirationDate)
     );
@@ -83,6 +114,6 @@ export class AuthService {
   }
 
   private handleError(errorResp: HttpErrorResponse) {
-    return throwError(errorResp.message);
+    return throwError(errorResp);
   }
 }

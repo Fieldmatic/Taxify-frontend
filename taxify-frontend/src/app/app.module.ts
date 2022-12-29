@@ -15,9 +15,16 @@ import { MatInputModule } from '@angular/material/input';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { EmailActivationComponent } from './auth/email-activation/email-activation.component';
+import { MatDivider, MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, AuthComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    AuthComponent,
+    EmailActivationComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -31,6 +38,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
     MatButtonModule,
     HttpClientModule,
     MatGridListModule,
+    MatDividerModule,
   ],
   providers: [
     {

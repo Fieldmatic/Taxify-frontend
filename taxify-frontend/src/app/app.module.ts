@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -17,6 +18,8 @@ import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { EmailActivationComponent } from './auth/email-activation/email-activation.component';
 import { MatDivider, MatDividerModule } from '@angular/material/divider';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CompleteSocialSignupDialog } from './auth/components/complete-social-signup-dialog/complete-social-signup-dialog.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,7 @@ import { MatDivider, MatDividerModule } from '@angular/material/divider';
     NavbarComponent,
     AuthComponent,
     EmailActivationComponent,
+    CompleteSocialSignupDialog,
   ],
   imports: [
     BrowserModule,
@@ -39,6 +43,7 @@ import { MatDivider, MatDividerModule } from '@angular/material/divider';
     HttpClientModule,
     MatGridListModule,
     MatDividerModule,
+    MatDialogModule,
   ],
   providers: [
     {
@@ -50,6 +55,8 @@ import { MatDivider, MatDividerModule } from '@angular/material/divider';
       useClass: AuthInterceptorService,
       multi: true,
     },
+    MatCardModule,
+    HttpClientModule,
   ],
   bootstrap: [AppComponent],
 })

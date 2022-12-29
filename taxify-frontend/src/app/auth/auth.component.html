@@ -85,6 +85,21 @@
           <hr />
         </div>
       </mat-grid-tile>
+      <mat-grid-tile>
+        <div id="googleSignIn"></div>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <div
+          class="fb-login-button"
+          data-width=""
+          data-size="medium"
+          data-button-type="continue_with"
+          data-layout="default"
+          data-auto-logout-link="false"
+          data-use-continue-as="true"
+          data-onlogin="onFacebookSignIn()"
+        ></div>
+      </mat-grid-tile>
     </mat-grid-list>
   </form>
 </div>

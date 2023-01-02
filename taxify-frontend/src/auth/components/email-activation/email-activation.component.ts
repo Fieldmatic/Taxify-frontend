@@ -1,4 +1,4 @@
-import { PassengerService } from './../../services/passenger.service';
+import { PassengerService } from '../../../app/services/passenger/passenger.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 

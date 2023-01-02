@@ -1,25 +1,29 @@
-import { LoggedInUser } from './LoggedInUser';
+import * as AuthActions from './../../store/auth.actions';
+import { LoggedInUser } from 'src/auth/model/logged-in-user';
 import { Router } from '@angular/router';
-import { LoginResponseData } from './../model/login/login-response-data';
-import { AppConfig } from './../appConfig/appconfig.interface';
-import { APP_SERVICE_CONFIG } from './../appConfig/appconfig.service';
+import { AppConfig } from '../../../app/appConfig/appconfig.interface';
+import { APP_SERVICE_CONFIG } from '../../../app/appConfig/appconfig.service';
 import { Inject, Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
-import { FacebookSignupRequest } from '../model/login/facebook-signup-request';
-import { GoogleSignUpRequest } from '../model/login/google-signup-request';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { FacebookSignupRequest } from '../../model/facebook-signup-request';
+import { GoogleSignUpRequest } from '../../model/google-signup-request';
+import { LoginResponseData } from '../../model/login-response-data';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../../app/store/app.reducer';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  user = new BehaviorSubject<LoggedInUser>(null);
+  //user = new BehaviorSubject<LoggedInUser>(null);
   private tokenExpirationTimer = null;
 
   constructor(
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private store: Store<fromApp.AppState>
   ) {}
 
   logIn(email: string, password: string) {
@@ -35,6 +39,7 @@ export class AuthService {
           email,
           resData.role
         );
+        this.router.navigateByUrl('/');
       });
   }
 
@@ -70,14 +75,22 @@ export class AuthService {
   ) {
     const expirationDate = new Date(new Date().getTime() + expiresIn);
     const user = new LoggedInUser(email, role, token, expirationDate);
-    this.user.next(user);
+    //this.user.next(user);
+    this.store.dispatch(
+      new AuthActions.Login({
+        email: email,
+        role: role,
+        token: token,
+        tokenExpirationDate: expirationDate,
+      })
+    );
     this.autoLogout(expiresIn);
     localStorage.setItem('userData', JSON.stringify(user));
   }
 
   logout() {
-    this.user.next(null);
-    this.router.navigate(['/login']);
+    //this.user.next(null);
+    this.store.dispatch(new AuthActions.Logout());
     localStorage.removeItem('userData');
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
@@ -91,15 +104,24 @@ export class AuthService {
       return;
     }
 
+    let expirationDate = new Date(userData._tokenExpirationDate);
     const loadedUser = new LoggedInUser(
       userData.email,
       userData.role,
       userData._token,
-      new Date(userData._tokenExpirationDate)
+      expirationDate
     );
     if (loadedUser.token) {
       //token is valid
-      this.user.next(loadedUser);
+      //this.user.next(loadedUser);
+      this.store.dispatch(
+        new AuthActions.Login({
+          email: loadedUser.email,
+          role: loadedUser.role,
+          token: loadedUser.token,
+          tokenExpirationDate: expirationDate,
+        })
+      );
       this.autoLogout(
         new Date(userData._tokenExpirationDate).getTime() - new Date().getTime()
       );
@@ -110,10 +132,6 @@ export class AuthService {
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
     }, expirationDuration);
-  }
-
-  private handleError(errorResp: HttpErrorResponse) {
-    return throwError(errorResp);
   }
 
   LoginWithGoogle(credentials: string) {

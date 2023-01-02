@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { AppConfig } from '../appConfig/appconfig.interface';
-import { APP_SERVICE_CONFIG } from '../appConfig/appconfig.service';
+import { AppConfig } from '../../appConfig/appconfig.interface';
+import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 
 @Injectable({
   providedIn: 'root',

@@ -1,4 +1,3 @@
-import { AuthComponent } from './auth/auth.component';
 import { APP_SERVICE_CONFIG, APP_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -10,40 +9,26 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar/navbar.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptorService } from './auth/auth-interceptor.service';
+import { AuthInterceptorService } from '../auth/auth-interceptor.service';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { EmailActivationComponent } from './auth/email-activation/email-activation.component';
-import { MatDivider, MatDividerModule } from '@angular/material/divider';
-import { MatDialogModule } from '@angular/material/dialog';
-import { CompleteSocialSignupDialog } from './auth/components/complete-social-signup-dialog/complete-social-signup-dialog.component';
+import { AuthModule } from 'src/auth/auth.module';
+import { StoreModule } from '@ngrx/store';
+import * as fromApp from './store/app.reducer';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavbarComponent,
-    AuthComponent,
-    EmailActivationComponent,
-    CompleteSocialSignupDialog,
-  ],
+  declarations: [AppComponent, NavbarComponent],
   imports: [
     BrowserModule,
+    AuthModule,
     AppRoutingModule,
+    StoreModule.forRoot(fromApp.appReducer),
     BrowserAnimationsModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
     HttpClientModule,
     MatGridListModule,
-    MatDividerModule,
-    MatDialogModule,
   ],
   providers: [
     {

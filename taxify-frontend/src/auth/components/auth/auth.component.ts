@@ -1,28 +1,34 @@
 import { map, Observable } from 'rxjs';
-import { AuthService } from './auth.service';
+import { AuthService } from 'src/auth/services/auth/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Component, Inject, NgZone, OnInit, Renderer2 } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Inject,
+  NgZone,
+  OnInit,
+  Renderer2,
+} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
-import { FacebookUserResponse } from '../model/login/facebook-user-response';
-import { AppConfig } from '../appConfig/appconfig.interface';
-import { APP_SERVICE_CONFIG } from '../appConfig/appconfig.service';
-import { CompleteSocialSignupDialog } from './components/complete-social-signup-dialog/complete-social-signup-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { FacebookSignupRequest } from '../model/login/facebook-signup-request';
-import { GoogleSignUpRequest } from '../model/login/google-signup-request';
+import { AppConfig } from 'src/app/appConfig/appconfig.interface';
+import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
+import { CompleteSocialSignupDialog } from '../complete-social-signup-dialog/complete-social-signup-dialog.component';
+import { FacebookSignupRequest } from '../../model/facebook-signup-request';
+import { FacebookUserResponse } from '../../model/facebook-user-response';
+import { GoogleSignUpRequest } from '../../model/google-signup-request';
 
 @Component({
   selector: 'app-login',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent implements OnInit {
-  loginForm!: FormGroup;
+export class AuthComponent implements OnInit, AfterViewInit {
+  authForm!: FormGroup;
 
   isLoginMode: boolean;
 
-  error: string = null;
   callback = null;
   constructor(
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
@@ -33,18 +39,12 @@ export class AuthComponent implements OnInit {
     private render: Renderer2,
     private socialSignUpDialogRef: MatDialog,
     private ngZone: NgZone
-  ) {
-    router.events.subscribe(() => {
-      const loginButton = document.getElementById('loginBtn');
-      if (this.isLoginMode) this.render.addClass(loginButton, 'red');
-      else this.render.removeClass(loginButton, 'red');
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.initGoogleSignIn();
     this.initFacebookSignIn();
-    this.loginForm = this.fb.group({
+    this.authForm = this.fb.group({
       email: new FormControl(''),
       password: new FormControl(''),
       repeatPassword: new FormControl(''),
@@ -63,6 +63,26 @@ export class AuthComponent implements OnInit {
         this.isLoginMode = false;
       }
     });
+
+    this.authForm.reset();
+  }
+
+  onSwitchMode() {
+    this.authForm.reset();
+    this.isLoginMode = !this.isLoginMode;
+    if (this.isLoginMode) {
+      this.router.navigateByUrl('/auth/login');
+      this.render.addClass(
+        document.getElementById('loginBtn'),
+        'markedLoginBtn'
+      );
+    } else {
+      this.router.navigateByUrl('/auth/signup');
+      this.render.removeClass(
+        document.getElementById('loginBtn'),
+        'markedLoginBtn'
+      );
+    }
   }
 
   private initFacebookSignIn() {
@@ -85,6 +105,11 @@ export class AuthComponent implements OnInit {
     window.onFacebookSignIn = () => {
       this.continueWithFacebook();
     };
+    if (this.isLoginMode)
+      this.render.addClass(
+        document.getElementById('loginBtn'),
+        'markedLoginBtn'
+      );
   }
 
   public completeFacebookSignup(userData: FacebookUserResponse): void {
@@ -136,7 +161,7 @@ export class AuthComponent implements OnInit {
               .UserExists(userResponse.email)
               .subscribe((userExists) => {
                 if (userExists) {
-                  this.authService.login(userResponse.email, userResponse.id);
+                  this.authService.logIn(userResponse.email, userResponse.id);
                 } else {
                   this.completeFacebookSignup(userResponse);
                 }
@@ -177,37 +202,26 @@ export class AuthComponent implements OnInit {
     });
   }
 
-  onSwitchMode() {
-    if (this.isLoginMode) this.router.navigateByUrl('/login/signup');
-    else this.router.navigateByUrl('/login/login');
-  }
-
   onSubmit() {
-    if (!this.loginForm.valid) {
+    if (!this.authForm.valid) {
       return;
     }
-    let authObs: Observable<any>;
-
     if (this.isLoginMode) {
-      authObs = this.authService.logIn(
-        this.loginForm.getRawValue()['email'],
-        this.loginForm.getRawValue()['password']
+      this.authService.logIn(
+        this.authForm.getRawValue()['email'],
+        this.authForm.getRawValue()['password']
       );
-      this.router.navigate(['/']);
     } else {
       //register
-      authObs = this.authService.signUp(this.loginForm.value);
+      this.authService.signUp(this.authForm.value).subscribe({
+        next: (resData) => {
+          console.log(resData);
+          this.router.navigateByUrl('/auth/login');
+        },
+        error: (errorResponse) => {
+          console.log(errorResponse);
+        },
+      });
     }
-    authObs.subscribe({
-      next: (resData) => {
-        console.log(resData);
-      },
-      error: (errorResponse) => {
-        console.log(errorResponse);
-        this.error = errorResponse.error.message;
-      },
-    });
-    //this.router.navigate(['/']);
-    this.loginForm.reset();
   }
 }

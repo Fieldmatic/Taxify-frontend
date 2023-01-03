@@ -1,4 +1,5 @@
-import { map, Observable } from 'rxjs';
+import * as AuthActions from './../../store/auth.actions';
+import { Subscription } from 'rxjs';
 import { AuthService } from 'src/auth/services/auth/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -6,6 +7,7 @@ import {
   Component,
   Inject,
   NgZone,
+  OnDestroy,
   OnInit,
   Renderer2,
 } from '@angular/core';
@@ -18,28 +20,36 @@ import { CompleteSocialSignupDialog } from '../complete-social-signup-dialog/com
 import { FacebookSignupRequest } from '../../model/facebook-signup-request';
 import { FacebookUserResponse } from '../../model/facebook-user-response';
 import { GoogleSignUpRequest } from '../../model/google-signup-request';
+import * as fromApp from '../../../app/store/app.reducer';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-login',
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.scss'],
 })
-export class AuthComponent implements OnInit, AfterViewInit {
+export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
+  private storeSub: Subscription;
   authForm!: FormGroup;
-
   isLoginMode: boolean;
+  error: string = null;
 
   callback = null;
   constructor(
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
     private fb: FormBuilder,
     private authService: AuthService,
+    private store: Store<fromApp.AppState>,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private render: Renderer2,
     private socialSignUpDialogRef: MatDialog,
     private ngZone: NgZone
   ) {}
+
+  ngOnDestroy(): void {
+    this.storeSub.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.initGoogleSignIn();
@@ -62,6 +72,10 @@ export class AuthComponent implements OnInit, AfterViewInit {
       } else if (authMode === 'signup') {
         this.isLoginMode = false;
       }
+    });
+
+    this.storeSub = this.store.select('auth').subscribe((authState) => {
+      this.error = authState.authError;
     });
 
     this.authForm.reset();
@@ -161,7 +175,7 @@ export class AuthComponent implements OnInit, AfterViewInit {
               .UserExists(userResponse.email)
               .subscribe((userExists) => {
                 if (userExists) {
-                  this.authService.logIn(userResponse.email, userResponse.id);
+                  //this.authService.logIn(userResponse.email, userResponse.id);
                 } else {
                   this.completeFacebookSignup(userResponse);
                 }
@@ -207,21 +221,24 @@ export class AuthComponent implements OnInit, AfterViewInit {
       return;
     }
     if (this.isLoginMode) {
-      this.authService.logIn(
-        this.authForm.getRawValue()['email'],
-        this.authForm.getRawValue()['password']
+      this.store.dispatch(
+        new AuthActions.LoginStart({
+          email: this.authForm.getRawValue()['email'],
+          password: this.authForm.getRawValue()['password'],
+        })
       );
     } else {
-      //register
-      this.authService.signUp(this.authForm.value).subscribe({
-        next: (resData) => {
-          console.log(resData);
-          this.router.navigateByUrl('/auth/login');
-        },
-        error: (errorResponse) => {
-          console.log(errorResponse);
-        },
-      });
+      this.store.dispatch(
+        new AuthActions.SignupStart({
+          email: this.authForm.getRawValue()['email'],
+          password: this.authForm.getRawValue()['password'],
+          firstName: this.authForm.getRawValue()['firstName'],
+          lastName: this.authForm.getRawValue()['lastName'],
+          city: this.authForm.getRawValue()['city'],
+          phoneNumber: this.authForm.getRawValue()['phoneNumber'],
+          profilePicture: this.authForm.getRawValue()['profilePicture'],
+        })
+      );
     }
   }
 }

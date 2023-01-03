@@ -1,3 +1,4 @@
+import { AuthEffects } from './../auth/store/auth.effects';
 import { APP_SERVICE_CONFIG, APP_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -15,14 +16,16 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { AuthModule } from 'src/auth/auth.module';
 import { StoreModule } from '@ngrx/store';
 import * as fromApp from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent],
   imports: [
     BrowserModule,
+    StoreModule.forRoot(fromApp.appReducer),
+    EffectsModule.forRoot([AuthEffects]),
     AuthModule,
     AppRoutingModule,
-    StoreModule.forRoot(fromApp.appReducer),
     BrowserAnimationsModule,
     MatToolbarModule,
     MatButtonModule,

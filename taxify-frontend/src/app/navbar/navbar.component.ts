@@ -1,8 +1,7 @@
+import * as AuthActions from './../../auth/store/auth.actions';
 import { Store } from '@ngrx/store';
-import { AuthService } from '../../auth/services/auth/auth.service';
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { map, Subscription } from 'rxjs';
-import { Router } from '@angular/router';
 import * as fromApp from '../store/app.reducer';
 
 @Component({
@@ -15,12 +14,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   loggedInUser: string = null;
 
-  constructor(
-    private store: Store<fromApp.AppState>,
-    private authService: AuthService,
-    private router: Router,
-    private render: Renderer2
-  ) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
     this.userSub = this.store
@@ -37,10 +31,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onLogout() {
-    this.loggedInUser = null;
-    this.authService.logout();
-    this.router.navigate(['/auth/login']).then(() => {
-      window.location.reload();
-    });
+    this.store.dispatch(new AuthActions.Logout());
+    // this.router.navigate(['/auth/login']).then(() => {
+    //   window.location.reload();
+    // });
   }
 }

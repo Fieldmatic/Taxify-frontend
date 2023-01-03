@@ -1,3 +1,5 @@
+import { AuthEffects } from "../auth/store/auth.effects";
+import { APP_SERVICE_CONFIG, APP_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -5,7 +7,6 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavbarComponent } from './navbar/navbar.component';
 import { StompService } from './stomp.service';
-import { HttpClientModule } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { DriversEffects } from './drivers/store/drivers.effects';
@@ -16,6 +17,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import * as fromApp from './store/app.reducer';
 import { SharedModule } from './shared/shared.module';
 import { MapsModule } from './maps/maps.module';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptorService } from '../auth/auth-interceptor.service';
+import { AuthModule } from 'src/auth/auth.module';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent],
@@ -26,13 +30,22 @@ import { MapsModule } from './maps/maps.module';
     HttpClientModule,
     SharedModule,
     StoreModule.forRoot(fromApp.appReducer),
-    EffectsModule.forRoot([DriversEffects]),
+    EffectsModule.forRoot([DriversEffects, AuthEffects]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
     AppRoutingModule,
+    AuthModule,
     MapsModule,
   ],
-  providers: [StompService],
+  providers: [StompService, {
+    provide: APP_SERVICE_CONFIG,
+    useValue: APP_CONFIG,
+  },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi: true,
+    }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

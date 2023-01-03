@@ -1,0 +1,45 @@
+
+mat-form-field {
+    width: 100%;
+}
+
+.authForm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 5%;
+}
+
+hr {
+    border: none;
+    color: lightgray;
+    background-color: lightgrey;
+    height: 1px;
+    width: 42%;
+}
+
+.authTitle {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+}
+
+.authTitle > p {
+    margin-left: 2%;
+    margin-right: 2%;
+    color: rgba(102, 99, 99, 0.799);
+}
+
+.authButton {
+    background-color: #000000;
+    color: white;
+    width: 100%;
+}
+
+.switchAuthButton {
+    background-color: rgb(242, 240, 240);
+    width: 100%;
+}
+

@@ -57,6 +57,8 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.authForm?.reset();
+
     this.initGoogleSignIn();
     this.initFacebookSignIn();
     this.authForm = this.fb.group(
@@ -85,7 +87,10 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
           validators: [Validators.required, Validators.pattern(/^[A-Za-z]+$/)],
         }),
         city: new FormControl('', {
-          validators: [Validators.required, Validators.pattern(/^[A-Za-z]+$/)],
+          validators: [
+            Validators.required,
+            Validators.pattern(/^[A-Za-z\s]*$/),
+          ],
         }),
         phoneNumber: new FormControl('', {
           validators: [
@@ -260,6 +265,5 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       );
     }
-    this.authForm.reset();
   }
 }

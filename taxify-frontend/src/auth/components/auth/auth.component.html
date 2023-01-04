@@ -4,12 +4,12 @@
       flex
       layout="column"
       cols="2"
-      rowHeight="9:2.9"
+      rowHeight="5em"
       style="width: 30%"
-      gutterSize="0.5em"
+      gutterSize="1em"
     >
       <mat-grid-tile colspan="2">
-        <div class="authTitle">
+        <div class="authDivider">
           <hr />
           <p>{{ isLoginMode ? "LOG IN" : "SIGN UP" }}</p>
           <hr />
@@ -122,14 +122,22 @@
           >
         </mat-form-field>
       </mat-grid-tile>
-
+    </mat-grid-list>
+    <mat-grid-list
+      layout="column"
+      cols="2"
+      rowHeight="2.5em"
+      style="width: 30%"
+      gutterSize="1em"
+      class="authBottom"
+    >
       <mat-grid-tile colspan="2">
         <button type="submit" mat-button class="authButton">
           {{ isLoginMode ? "Log in" : "Sign up" }}
         </button>
       </mat-grid-tile>
       <mat-grid-tile colspan="2">
-        <div class="authTitle">
+        <div class="authDivider">
           <hr />
           <p>or</p>
           <hr />

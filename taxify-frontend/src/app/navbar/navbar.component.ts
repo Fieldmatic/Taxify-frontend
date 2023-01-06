@@ -22,6 +22,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .select('auth')
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
+        //!!user
         this.isAuthenticated = !user ? false : true;
       });
   }
@@ -32,5 +33,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.store.dispatch(new AuthActions.Logout());
+    // this.router.navigate(['/auth/login']).then(() => {
+    //   window.location.reload();
+    // });
   }
 }

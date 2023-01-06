@@ -9,7 +9,6 @@ import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { LoggedInUser } from '../model/logged-in-user';
 import { LoginResponseData } from '../model/login-response-data';
-import { Observable } from 'rxjs';
 import * as AuthActions from './auth.actions';
 
 const handleError = (errorRes: any) => {
@@ -18,18 +17,6 @@ const handleError = (errorRes: any) => {
     return of(new AuthActions.AuthenticateFail(errorRes.error.message));
   }
   return of(new AuthActions.AuthenticateFail('An unknown error occurred'));
-};
-
-const handleAuthentication = (
-  token: string,
-  expiresIn: number,
-  role?: string,
-  email?: string
-) => {
-  const expirationDate = new Date(new Date().getTime() + expiresIn);
-  const user = new LoggedInUser(email, role, token, expirationDate);
-  localStorage.setItem('userData', JSON.stringify(user));
-  return new AuthActions.LoginSuccess(user);
 };
 
 @Injectable()
@@ -45,13 +32,23 @@ export class AuthEffects {
           })
           .pipe(
             map((resData) => {
-              this.authService.setLogoutTimer(resData.expiresIn);
-              return handleAuthentication(
-                resData.token,
-                resData.expiresIn,
-                resData.role,
-                authData.payload.email
+              const expirationDate = new Date(
+                new Date().getTime() + resData.expiresIn
               );
+              const user = new LoggedInUser(
+                authData.payload.email,
+                resData.role,
+                resData.token,
+                expirationDate
+              );
+              localStorage.setItem('userData', JSON.stringify(user));
+              this.authService.setLogoutTimer(resData.expiresIn);
+              return new AuthActions.LoginSuccess({
+                email: authData.payload.email,
+                role: resData.role,
+                token: resData.token,
+                tokenExpirationDate: expirationDate,
+              });
             }),
             catchError((errorResp) => {
               return handleError(errorResp);
@@ -77,7 +74,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.SIGNUP_SUCCESS),
         tap(() => {
-          this.router.navigate(['/auth/login']);
+          this.router.navigateByUrl('/auth/login');
         })
       ),
     { dispatch: false }
@@ -147,141 +144,14 @@ export class AuthEffects {
             new Date(userData._tokenExpirationDate).getTime() -
               new Date().getTime()
           );
-          return new AuthActions.LoginSuccess(loadedUser);
+          return new AuthActions.LoginSuccess({
+            email: loadedUser.email,
+            role: loadedUser.role,
+            token: loadedUser.token,
+            tokenExpirationDate: expirationDate,
+          });
         }
         return { type: 'DUMMY' };
-      })
-    )
-  );
-
-  emailActivation = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.EMAIL_ACTIVATION),
-      switchMap((emailActivationAction: AuthActions.EmailActivation) => {
-        console.log('token 2 ', emailActivationAction.payload.token);
-        return this.http
-          .put<void>(
-            this.config.apiEndpoint +
-              'passenger/activateEmail/' +
-              emailActivationAction.payload.token,
-            {}
-          )
-          .pipe(
-            map(() => {
-              return new AuthActions.SignupSuccess();
-            }),
-            catchError((errorResp) => {
-              return handleError(errorResp);
-            })
-          );
-      })
-    )
-  );
-
-  loginWithGoogle = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.LOGIN_WITH_GOOGLE),
-      switchMap((loginWithGoogle: AuthActions.LoginWithGoogle) => {
-        return this.http
-          .post<LoginResponseData>(
-            this.config.apiEndpoint +
-              `auth/login-google/${loginWithGoogle.credential}`,
-            {}
-          )
-          .pipe(
-            map((resData) => {
-              return handleAuthentication(
-                resData.token,
-                resData.expiresIn,
-                resData.role
-              );
-            })
-          );
-      })
-    )
-  );
-
-  googleSignUp = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.GOOGLE_SIGNUP),
-      switchMap((googleSignUp: AuthActions.GoogleSignup) => {
-        return this.http
-          .post<LoginResponseData>(
-            this.config.apiEndpoint + `passenger/google-signup`,
-            googleSignUp.request
-          )
-          .pipe(
-            map((resData) => {
-              return handleAuthentication(
-                resData.token,
-                resData.expiresIn,
-                resData.role
-              );
-            })
-          );
-      })
-    )
-  );
-
-  facebookSignUp = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.FACEBOOK_SIGNUP),
-      switchMap((facebookSignup: AuthActions.FacebookSignup) => {
-        return this.http
-          .post<LoginResponseData>(
-            this.config.apiEndpoint + `passenger/facebook-signup`,
-            facebookSignup.payload.facebookSignUpRequest
-          )
-          .pipe(
-            map((resData) => {
-              return handleAuthentication(
-                resData.token,
-                resData.expiresIn,
-                resData.role,
-                facebookSignup.payload.facebookSignUpRequest.email
-              );
-            })
-          );
-      })
-    )
-  );
-
-  userSignedWithGoogleExists = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.USER_SIGNED_WITH_GOOGLE_EXISTS),
-      switchMap(
-        (
-          userSignedWithGoogleExists: AuthActions.UserSignedWithGoogleExists
-        ) => {
-          return this.http
-            .get<boolean>(
-              this.config.apiEndpoint +
-                `auth/user-signed-with-google-exists/${userSignedWithGoogleExists.payload.credential}`
-            )
-            .pipe(
-              map((userExists) => {
-                return new AuthActions.ChangeUserExistsState({ userExists });
-              })
-            );
-        }
-      )
-    )
-  );
-
-  userExists = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.USER_EXISTS_BY_EMAIL),
-      switchMap((userExistsByEmail: AuthActions.UserExistsByEmail) => {
-        return this.http
-          .get<boolean>(
-            this.config.apiEndpoint +
-              `auth/user-exists/${userExistsByEmail.payload.email}`
-          )
-          .pipe(
-            map((userExists) => {
-              return new AuthActions.ChangeUserExistsState({ userExists });
-            })
-          );
       })
     )
   );

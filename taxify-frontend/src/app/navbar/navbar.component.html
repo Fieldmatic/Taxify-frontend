@@ -4,16 +4,12 @@
       <h1 mat-button>Taxify</h1>
     </div>
     <div class="authentication">
-      <a
-        mat-button
-        routerLink="/auth/login"
-        *ngIf="!isAuthenticated"
-        id="loginBtn"
+      <a mat-button href="/auth/login" *ngIf="!isAuthenticated" id="loginBtn"
         >Log in</a
       >
       <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile">Profile</a>
       <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
-      <a mat-raised-button *ngIf="!isAuthenticated" routerLink="/auth/signup"
+      <a mat-raised-button *ngIf="!isAuthenticated" href="/auth/signup"
         >Sign up</a
       >
     </div>

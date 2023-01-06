@@ -1,6 +1,6 @@
 import { CustomValidators } from './../../validators/custom-validators';
 import * as AuthActions from './../../store/auth.actions';
-import { Subscription } from 'rxjs';
+import { filter, first, map, Observable, Subscription, tap } from 'rxjs';
 import { AuthService } from 'src/auth/services/auth/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -27,7 +27,8 @@ import { FacebookSignupRequest } from '../../model/facebook-signup-request';
 import { FacebookUserResponse } from '../../model/facebook-user-response';
 import { GoogleSignUpRequest } from '../../model/google-signup-request';
 import * as fromApp from '../../../app/store/app.reducer';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
+import { getUserExistsSelector } from 'src/auth/store/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -39,12 +40,12 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   authForm!: FormGroup;
   isLoginMode: boolean;
   error: string = null;
+  userExists$: Observable<boolean>;
 
   callback = null;
   constructor(
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
-    private fb: FormBuilder,
-    private authService: AuthService,
+    private formBuilder: FormBuilder,
     private store: Store<fromApp.AppState>,
     private activatedRoute: ActivatedRoute,
     private render: Renderer2,
@@ -61,7 +62,7 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.initGoogleSignIn();
     this.initFacebookSignIn();
-    this.authForm = this.fb.group(
+    this.authForm = this.formBuilder.group(
       {
         email: new FormControl('', {
           validators: [
@@ -124,6 +125,8 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     this.storeSub = this.store.select('auth').subscribe((authState) => {
       this.error = authState.authError;
     });
+
+    this.userExists$ = this.store.pipe(select(getUserExistsSelector));
   }
 
   private initFacebookSignIn() {
@@ -151,19 +154,6 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         document.getElementById('loginBtn'),
         'markedLoginBtn'
       );
-  }
-
-  public completeFacebookSignup(userData: FacebookUserResponse): void {
-    this.ngZone.run(() => {
-      let dialogReference = this.socialSignUpDialogRef.open(
-        CompleteSocialSignupDialog
-      );
-      dialogReference.afterClosed().subscribe((result) => {
-        this.authService.SignUpFacebook(
-          new FacebookSignupRequest(userData, result.city, result.phoneNumber)
-        );
-      });
-    });
   }
 
   private initGoogleSignIn(): void {
@@ -198,12 +188,26 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
           `/${userId}`,
           { fields: ['email', 'first_name', 'last_name'] },
           (userResponse: FacebookUserResponse) => {
-            this.authService
-              .UserExists(userResponse.email)
+            this.store.dispatch(
+              new AuthActions.UserExistsByEmail({ email: userResponse.email })
+            );
+            this.userExists$
+              .pipe(filter((val) => val !== null))
+              .pipe(first())
               .subscribe((userExists) => {
-                if (userExists) {
-                  //this.authService.logIn(userResponse.email, userResponse.id);
-                } else {
+                console.log(userExists);
+                if (userExists)
+                  try {
+                    this.store.dispatch(
+                      new AuthActions.LoginStart({
+                        email: userResponse.email,
+                        password: userResponse.id,
+                      })
+                    );
+                  } catch (e) {
+                    alert('User with this email already has an local account');
+                  }
+                else {
                   this.completeFacebookSignup(userResponse);
                 }
               });
@@ -214,17 +218,45 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  public completeFacebookSignup(userData: FacebookUserResponse): void {
+    this.ngZone.run(() => {
+      let dialogReference = this.socialSignUpDialogRef.open(
+        CompleteSocialSignupDialog
+      );
+      dialogReference.afterClosed().subscribe((result) => {
+        this.store.dispatch(
+          new AuthActions.FacebookSignup({
+            facebookSignUpRequest: new FacebookSignupRequest(
+              userData,
+              result.city,
+              result.phoneNumber
+            ),
+          })
+        );
+      });
+    });
+  }
+
   private async continueWithGoogle(response: CredentialResponse) {
-    this.authService
-      .UserSignedWithGoogleExists(response.credential)
+    let credential: string = response.credential;
+    this.store.dispatch(
+      new AuthActions.UserSignedWithGoogleExists({ credential })
+    );
+
+    this.userExists$
+      .pipe(filter((val) => val !== null))
+      .pipe(first())
       .subscribe((userExists) => {
-        if (userExists) {
+        console.log(userExists);
+        if (userExists)
           try {
-            this.authService.LoginWithGoogle(response.credential);
+            this.store.dispatch(
+              new AuthActions.LoginWithGoogle(response.credential)
+            );
           } catch (e) {
             alert('User with this email already has an local account');
           }
-        } else {
+        else {
           this.completeGoogleSignUp(response.credential);
         }
       });
@@ -236,8 +268,14 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         CompleteSocialSignupDialog
       );
       dialogReference.afterClosed().subscribe((result) => {
-        this.authService.SignUpGoogle(
-          new GoogleSignUpRequest(credentials, result.city, result.phoneNumber)
+        this.store.dispatch(
+          new AuthActions.GoogleSignup(
+            new GoogleSignUpRequest(
+              credentials,
+              result.city,
+              result.phoneNumber
+            )
+          )
         );
       });
     });

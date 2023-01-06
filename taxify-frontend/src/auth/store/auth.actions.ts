@@ -1,4 +1,8 @@
 import { Action } from '@ngrx/store';
+import { GoogleSignUpRequest } from '../model/google-signup-request';
+import { CredentialResponse } from 'google-one-tap';
+import { LoggedInUser } from '../model/logged-in-user';
+import { FacebookSignupRequest } from '../model/facebook-signup-request';
 
 export const LOGIN_START = '[Auth] Login Start';
 export const LOGIN_SUCCESS = '[Auth] Login Success';
@@ -9,17 +13,17 @@ export const SIGNUP_START = '[Auth] Singup Start';
 export const SIGNUP_SUCCESS = '[Auth] Singup Success';
 export const EMAIL_ACTIVATION = '[Auth] Email Activation';
 
+export const GOOGLE_SIGNUP = '[Auth] Google SignUp';
+export const FACEBOOK_SIGNUP = '[Auth] Facebook SignUp';
+export const LOGIN_WITH_GOOGLE = '[Auth] Login With Google';
+export const USER_SIGNED_WITH_GOOGLE_EXISTS =
+  '[Auth] User Signed With Google Exists';
+export const CHANGE_USER_EXISTS_STATE = '[Auth] Change User exists';
+export const USER_EXISTS_BY_EMAIL = '[Auth] User exists by email';
 export class LoginSuccess implements Action {
   readonly type = LOGIN_SUCCESS;
 
-  constructor(
-    public payload: {
-      email: string;
-      role: string;
-      token: string;
-      tokenExpirationDate: Date;
-    }
-  ) {}
+  constructor(public user: LoggedInUser) {}
 }
 
 export class Logout implements Action {
@@ -68,6 +72,38 @@ export class EmailActivation implements Action {
   constructor(public payload: { token: string }) {}
 }
 
+export class GoogleSignup implements Action {
+  readonly type = GOOGLE_SIGNUP;
+
+  constructor(public request: GoogleSignUpRequest) {}
+}
+
+export class FacebookSignup implements Action {
+  readonly type = FACEBOOK_SIGNUP;
+  constructor(
+    public payload: { facebookSignUpRequest: FacebookSignupRequest }
+  ) {}
+}
+
+export class LoginWithGoogle implements Action {
+  readonly type = LOGIN_WITH_GOOGLE;
+  constructor(public credential: string) {}
+}
+
+export class UserSignedWithGoogleExists implements Action {
+  readonly type = USER_SIGNED_WITH_GOOGLE_EXISTS;
+  constructor(public payload: { credential: string }) {}
+}
+
+export class UserExistsByEmail implements Action {
+  readonly type = USER_EXISTS_BY_EMAIL;
+  constructor(public payload: { email: string }) {}
+}
+
+export class ChangeUserExistsState implements Action {
+  readonly type = CHANGE_USER_EXISTS_STATE;
+  constructor(public payload: { userExists: boolean }) {}
+}
 export type AuthActions =
   | LoginSuccess
   | Logout
@@ -76,4 +112,10 @@ export type AuthActions =
   | SignupStart
   | SignupSuccess
   | AutoLogin
-  | EmailActivation;
+  | EmailActivation
+  | GoogleSignup
+  | LoginWithGoogle
+  | UserSignedWithGoogleExists
+  | ChangeUserExistsState
+  | UserExistsByEmail
+  | FacebookSignup;

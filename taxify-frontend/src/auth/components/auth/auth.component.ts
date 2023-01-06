@@ -304,8 +304,6 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSubmit(formDirective: FormGroupDirective) {
-    formDirective.resetForm();
-    this.authForm.reset();
     if (this.isLoginMode) {
       this.store.dispatch(
         new AuthActions.LoginStart({
@@ -330,5 +328,7 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       );
     }
+    formDirective.resetForm();
+    this.authForm.reset();
   }
 }

@@ -1,6 +1,5 @@
 import * as fromApp from './../app/store/app.reducer';
 import { Store } from '@ngrx/store';
-import { AuthService } from './services/auth/auth.service';
 import {
   HttpEvent,
   HttpHandler,
@@ -9,7 +8,7 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { exhaustMap, Observable, take, map } from 'rxjs';
+import { exhaustMap, map, Observable, take } from 'rxjs';
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
@@ -28,7 +27,7 @@ export class AuthInterceptorService implements HttpInterceptor {
           return next.handle(req);
         }
         const modifiedReq = req.clone({
-          headers: new HttpHeaders({ token: user.token }),
+          headers: new HttpHeaders({ Authorization: 'Bearer ' + user.token }),
         });
         return next.handle(modifiedReq);
       })

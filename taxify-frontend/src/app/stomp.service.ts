@@ -9,7 +9,9 @@ export class StompService {
   socket = new SockJS('http://localhost:8080/api/ws');
   stompClient = Stomp.over(this.socket);
 
-  constructor() {}
+  constructor() {
+    this.stompClient.debug = function() {};
+  }
 
   subscribe(topic: string, callback: any) {
     const connected: boolean = this.stompClient.connected;

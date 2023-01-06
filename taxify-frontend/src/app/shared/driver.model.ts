@@ -1,11 +1,17 @@
 import { Vehicle } from './vehicle.model';
+import { User } from './user.model';
 
-export interface Driver {
-  id: number;
-  name: string;
-  surname: string;
-  phoneNumber: string;
-  email: string;
-  profilePicture: string;
-  vehicle: Vehicle;
+export class Driver extends User {
+  constructor(
+    id: number,
+    name: string,
+    surname: string,
+    phoneNumber: string,
+    email: string,
+    profilePicture: string,
+    city: string,
+    public vehicle: Vehicle
+  ) {
+    super(id, name, surname, phoneNumber, email, profilePicture, city);
+  }
 }

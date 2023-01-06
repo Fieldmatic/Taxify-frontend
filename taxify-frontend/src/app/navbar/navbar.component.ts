@@ -12,6 +12,7 @@ import * as fromApp from '../store/app.reducer';
 export class NavbarComponent implements OnInit, OnDestroy {
   private userSub: Subscription;
   isAuthenticated = false;
+  role: string = null;
   loggedInUser: string = null;
 
   constructor(private store: Store<fromApp.AppState>) {}

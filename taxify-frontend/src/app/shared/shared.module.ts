@@ -5,10 +5,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatCardModule } from "@angular/material/card";
+import { MatCardModule } from '@angular/material/card';
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [],
+  declarations: [LoadingSpinnerComponent, ConfirmationDialogComponent],
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -16,7 +19,8 @@ import { MatCardModule } from "@angular/material/card";
     MatIconModule,
     MatProgressSpinnerModule,
     MatGridListModule,
-    MatCardModule
+    MatCardModule,
+    MatDialogModule,
   ],
   exports: [
     CommonModule,
@@ -25,6 +29,7 @@ import { MatCardModule } from "@angular/material/card";
     MatIconModule,
     MatProgressSpinnerModule,
     MatGridListModule,
+    LoadingSpinnerComponent,
   ],
 })
 export class SharedModule {}

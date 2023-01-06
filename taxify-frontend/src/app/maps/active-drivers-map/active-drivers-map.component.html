@@ -1,6 +1,6 @@
 <div class="wrapper">
   <div id="map" class="map col-12"></div>
-  <mat-progress-spinner *ngIf="loading" class="mat-progress-spinner col-md-6" mode="indeterminate" color="primary"></mat-progress-spinner>
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
   <div id="popup" [ngClass]="driver?null:'hidden'"  class="ol-popup" #popup>
     <app-selected-driver-info *ngIf="driver"></app-selected-driver-info>
   </div>

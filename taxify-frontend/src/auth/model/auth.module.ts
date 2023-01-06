@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { AuthRoutingModule } from '../../app/auth/auth-routing.module';
+import { AuthRoutingModule } from '../auth-routing.module';
 import { AuthComponent } from '../components/auth/auth.component';
 import { CompleteSocialSignupDialog } from '../components/complete-social-signup-dialog/complete-social-signup-dialog.component';
 import { EmailActivationComponent } from '../components/email-activation/email-activation.component';

@@ -1,0 +1,26 @@
+mat-card-header {
+  aspect-ratio: 1 / 1;
+}
+
+mat-card-header img{
+  min-width: 100%;
+  min-height: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.info-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+mat-icon {
+  padding-left: 0.3em;
+  margin-right: 0.6em;
+}
+
+a {
+  background-color: #000000;
+  color: white;
+  width: 100%;
+}

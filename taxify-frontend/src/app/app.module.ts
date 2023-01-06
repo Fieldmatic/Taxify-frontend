@@ -1,5 +1,5 @@
-import { AuthEffects } from "../auth/store/auth.effects";
-import { APP_SERVICE_CONFIG, APP_CONFIG } from './appConfig/appconfig.service';
+import { AuthEffects } from '../auth/store/auth.effects';
+import { APP_CONFIG, APP_SERVICE_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -17,9 +17,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import * as fromApp from './store/app.reducer';
 import { SharedModule } from './shared/shared.module';
 import { MapsModule } from './maps/maps.module';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AuthInterceptorService } from '../auth/auth-interceptor.service';
 import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { UsersEffects } from './users/store/users.effects';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent],
@@ -30,22 +32,26 @@ import { AuthModule } from 'src/auth/auth.module';
     HttpClientModule,
     SharedModule,
     StoreModule.forRoot(fromApp.appReducer),
-    EffectsModule.forRoot([DriversEffects, AuthEffects]),
+    EffectsModule.forRoot([DriversEffects, AuthEffects, UsersEffects]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
-    AppRoutingModule,
-    AuthModule,
+    UsersModule,
     MapsModule,
+    AuthModule,
+    AppRoutingModule,
   ],
-  providers: [StompService, {
-    provide: APP_SERVICE_CONFIG,
-    useValue: APP_CONFIG,
-  },
+  providers: [
+    StompService,
+    {
+      provide: APP_SERVICE_CONFIG,
+      useValue: APP_CONFIG,
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,
       multi: true,
-    }],
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

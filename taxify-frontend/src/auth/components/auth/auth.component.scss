@@ -8,7 +8,7 @@ mat-form-field {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin-top: 1%;
+    margin-top: 5%;
 }
 
 hr {
@@ -16,23 +16,21 @@ hr {
     color: lightgray;
     background-color: lightgrey;
     height: 1px;
-    width: 40%;
+    width: 42%;
 }
 
-.authDivider {
+.authTitle {
     display: flex;
     justify-content: center;
     width: 100%;
 
 }
 
-.authDivider > p {
-  display: flex;
-  justify-content: center;
-  width: 18%;
-  color: rgba(102, 99, 99, 0.799);
+.authTitle > p {
+    margin-left: 2%;
+    margin-right: 2%;
+    color: rgba(102, 99, 99, 0.799);
 }
-
 
 .authButton {
     background-color: #000000;
@@ -40,7 +38,8 @@ hr {
     width: 100%;
 }
 
-.authBottom {
-  margin-top: 1.5%;
+.switchAuthButton {
+    background-color: rgb(242, 240, 240);
+    width: 100%;
 }
 

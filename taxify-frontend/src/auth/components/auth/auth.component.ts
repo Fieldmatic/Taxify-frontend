@@ -1,7 +1,6 @@
 import { CustomValidators } from './../../validators/custom-validators';
 import * as AuthActions from './../../store/auth.actions';
-import { filter, first, map, Observable, Subscription, tap } from 'rxjs';
-import { AuthService } from 'src/auth/services/auth/auth.service';
+import { filter, first, Observable, Subscription, tap } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   AfterViewInit,
@@ -16,6 +15,7 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
+  FormGroupDirective,
   Validators,
 } from '@angular/forms';
 import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
@@ -58,8 +58,7 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.authForm?.reset();
-
+    this.reloadIfNecessary();
     this.initGoogleSignIn();
     this.initFacebookSignIn();
     this.authForm = this.formBuilder.group(
@@ -119,6 +118,20 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         this.authForm.get('password').clearValidators();
       } else if (authMode === 'signup') {
         this.isLoginMode = false;
+        this.authForm
+          .get('email')
+          .addValidators([
+            Validators.required,
+            Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+          ]);
+        this.authForm
+          .get('password')
+          .addValidators([
+            Validators.required,
+            Validators.pattern(
+              '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,}$'
+            ),
+          ]);
       }
     });
 
@@ -127,6 +140,15 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.userExists$ = this.store.pipe(select(getUserExistsSelector));
+  }
+  private reloadIfNecessary() {
+    var isLoadedBefore = localStorage.getItem('IsLoadedBefore');
+    if (isLoadedBefore === 'true') {
+      localStorage.removeItem('IsLoadedBefore');
+    } else {
+      localStorage.setItem('IsLoadedBefore', 'true');
+      location.reload();
+    }
   }
 
   private initFacebookSignIn() {
@@ -281,7 +303,9 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  onSubmit() {
+  onSubmit(formDirective: FormGroupDirective) {
+    formDirective.resetForm();
+    this.authForm.reset();
     if (this.isLoginMode) {
       this.store.dispatch(
         new AuthActions.LoginStart({

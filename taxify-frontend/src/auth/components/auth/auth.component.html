@@ -1,5 +1,10 @@
 <div>
-  <form [formGroup]="authForm" class="authForm" (ngSubmit)="onSubmit()">
+  <form
+    [formGroup]="authForm"
+    #formDirective="ngForm"
+    class="authForm"
+    (ngSubmit)="onSubmit(formDirective)"
+  >
     <mat-grid-list
       flex
       layout="column"

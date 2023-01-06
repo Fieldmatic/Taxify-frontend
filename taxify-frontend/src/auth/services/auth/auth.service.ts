@@ -32,7 +32,14 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expiresIn);
     const user = new LoggedInUser(email, role, token, expirationDate);
     //this.user.next(user);
-    this.store.dispatch(new AuthActions.LoginSuccess(user));
+    this.store.dispatch(
+      new AuthActions.LoginSuccess({
+        email: email,
+        role: role,
+        token: token,
+        tokenExpirationDate: expirationDate,
+      })
+    );
     //this.autoLogout(expiresIn);
     //localStorage.setItem('userData', JSON.stringify(user));
   }

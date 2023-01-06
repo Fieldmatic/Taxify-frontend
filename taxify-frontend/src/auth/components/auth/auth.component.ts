@@ -114,6 +114,8 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
       let authMode = params['authMode'];
       if (authMode === 'login') {
         this.isLoginMode = true;
+        this.authForm.get('email').clearValidators();
+        this.authForm.get('password').clearValidators();
       } else if (authMode === 'signup') {
         this.isLoginMode = false;
       }
@@ -242,9 +244,6 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSubmit() {
-    if (!this.authForm.valid) {
-      return;
-    }
     if (this.isLoginMode) {
       this.store.dispatch(
         new AuthActions.LoginStart({
@@ -253,6 +252,10 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       );
     } else {
+      if (!this.authForm.valid) {
+        return;
+      }
+
       this.store.dispatch(
         new AuthActions.SignupStart({
           email: this.authForm.getRawValue()['email'],

@@ -19,10 +19,16 @@
         <mat-form-field appearance="fill">
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" />
-          <mat-error *ngIf="this.authForm.get('email')?.hasError('required')"
+          <mat-error
+            *ngIf="
+              this.authForm.get('email')?.hasError('required') && !isLoginMode
+            "
             >Email is required field.</mat-error
           >
-          <mat-error *ngIf="this.authForm.get('email')?.hasError('pattern')"
+          <mat-error
+            *ngIf="
+              this.authForm.get('email')?.hasError('pattern') && !isLoginMode
+            "
             >Please provide a valid email address.</mat-error
           >
         </mat-form-field>
@@ -32,14 +38,24 @@
         <mat-form-field appearance="fill">
           <mat-label>Password</mat-label>
           <input matInput formControlName="password" type="password" />
-          <mat-error *ngIf="this.authForm.get('password')?.hasError('required')"
+          <mat-error
+            *ngIf="
+              this.authForm.get('password')?.hasError('required') &&
+              !isLoginMode
+            "
             >Password is required field.</mat-error
           >
           <mat-error
-            *ngIf="this.authForm.get('password')?.hasError('minlength')"
+            *ngIf="
+              this.authForm.get('password')?.hasError('minlength') &&
+              !isLoginMode
+            "
             >Password must contain at least 8 characters.</mat-error
           >
-          <mat-error *ngIf="this.authForm.get('password')?.hasError('pattern')"
+          <mat-error
+            *ngIf="
+              this.authForm.get('password')?.hasError('pattern') && !isLoginMode
+            "
             >Password contain at least one number, symbol, uppercase and
             lowercase letter.</mat-error
           >

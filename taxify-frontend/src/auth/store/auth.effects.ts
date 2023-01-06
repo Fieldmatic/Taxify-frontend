@@ -74,7 +74,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.SIGNUP_SUCCESS),
         tap(() => {
-          this.router.navigateByUrl('/auth/login');
+          this.router.navigate(['/auth/login']);
         })
       ),
     { dispatch: false }
@@ -152,6 +152,30 @@ export class AuthEffects {
           });
         }
         return { type: 'DUMMY' };
+      })
+    )
+  );
+
+  emailActivation = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.EMAIL_ACTIVATION),
+      switchMap((emailActivationAction: AuthActions.EmailActivation) => {
+        console.log('token 2 ', emailActivationAction.payload.token);
+        return this.http
+          .put<void>(
+            this.config.apiEndpoint +
+              'passenger/activateEmail/' +
+              emailActivationAction.payload.token,
+            {}
+          )
+          .pipe(
+            map(() => {
+              return new AuthActions.SignupSuccess();
+            }),
+            catchError((errorResp) => {
+              return handleError(errorResp);
+            })
+          );
       })
     )
   );

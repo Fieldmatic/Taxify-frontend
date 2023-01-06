@@ -1,6 +1,6 @@
+import { CustomValidators } from './../../validators/custom-validators';
 import * as AuthActions from './../../store/auth.actions';
-import { Subscription } from 'rxjs';
-import { AuthService } from 'src/auth/services/auth/auth.service';
+import { filter, first, Observable, Subscription, tap } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   AfterViewInit,
@@ -11,7 +11,13 @@ import {
   OnInit,
   Renderer2,
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  Validators,
+} from '@angular/forms';
 import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
 import { MatDialog } from '@angular/material/dialog';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
@@ -21,7 +27,8 @@ import { FacebookSignupRequest } from '../../model/facebook-signup-request';
 import { FacebookUserResponse } from '../../model/facebook-user-response';
 import { GoogleSignUpRequest } from '../../model/google-signup-request';
 import * as fromApp from '../../../app/store/app.reducer';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
+import { getUserExistsSelector } from 'src/auth/store/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -33,14 +40,13 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   authForm!: FormGroup;
   isLoginMode: boolean;
   error: string = null;
+  userExists$: Observable<boolean>;
 
   callback = null;
   constructor(
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
-    private fb: FormBuilder,
-    private authService: AuthService,
+    private formBuilder: FormBuilder,
     private store: Store<fromApp.AppState>,
-    private router: Router,
     private activatedRoute: ActivatedRoute,
     private render: Renderer2,
     private socialSignUpDialogRef: MatDialog,
@@ -52,25 +58,80 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.reloadIfNecessary();
     this.initGoogleSignIn();
     this.initFacebookSignIn();
-    this.authForm = this.fb.group({
-      email: new FormControl(''),
-      password: new FormControl(''),
-      repeatPassword: new FormControl(''),
-      firstName: new FormControl(''),
-      lastName: new FormControl(''),
-      city: new FormControl(''),
-      phoneNumber: new FormControl(''),
-      profilePicture: new FormControl(''),
-    });
+    this.authForm = this.formBuilder.group(
+      {
+        email: new FormControl('', {
+          validators: [
+            Validators.required,
+            Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+          ],
+        }),
+        password: new FormControl('', {
+          validators: [
+            Validators.required,
+            Validators.pattern(
+              '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,}$'
+            ),
+          ],
+        }),
+        confirmPassword: new FormControl('', {
+          validators: [Validators.required],
+        }),
+        firstName: new FormControl('', {
+          validators: [Validators.required, Validators.pattern(/^[A-Za-z]+$/)],
+        }),
+        lastName: new FormControl('', {
+          validators: [Validators.required, Validators.pattern(/^[A-Za-z]+$/)],
+        }),
+        city: new FormControl('', {
+          validators: [
+            Validators.required,
+            Validators.pattern(/^[A-Za-z\s]*$/),
+          ],
+        }),
+        phoneNumber: new FormControl('', {
+          validators: [
+            Validators.required,
+            Validators.minLength(9),
+            Validators.maxLength(13),
+            Validators.pattern('^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-s./0-9]*$'),
+          ],
+        }),
+        profilePicture: new FormControl(''),
+      },
+      {
+        validator: CustomValidators.MatchValidator(
+          'password',
+          'confirmPassword'
+        ),
+      }
+    );
 
     this.activatedRoute.params.subscribe((params) => {
       let authMode = params['authMode'];
       if (authMode === 'login') {
         this.isLoginMode = true;
+        this.authForm.get('email').clearValidators();
+        this.authForm.get('password').clearValidators();
       } else if (authMode === 'signup') {
         this.isLoginMode = false;
+        this.authForm
+          .get('email')
+          .addValidators([
+            Validators.required,
+            Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+          ]);
+        this.authForm
+          .get('password')
+          .addValidators([
+            Validators.required,
+            Validators.pattern(
+              '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*_=+-]).{8,}$'
+            ),
+          ]);
       }
     });
 
@@ -78,24 +139,15 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
       this.error = authState.authError;
     });
 
-    this.authForm.reset();
+    this.userExists$ = this.store.pipe(select(getUserExistsSelector));
   }
-
-  onSwitchMode() {
-    this.authForm.reset();
-    this.isLoginMode = !this.isLoginMode;
-    if (this.isLoginMode) {
-      this.router.navigateByUrl('/auth/login');
-      this.render.addClass(
-        document.getElementById('loginBtn'),
-        'markedLoginBtn'
-      );
+  private reloadIfNecessary() {
+    var isLoadedBefore = localStorage.getItem('IsLoadedBefore');
+    if (isLoadedBefore === 'true') {
+      localStorage.removeItem('IsLoadedBefore');
     } else {
-      this.router.navigateByUrl('/auth/signup');
-      this.render.removeClass(
-        document.getElementById('loginBtn'),
-        'markedLoginBtn'
-      );
+      localStorage.setItem('IsLoadedBefore', 'true');
+      location.reload();
     }
   }
 
@@ -124,19 +176,6 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         document.getElementById('loginBtn'),
         'markedLoginBtn'
       );
-  }
-
-  public completeFacebookSignup(userData: FacebookUserResponse): void {
-    this.ngZone.run(() => {
-      let dialogReference = this.socialSignUpDialogRef.open(
-        CompleteSocialSignupDialog
-      );
-      dialogReference.afterClosed().subscribe((result) => {
-        this.authService.SignUpFacebook(
-          new FacebookSignupRequest(userData, result.city, result.phoneNumber)
-        );
-      });
-    });
   }
 
   private initGoogleSignIn(): void {
@@ -171,12 +210,26 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
           `/${userId}`,
           { fields: ['email', 'first_name', 'last_name'] },
           (userResponse: FacebookUserResponse) => {
-            this.authService
-              .UserExists(userResponse.email)
+            this.store.dispatch(
+              new AuthActions.UserExistsByEmail({ email: userResponse.email })
+            );
+            this.userExists$
+              .pipe(filter((val) => val !== null))
+              .pipe(first())
               .subscribe((userExists) => {
-                if (userExists) {
-                  //this.authService.logIn(userResponse.email, userResponse.id);
-                } else {
+                console.log(userExists);
+                if (userExists)
+                  try {
+                    this.store.dispatch(
+                      new AuthActions.LoginStart({
+                        email: userResponse.email,
+                        password: userResponse.id,
+                      })
+                    );
+                  } catch (e) {
+                    alert('User with this email already has an local account');
+                  }
+                else {
                   this.completeFacebookSignup(userResponse);
                 }
               });
@@ -187,17 +240,45 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  public completeFacebookSignup(userData: FacebookUserResponse): void {
+    this.ngZone.run(() => {
+      let dialogReference = this.socialSignUpDialogRef.open(
+        CompleteSocialSignupDialog
+      );
+      dialogReference.afterClosed().subscribe((result) => {
+        this.store.dispatch(
+          new AuthActions.FacebookSignup({
+            facebookSignUpRequest: new FacebookSignupRequest(
+              userData,
+              result.city,
+              result.phoneNumber
+            ),
+          })
+        );
+      });
+    });
+  }
+
   private async continueWithGoogle(response: CredentialResponse) {
-    this.authService
-      .UserSignedWithGoogleExists(response.credential)
+    let credential: string = response.credential;
+    this.store.dispatch(
+      new AuthActions.UserSignedWithGoogleExists({ credential })
+    );
+
+    this.userExists$
+      .pipe(filter((val) => val !== null))
+      .pipe(first())
       .subscribe((userExists) => {
-        if (userExists) {
+        console.log(userExists);
+        if (userExists)
           try {
-            this.authService.LoginWithGoogle(response.credential);
+            this.store.dispatch(
+              new AuthActions.LoginWithGoogle(response.credential)
+            );
           } catch (e) {
             alert('User with this email already has an local account');
           }
-        } else {
+        else {
           this.completeGoogleSignUp(response.credential);
         }
       });
@@ -209,17 +290,22 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         CompleteSocialSignupDialog
       );
       dialogReference.afterClosed().subscribe((result) => {
-        this.authService.SignUpGoogle(
-          new GoogleSignUpRequest(credentials, result.city, result.phoneNumber)
+        this.store.dispatch(
+          new AuthActions.GoogleSignup(
+            new GoogleSignUpRequest(
+              credentials,
+              result.city,
+              result.phoneNumber
+            )
+          )
         );
       });
     });
   }
 
-  onSubmit() {
-    if (!this.authForm.valid) {
-      return;
-    }
+  onSubmit(formDirective: FormGroupDirective) {
+    formDirective.resetForm();
+    this.authForm.reset();
     if (this.isLoginMode) {
       this.store.dispatch(
         new AuthActions.LoginStart({
@@ -228,6 +314,10 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       );
     } else {
+      if (!this.authForm.valid) {
+        return;
+      }
+
       this.store.dispatch(
         new AuthActions.SignupStart({
           email: this.authForm.getRawValue()['email'],

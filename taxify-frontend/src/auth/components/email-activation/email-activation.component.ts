@@ -1,6 +1,8 @@
-import { PassengerService } from '../../../app/services/passenger/passenger.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../../app/store/app.reducer';
+import * as AuthActions from './../../store/auth.actions';
 
 @Component({
   selector: 'app-email-activation',
@@ -9,19 +11,12 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class EmailActivationComponent implements OnInit {
   constructor(
-    private passengerService: PassengerService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit(): void {
     let token = this.activatedRoute.snapshot.paramMap.get('token');
-    this.passengerService.activateEmail(token).subscribe({
-      next: (resData) => {
-        console.log(resData);
-      },
-      error: (errorResponse) => {
-        console.log(errorResponse);
-      },
-    });
+    this.store.dispatch(new AuthActions.EmailActivation({ token }));
   }
 }

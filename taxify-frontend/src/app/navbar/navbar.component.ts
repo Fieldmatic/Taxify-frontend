@@ -1,4 +1,4 @@
-import * as AuthActions from './../../auth/store/auth.actions';
+import * as AuthActions from '../auth/store/auth.actions';
 import { Store } from '@ngrx/store';
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { map, Subscription } from 'rxjs';

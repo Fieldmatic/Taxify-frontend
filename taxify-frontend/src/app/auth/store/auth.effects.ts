@@ -1,4 +1,4 @@
-import { AuthService } from 'src/auth/services/auth/auth.service';
+import { AuthService } from 'src/app/auth/services/auth/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';

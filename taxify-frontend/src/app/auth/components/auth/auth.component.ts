@@ -1,5 +1,5 @@
-import { CustomValidators } from './../../validators/custom-validators';
-import * as AuthActions from './../../store/auth.actions';
+import { CustomValidators } from '../../validators/custom-validators';
+import * as AuthActions from '../../store/auth.actions';
 import { filter, first, Observable, Subscription, tap } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
@@ -26,9 +26,9 @@ import { CompleteSocialSignupDialog } from '../complete-social-signup-dialog/com
 import { FacebookSignupRequest } from '../../model/facebook-signup-request';
 import { FacebookUserResponse } from '../../model/facebook-user-response';
 import { GoogleSignUpRequest } from '../../model/google-signup-request';
-import * as fromApp from '../../../app/store/app.reducer';
+import * as fromApp from '../../../store/app.reducer';
 import { select, Store } from '@ngrx/store';
-import { getUserExistsSelector } from 'src/auth/store/auth.selectors';
+import { getUserExistsSelector } from 'src/app/auth/store/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -55,6 +55,7 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.storeSub.unsubscribe();
+
   }
 
   ngOnInit(): void {

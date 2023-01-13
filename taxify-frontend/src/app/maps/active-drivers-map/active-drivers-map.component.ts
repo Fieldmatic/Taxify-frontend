@@ -18,44 +18,35 @@ import { Coordinate } from 'ol/coordinate';
 import * as MapUtils from '../mapUtils';
 import VectorSource from 'ol/source/Vector';
 import { Vehicle } from '../../shared/vehicle.model';
+import { MapsService } from '../maps.service';
 
 @Component({
   selector: 'app-active-drivers-map',
   templateUrl: './active-drivers-map.component.html',
   styleUrls: ['./active-drivers-map.component.scss'],
 })
-export class ActiveDriversMapComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
-  map: Map;
-  drivers: Driver[] = [];
-  vehicles: Vehicle[] = [];
-  error: number;
-  loading: boolean;
-  mapsSubscription: Subscription;
-  driversSubscription: Subscription;
-  driver: Driver;
+export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
   @ViewChild('popup') popup: ElementRef;
+  loading: boolean;
+  driver: Driver;
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private stompService: StompService
+    private stompService: StompService,
+    private mapsService: MapsService
   ) {}
-
-  ngOnDestroy(): void {
-    this.mapsSubscription.unsubscribe();
-    this.driversSubscription.unsubscribe();
-  }
 
   ngOnInit(): void {
     this.subscribeToWebSocket();
-    this.subscribeToDriversStore();
-    this.subscribeToMapsStore();
-    this.addMapEvents();
+    this.store.select('maps').subscribe((mapsState) => {
+      this.loading = mapsState.loading;
+      this.driver = mapsState.driver;
+    });
+    this.mapsService.setTarget('map');
   }
 
   ngAfterViewInit(): void {
-    this.map.addOverlay(
+    this.mapsService.addOverlay(
       MapUtils.createMapDriversOverlay(this.popup.nativeElement as HTMLElement)
     );
   }
@@ -64,88 +55,5 @@ export class ActiveDriversMapComponent
     this.stompService.subscribe('/topic/vehicles', (): any => {
       this.store.dispatch(new DriversActions.FetchActiveDriversInArea());
     });
-  }
-
-  subscribeToDriversStore() {
-    this.driversSubscription = this.store
-      .select('drivers')
-      .subscribe((driversState) => {
-        this.drivers = driversState.drivers;
-        this.vehicles = this.getVehiclesFromDrivers(driversState.drivers);
-        this.error = driversState.error;
-        this.updateMapVehicleLayer();
-        this.updateOverlay();
-      });
-  }
-
-  subscribeToMapsStore() {
-    this.mapsSubscription = this.store.select('maps').subscribe((mapsState) => {
-      this.loading = mapsState.loading;
-      this.driver = mapsState.driver;
-      if (this.map) {
-        this.updateMapVehicleLayer();
-      } else {
-        this.initMap(mapsState.mapData.mapCenter);
-      }
-    });
-  }
-
-  addMapEvents() {
-    this.map.on('loadstart', () => {
-      this.store.dispatch(new MapActions.MapLoadStart());
-    });
-    this.map.on('loadend', (event: any) => {
-      this.store.dispatch(
-        new MapActions.MapLoadEnd(MapUtils.getMapData(event.map))
-      );
-    });
-    this.map.on('click', (event) => {
-      const feature = this.map.forEachFeatureAtPixel(
-        event.pixel,
-        function (feature) {
-          return feature;
-        }
-      );
-      if (feature) {
-        this.store.dispatch(
-          new MapActions.DriverSelected(this.drivers[feature.get('id')])
-        );
-        const geometry = feature.getGeometry();
-        const extent = geometry.getExtent();
-        const coordinate = [
-          (extent[0] + extent[2]) / 2,
-          (extent[1] + extent[3]) / 2,
-        ];
-        this.map.getOverlayById('drivers').setPosition(coordinate);
-      }
-    });
-  }
-
-  initMap(mapCenter: Coordinate) {
-    this.map = MapUtils.createMapWithVehiclesLayer(mapCenter, this.vehicles);
-  }
-
-  updateMapVehicleLayer() {
-    if (this.map) {
-      let vectorSource = <VectorSource>this.map.getAllLayers()[1].getSource();
-      vectorSource.clear();
-      vectorSource.addFeatures(MapUtils.createVehicleFeatures(this.vehicles));
-      vectorSource.changed();
-      this.map.getOverlayById('drivers').setPosition(undefined);
-    }
-  }
-
-  getVehiclesFromDrivers(drivers: Driver[]): Vehicle[] {
-    let vehicles: Vehicle[] = [];
-    for (let driver of drivers) {
-      vehicles.push(driver.vehicle);
-    }
-    return vehicles;
-  }
-
-  updateOverlay() {
-    if (!this.driver) {
-      this.map?.getOverlayById('drivers').setPosition(undefined);
-    }
   }
 }

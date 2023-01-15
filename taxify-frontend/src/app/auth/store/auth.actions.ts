@@ -1,6 +1,5 @@
 import { Action } from '@ngrx/store';
 import { GoogleSignUpRequest } from '../model/google-signup-request';
-import { CredentialResponse } from 'google-one-tap';
 import { LoggedInUser } from '../model/logged-in-user';
 import { FacebookSignupRequest } from '../model/facebook-signup-request';
 
@@ -20,6 +19,12 @@ export const USER_SIGNED_WITH_GOOGLE_EXISTS =
   '[Auth] User Signed With Google Exists';
 export const CHANGE_USER_EXISTS_STATE = '[Auth] Change User exists';
 export const USER_EXISTS_BY_EMAIL = '[Auth] User exists by email';
+
+export const REAUTHENTICATE = '[Users] Reauthenticate';
+export const REAUTHENTICATE_SUCCESS =
+  '[Users] Authentication confirmed successful';
+export const REAUTHENTICATE_FAIL = '[Users] Authentication not confirmed';
+
 export class LoginSuccess implements Action {
   readonly type = LOGIN_SUCCESS;
 
@@ -104,6 +109,23 @@ export class ChangeUserExistsState implements Action {
   readonly type = CHANGE_USER_EXISTS_STATE;
   constructor(public payload: { userExists: boolean }) {}
 }
+
+export class Reauthenticate implements Action {
+  readonly type = REAUTHENTICATE;
+
+  constructor(public payload: string) {}
+}
+
+export class ReauthenticateSuccess implements Action {
+  readonly type = REAUTHENTICATE_SUCCESS;
+}
+
+export class ReauthenticateFail implements Action {
+  readonly type = REAUTHENTICATE_FAIL;
+
+  constructor(public payload: string) {}
+}
+
 export type AuthActions =
   | LoginSuccess
   | Logout
@@ -118,4 +140,7 @@ export type AuthActions =
   | UserSignedWithGoogleExists
   | ChangeUserExistsState
   | UserExistsByEmail
-  | FacebookSignup;
+  | FacebookSignup
+  | Reauthenticate
+  | ReauthenticateSuccess
+  | ReauthenticateFail;

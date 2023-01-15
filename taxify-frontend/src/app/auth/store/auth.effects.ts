@@ -1,16 +1,15 @@
 import { AuthService } from 'src/app/auth/services/auth/auth.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { tap } from 'rxjs';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { LoggedInUser } from '../model/logged-in-user';
 import { LoginResponseData } from '../model/login-response-data';
-import { Observable } from 'rxjs';
 import * as AuthActions from './auth.actions';
+import { NotifierService } from '../../shared/notifier.service';
 
 const handleError = (errorRes: any) => {
   console.log(errorRes.error);
@@ -286,11 +285,68 @@ export class AuthEffects {
     )
   );
 
+  reauthenticate = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.REAUTHENTICATE),
+      switchMap((reauthenticateData: AuthActions.Reauthenticate) => {
+        localStorage.setItem('oldPassword', reauthenticateData.payload);
+        return this.http
+          .post(
+            this.config.apiEndpoint + 'auth/password-confirm',
+            {},
+            {
+              params: new HttpParams().append(
+                'oldPassword',
+                reauthenticateData.payload
+              ),
+            }
+          )
+          .pipe(
+            map(() => {
+              return new AuthActions.ReauthenticateSuccess();
+            }),
+            catchError((errorRes) => {
+              return of(new AuthActions.ReauthenticateFail(errorRes));
+            })
+          );
+      })
+    );
+  });
+
+  reauthenticateSuccess = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(AuthActions.REAUTHENTICATE_SUCCESS),
+        tap(() => {
+          this.notifierService.notifySuccess('Successfully confirmed identity');
+          this.router.navigate(['users', 'profile', 'pass']);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  reauthenticateFail = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(AuthActions.REAUTHENTICATE_FAIL),
+        tap((action: AuthActions.ReauthenticateFail) => {
+          if (action.payload) {
+            this.notifierService.notifyError(action.payload);
+          }
+          localStorage.removeItem('oldPassword');
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
     private http: HttpClient,
     private router: Router,
     private authService: AuthService,
+    private notifierService: NotifierService,
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig
   ) {}
 }

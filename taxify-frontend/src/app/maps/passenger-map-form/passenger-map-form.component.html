@@ -1,0 +1,48 @@
+<div>
+  <mat-card>
+  <form
+    [formGroup]="ridingForm"
+    #formDirective="ngForm"
+    class="ridingForm"
+    >
+    <mat-grid-list
+      flex
+      layout="column"
+      cols="2"
+      rowHeight="5em"
+      style="width: 100%"
+      gutterSize="1em"
+    >
+      <mat-grid-tile colspan="2">
+        <mat-form-field appearance="fill" class="addressInput">
+          <mat-label>Pickup location</mat-label>
+          <input matInput formControlName="pickupLocation" [matAutocomplete]="pickupLocations">
+          <mat-autocomplete #pickupLocations="matAutocomplete">
+            <mat-option *ngFor="let location of pickupLocationAddresses$ | async" [value]="location.address" (onSelectionChange)="markPickupLocation(location)">
+              {{location.address}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="2">
+        <mat-form-field appearance="fill" class="addressInput">
+          <mat-label>Destination</mat-label>
+          <input matInput formControlName="destination" [matAutocomplete]="destinations">
+          <mat-autocomplete #destinations="matAutocomplete">
+            <mat-option *ngFor="let location of destinationAddresses$ | async" [value]="location.address" (onSelectionChange)="markDestination(location)">
+              {{location.address}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="2">
+        <button type="submit" mat-button color="primary" class="continueButton">
+          Continue
+        </button>
+      </mat-grid-tile>
+
+    </mat-grid-list>
+  </form>
+  </mat-card>
+</div>
+

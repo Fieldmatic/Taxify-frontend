@@ -2,13 +2,13 @@ import { Coordinate } from 'ol/coordinate';
 import { Feature, Map, Overlay, View } from 'ol';
 import { Point } from 'ol/geom';
 import * as olProj from 'ol/proj';
-import { Icon, Style } from 'ol/style';
+import { Icon, Stroke, Style } from 'ol/style';
 import { Vehicle } from '../shared/vehicle.model';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import TileLayer from 'ol/layer/Tile';
 import { OSM } from 'ol/source';
-import { MapData } from './mapData.model';
+import { MapData } from './model/mapData.model';
 import { Layer } from 'ol/layer';
 
 export const createMapCenterMarker = function (mapCenter: Coordinate): Feature {
@@ -69,6 +69,35 @@ export const createMapVehicleLayer = function (
   });
 };
 
+export const createRoutesLayer = function (): Layer {
+  const styles = {
+    route: new Style({
+      stroke: new Stroke({
+        width: 6,
+        color: [0, 0, 0],
+      }),
+    }),
+  };
+
+  return new VectorLayer({
+    source: new VectorSource({
+      features: [],
+    }),
+    style: function (feature) {
+      return styles[feature.get('type')];
+    },
+  });
+};
+export const createLocationsLayer = function (): Layer {
+  const vectorSource = new VectorSource({
+    features: [],
+  });
+
+  return new VectorLayer({
+    source: vectorSource,
+  });
+};
+
 export const createMapDriversOverlay = function (
   container: HTMLElement
 ): Overlay {
@@ -88,16 +117,17 @@ export const createMapWithVehiclesLayer = function (
   vehicles: Vehicle[]
 ): Map {
   return new Map({
-    target: 'map',
     layers: [
       new TileLayer({
         source: new OSM(),
       }),
       createMapVehicleLayer(mapCenter, vehicles),
+      createLocationsLayer(),
+      createRoutesLayer(),
     ],
     view: new View({
       center: olProj.fromLonLat(mapCenter),
-      zoom: 17,
+      zoom: 16,
     }),
   });
 };
@@ -114,4 +144,10 @@ export const getMapData = function (map: Map): MapData {
     minLat: extent[1],
     maxLat: extent[3],
   };
+};
+
+export const getMarker = function (lon, lat) {
+  return new Feature({
+    geometry: new Point(olProj.fromLonLat([lon, lat])),
+  });
 };

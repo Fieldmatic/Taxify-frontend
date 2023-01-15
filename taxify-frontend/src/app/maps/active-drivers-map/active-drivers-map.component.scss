@@ -24,3 +24,11 @@
   left: -130px;
   min-width: 280px;
 }
+
+app-passenger-map-form{
+  position: absolute;
+  z-index: 99;
+  height: 60vh;
+  width: 28vw;
+  padding: 3rem;
+}

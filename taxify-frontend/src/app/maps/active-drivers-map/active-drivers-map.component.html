@@ -1,4 +1,5 @@
 <div class="wrapper">
+  <app-passenger-map-form></app-passenger-map-form>
   <div id="map" class="map col-12"></div>
   <app-loading-spinner *ngIf="loading"></app-loading-spinner>
   <div id="popup" [ngClass]="driver?null:'hidden'"  class="ol-popup" #popup>

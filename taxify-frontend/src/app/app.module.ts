@@ -1,4 +1,4 @@
-import { AuthEffects } from '../auth/store/auth.effects';
+import { AuthEffects } from './auth/store/auth.effects';
 import { APP_CONFIG, APP_SERVICE_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,10 +18,12 @@ import * as fromApp from './store/app.reducer';
 import { SharedModule } from './shared/shared.module';
 import { MapsModule } from './maps/maps.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AuthInterceptorService } from '../auth/auth-interceptor.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthInterceptorService } from './auth/auth-interceptor.service';
+import { AuthModule } from 'src/app/auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersEffects } from './users/store/users.effects';
+import { MapsEffects } from './maps/store/maps.effects';
+import { MapsService } from './maps/maps.service';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent],
@@ -32,7 +34,12 @@ import { UsersEffects } from './users/store/users.effects';
     HttpClientModule,
     SharedModule,
     StoreModule.forRoot(fromApp.appReducer),
-    EffectsModule.forRoot([DriversEffects, AuthEffects, UsersEffects]),
+    EffectsModule.forRoot([
+      DriversEffects,
+      AuthEffects,
+      UsersEffects,
+      MapsEffects,
+    ]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
     UsersModule,
@@ -42,6 +49,7 @@ import { UsersEffects } from './users/store/users.effects';
   ],
   providers: [
     StompService,
+    MapsService,
     {
       provide: APP_SERVICE_CONFIG,
       useValue: APP_CONFIG,

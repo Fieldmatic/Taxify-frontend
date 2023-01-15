@@ -1,20 +1,25 @@
-<div>
+<div class="p-3 container">
   <form [formGroup]="editForm" (ngSubmit)="onSubmit()" class="editForm">
     <mat-grid-list
       flex
       layout="column"
       cols="2"
       rowHeight="4:1"
-      style="width: 30%"
+      style="width: 100%"
       gutterSize="0.5em"
     >
-      <mat-grid-tile colspan="2">
-        <div class="title text-center">
-          <hr />
-          <p>PROFILE EDIT</p>
-          <hr />
-        </div>
+      <mat-grid-tile colspan="2" rowspan="2">
+        <label class="profile-picture text-center rounded-circle p-1"
+                 matTooltip="Change profile picture"
+                 matTooltipPosition="below"
+                 [ngStyle]="{'background-image': !imageSnippet ? 'url(\'assets/avatar.jpg\')' : getBackgroundImageUrl(this.imageSnippet)}" >
+            <span>
+              <ngx-mat-file-input formControlName="profilePicture" accept="image/*" (change)="processFile()"></ngx-mat-file-input>
+            </span>
+            <span class="tooltip">Change profile picture</span>
+          </label>
       </mat-grid-tile>
+
       <mat-grid-tile colspan="2">
         <mat-form-field appearance="fill">
           <mat-label>Email</mat-label>

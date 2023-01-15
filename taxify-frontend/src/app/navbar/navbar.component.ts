@@ -1,8 +1,8 @@
-import * as AuthActions from './../../auth/store/auth.actions';
 import { Store } from '@ngrx/store';
-import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { map, Subscription } from 'rxjs';
 import * as fromApp from '../store/app.reducer';
+import * as AuthActions from '../../auth/store/auth.actions';
 
 @Component({
   selector: 'app-navbar',
@@ -33,8 +33,5 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.store.dispatch(new AuthActions.Logout());
-    // this.router.navigate(['/auth/login']).then(() => {
-    //   window.location.reload();
-    // });
   }
 }

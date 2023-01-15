@@ -3,13 +3,13 @@ import * as UsersActions from './users.actions';
 
 export interface State {
   loggedUser: User;
-  error: number;
+  loggedUserProfilePicture: Blob;
   loading: boolean;
 }
 
 const initialState: State = {
   loggedUser: null,
-  error: null,
+  loggedUserProfilePicture: null,
   loading: true,
 };
 
@@ -22,13 +22,10 @@ export function usersReducer(
       return {
         ...state,
         loggedUser: action.payload,
-        error: null,
-        loading: false,
       };
     case UsersActions.GETTING_LOGGED_USER_FAILED:
       return {
         ...state,
-        error: action.payload,
         loading: false,
       };
     case UsersActions.SAVE_LOGGED_USER_CHANGES:
@@ -40,6 +37,27 @@ export function usersReducer(
       return {
         ...state,
         loading: true,
+      };
+    case UsersActions.SET_LOGGED_USER_PROFILE_PICTURE:
+      return {
+        ...state,
+        loggedUserProfilePicture: action.payload,
+        loading: false,
+      };
+    case UsersActions.SAVE_LOGGED_USER_PROFILE_PICTURE_CHANGE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case UsersActions.SAVE_LOGGED_USER_PASSWORD_CHANGE:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UsersActions.SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
       };
     default:
       return state;

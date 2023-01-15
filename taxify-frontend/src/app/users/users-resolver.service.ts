@@ -33,7 +33,7 @@ export class UsersResolverService implements Resolve<User> {
         if (!loggedUser) {
           this.store.dispatch(new UsersActions.GetLoggedUser());
           return this.actions$.pipe(
-            ofType(UsersActions.SET_LOGGED_USER),
+            ofType(UsersActions.SET_LOGGED_USER_PROFILE_PICTURE),
             take(1)
           );
         } else {

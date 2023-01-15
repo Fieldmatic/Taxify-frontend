@@ -22,9 +22,12 @@ import { AuthInterceptorService } from '../auth/auth-interceptor.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersEffects } from './users/store/users.effects';
+import { NavbarProfileMenuComponent } from './navbar/navbar-profile-menu/navbar-profile-menu.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { HotToastModule } from '@ngneat/hot-toast';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent],
+  declarations: [AppComponent, NavbarComponent, NavbarProfileMenuComponent],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -35,10 +38,12 @@ import { UsersEffects } from './users/store/users.effects';
     EffectsModule.forRoot([DriversEffects, AuthEffects, UsersEffects]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
+    HotToastModule.forRoot({ position: 'top-center', dismissible: true }),
     UsersModule,
     MapsModule,
     AuthModule,
     AppRoutingModule,
+    MatMenuModule,
   ],
   providers: [
     StompService,

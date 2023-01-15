@@ -1,3 +1,4 @@
+@use 'node_modules/@ngneat/hot-toast/src/styles/styles.scss';
 
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
@@ -37,3 +38,7 @@ $taxify-frontend-theme: mat.define-light-theme((
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.filename {
+  display: none;
+  visibility: hidden;
+}

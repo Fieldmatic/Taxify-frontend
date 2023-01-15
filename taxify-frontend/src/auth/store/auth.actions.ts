@@ -7,6 +7,10 @@ export const LOGOUT = '[Auth] Logout';
 export const AUTO_LOGIN = '[Auth] Auto Login';
 export const SIGNUP_START = '[Auth] Singup Start';
 export const SIGNUP_SUCCESS = '[Auth] Singup Success';
+export const REAUTHENTICATE = '[Users] Reauthenticate';
+export const REAUTHENTICATE_SUCCESS =
+  '[Users] Authentication confirmed successful';
+export const REAUTHENTICATE_FAIL = '[Users] Authentication not confirmed';
 
 export class LoginSuccess implements Action {
   readonly type = LOGIN_SUCCESS;
@@ -61,6 +65,22 @@ export class AutoLogin implements Action {
   readonly type = AUTO_LOGIN;
 }
 
+export class Reauthenticate implements Action {
+  readonly type = REAUTHENTICATE;
+
+  constructor(public payload: string) {}
+}
+
+export class ReauthenticateSuccess implements Action {
+  readonly type = REAUTHENTICATE_SUCCESS;
+}
+
+export class ReauthenticateFail implements Action {
+  readonly type = REAUTHENTICATE_FAIL;
+
+  constructor(public payload: string) {}
+}
+
 export type AuthActions =
   | LoginSuccess
   | Logout
@@ -68,4 +88,7 @@ export type AuthActions =
   | AuthenticateFail
   | SignupStart
   | SignupSuccess
-  | AutoLogin;
+  | AutoLogin
+  | Reauthenticate
+  | ReauthenticateSuccess
+  | ReauthenticateFail;

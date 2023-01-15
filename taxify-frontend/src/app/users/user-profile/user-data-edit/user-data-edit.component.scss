@@ -1,0 +1,45 @@
+.container {
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.editForm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.profile-picture {
+  display: table;
+  height: 100%;
+  aspect-ratio: 1/1;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+}
+
+.profile-picture:hover {
+  box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
+}
+
+.profile-picture span {
+  display:table-cell;
+  vertical-align: middle
+}
+
+.submitBtn {
+  background-color: #000000;
+  color: white;
+  width: 100%;
+}
+
+.submitBtn:disabled {
+  background-color: rgba(128, 128, 128, 0.3);
+}

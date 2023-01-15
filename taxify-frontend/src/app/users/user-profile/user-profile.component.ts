@@ -1,7 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { User } from '../../shared/user.model';
-import { Store } from '@ngrx/store';
-import * as fromApp from '../../store/app.reducer';
+import { Component, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -9,21 +7,17 @@ import { Subscription } from 'rxjs';
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss'],
 })
-export class UserProfileComponent implements OnInit, OnDestroy {
-  user: User;
-  usersSubscription: Subscription;
+export class UserProfileComponent implements OnInit {
+  activeRoute: string = 'history';
+  routeSubscription: Subscription;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.usersSubscription = this.store
-      .select('users')
-      .subscribe((usersState) => {
-        this.user = usersState.loggedUser;
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.usersSubscription.unsubscribe();
+    this.routeSubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.activeRoute = event.url.split('/').pop();
+      }
+    });
   }
 }

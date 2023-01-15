@@ -1,7 +1,7 @@
-import * as AuthActions from './../../store/auth.actions';
-import { LoggedInUser } from 'src/auth/model/logged-in-user';
-import { AppConfig } from '../../../app/appConfig/appconfig.interface';
-import { APP_SERVICE_CONFIG } from '../../../app/appConfig/appconfig.service';
+import * as AuthActions from '../../store/auth.actions';
+import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
+import { AppConfig } from '../../../appConfig/appconfig.interface';
+import { APP_SERVICE_CONFIG } from '../../../appConfig/appconfig.service';
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -9,7 +9,7 @@ import { FacebookSignupRequest } from '../../model/facebook-signup-request';
 import { GoogleSignUpRequest } from '../../model/google-signup-request';
 import { LoginResponseData } from '../../model/login-response-data';
 import { Store } from '@ngrx/store';
-import * as fromApp from '../../../app/store/app.reducer';
+import * as fromApp from '../../../store/app.reducer';
 
 @Injectable({
   providedIn: 'root',
@@ -32,14 +32,7 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expiresIn);
     const user = new LoggedInUser(email, role, token, expirationDate);
     //this.user.next(user);
-    this.store.dispatch(
-      new AuthActions.LoginSuccess({
-        email: email,
-        role: role,
-        token: token,
-        tokenExpirationDate: expirationDate,
-      })
-    );
+    this.store.dispatch(new AuthActions.LoginSuccess(user));
     //this.autoLogout(expiresIn);
     //localStorage.setItem('userData', JSON.stringify(user));
   }

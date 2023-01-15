@@ -1,4 +1,4 @@
-import { AuthEffects } from '../auth/store/auth.effects';
+import { AuthEffects } from './auth/store/auth.effects';
 import { APP_CONFIG, APP_SERVICE_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,13 +18,15 @@ import * as fromApp from './store/app.reducer';
 import { SharedModule } from './shared/shared.module';
 import { MapsModule } from './maps/maps.module';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AuthInterceptorService } from '../auth/auth-interceptor.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthInterceptorService } from './auth/auth-interceptor.service';
+import { AuthModule } from 'src/app/auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersEffects } from './users/store/users.effects';
 import { NavbarProfileMenuComponent } from './navbar/navbar-profile-menu/navbar-profile-menu.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { HotToastModule } from '@ngneat/hot-toast';
+import { MapsEffects } from './maps/store/maps.effects';
+import { MapsService } from './maps/maps.service';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarProfileMenuComponent],
@@ -35,7 +37,12 @@ import { HotToastModule } from '@ngneat/hot-toast';
     HttpClientModule,
     SharedModule,
     StoreModule.forRoot(fromApp.appReducer),
-    EffectsModule.forRoot([DriversEffects, AuthEffects, UsersEffects]),
+    EffectsModule.forRoot([
+      DriversEffects,
+      AuthEffects,
+      UsersEffects,
+      MapsEffects,
+    ]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
     HotToastModule.forRoot({ position: 'top-center', dismissible: true }),
@@ -47,6 +54,7 @@ import { HotToastModule } from '@ngneat/hot-toast';
   ],
   providers: [
     StompService,
+    MapsService,
     {
       provide: APP_SERVICE_CONFIG,
       useValue: APP_CONFIG,

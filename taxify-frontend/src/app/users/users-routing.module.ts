@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { UserDataEditComponent } from './user-profile/user-data-edit/user-data-edit.component';
-import { AuthGuard } from '../../auth/auth.guard';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { AuthGuard } from '../auth/auth.guard';
 import { UsersComponent } from './users.component';
 import { UsersResolverService } from './users-resolver.service';
 import { UserPaymentMethodsComponent } from './user-profile/user-payment-methods/user-payment-methods.component';
 import { UserPasswordChangeComponent } from './user-profile/user-password-change/user-password-change.component';
-import { UserProfileComponent } from './user-profile/user-profile.component';
 import { UserRideHistoryComponent } from './user-profile/user-ride-history/user-ride-history.component';
 import { ReauthGuard } from './user-profile/reauth.guard';
 import { UserOldPasswordConfirmationComponent } from './user-profile/user-old-password-confirmation/user-old-password-confirmation.component';

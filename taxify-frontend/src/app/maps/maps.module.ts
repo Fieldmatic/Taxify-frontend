@@ -4,18 +4,26 @@ import { MapsRoutingModule } from './maps-routing.module';
 import { MapsComponent } from './maps.component';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { SelectedDriverInfoComponent } from './active-drivers-map/selected-driver-info/selected-driver-info.component';
+import { PassengerMapFormComponent } from './passenger-map-form/passenger-map-form.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MapsService } from './maps.service';
 
 @NgModule({
-  declarations: [MapsComponent, ActiveDriversMapComponent, SelectedDriverInfoComponent],
+  declarations: [
+    MapsComponent,
+    ActiveDriversMapComponent,
+    SelectedDriverInfoComponent,
+    PassengerMapFormComponent,
+  ],
   imports: [
     RouterModule,
     SharedModule,
     MapsRoutingModule,
-    MatCardModule,
-    MatIconModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
   ],
+  providers: [MapsService],
 })
 export class MapsModule {}

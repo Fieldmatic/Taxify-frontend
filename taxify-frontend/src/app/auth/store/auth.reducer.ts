@@ -6,7 +6,7 @@ export interface State {
   authError: string;
   loading: boolean;
   authenticationConfirmed: boolean;
-  authenticationConfirmError: string;
+  userExists: boolean;
 }
 
 const initialState: State = {
@@ -14,7 +14,7 @@ const initialState: State = {
   authError: null,
   loading: false,
   authenticationConfirmed: false,
-  authenticationConfirmError: null,
+  userExists: null,
 };
 
 export function authReducer(
@@ -23,16 +23,10 @@ export function authReducer(
 ) {
   switch (action.type) {
     case AuthActions.LOGIN_SUCCESS:
-      const user = new LoggedInUser(
-        action.payload.email,
-        action.payload.role,
-        action.payload.token,
-        action.payload.tokenExpirationDate
-      );
       return {
         ...state,
         authError: null,
-        user,
+        user: action.user,
         loading: false,
       };
 
@@ -63,6 +57,11 @@ export function authReducer(
       return {
         ...state,
         authenticationConfirmed: false,
+      };
+    case AuthActions.CHANGE_USER_EXISTS_STATE:
+      return {
+        ...state,
+        userExists: action.payload.userExists,
       };
     default:
       return state;

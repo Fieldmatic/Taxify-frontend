@@ -2,7 +2,7 @@ import { Store } from '@ngrx/store';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { map, Subscription } from 'rxjs';
 import * as fromApp from '../store/app.reducer';
-import * as AuthActions from '../../auth/store/auth.actions';
+import * as AuthActions from '../auth/store/auth.actions';
 
 @Component({
   selector: 'app-navbar',
@@ -22,7 +22,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .select('auth')
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
-        //!!user
         this.isAuthenticated = !user ? false : true;
       });
   }

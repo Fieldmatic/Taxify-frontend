@@ -1,4 +1,4 @@
-import * as fromApp from './../app/store/app.reducer';
+import * as fromApp from '../store/app.reducer';
 import { Store } from '@ngrx/store';
 import {
   HttpEvent,

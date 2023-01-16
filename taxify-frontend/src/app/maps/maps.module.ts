@@ -9,6 +9,7 @@ import { PassengerMapFormComponent } from './passenger-map-form/passenger-map-fo
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MapsService } from './maps.service';
+import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { MapsService } from './maps.service';
     ActiveDriversMapComponent,
     SelectedDriverInfoComponent,
     PassengerMapFormComponent,
+    DriverMapInfoComponent,
   ],
   imports: [
     RouterModule,

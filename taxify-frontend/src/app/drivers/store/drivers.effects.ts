@@ -1,3 +1,4 @@
+import { GetDriverInfo } from './drivers.actions';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap, withLatestFrom } from 'rxjs';
@@ -45,6 +46,90 @@ export class DriversEffects {
               return of(
                 new DriversActions.FetchDriversFailed(errorResponse.status)
               );
+            })
+          );
+      })
+    );
+  });
+
+  getDriverInfo = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DriversActions.GET_DRIVER_INFO),
+      switchMap((getDriverInfoAction: DriversActions.GetDriverInfo) => {
+        return this.http
+          .get<Driver>(
+            'http://localhost:8080/api/driver/get/' +
+              getDriverInfoAction.payload.email
+          )
+          .pipe(
+            map((driver) => {
+              return new DriversActions.SetDriver({
+                id: driver.id,
+                name: driver.name,
+                surname: driver.surname,
+                phoneNumber: driver.phoneNumber,
+                email: driver.email,
+                profilePicture: driver.profilePicture,
+                city: driver.city,
+                active: driver.active,
+                vehicle: driver.vehicle,
+              });
+            }),
+            catchError(() => {
+              return of();
+            })
+          );
+      })
+    );
+  });
+
+  getDriverRemainingWorkTime = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DriversActions.GET_DRIVER_REMAINING_WORK_TIME),
+      switchMap(
+        (getRemainingTime: DriversActions.GetDriverRemainingWorkTime) => {
+          return this.http
+            .get<number>(
+              'http://localhost:8080/api/driver/remainingWorkTime/' +
+                getRemainingTime.payload.email
+            )
+            .pipe(
+              map((time: number) => {
+                return new DriversActions.SetDriverRemainingWorkTime({
+                  remainingTime: time,
+                });
+              }),
+              catchError(() => {
+                return of();
+              })
+            );
+        }
+      )
+    );
+  });
+
+  changeDriverStatus = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DriversActions.CHANGE_DRIVER_STATUS),
+      switchMap((changeDriverStatus: DriversActions.ChangeDriverStatus) => {
+        let action = 'goOnline';
+        if (changeDriverStatus.payload.active) {
+          action = 'goOffline';
+        }
+        return this.http
+          .put<Driver>(
+            'http://localhost:8080/api/driver/' +
+              action +
+              '/' +
+              changeDriverStatus.payload.email,
+            {}
+          )
+          .pipe(
+            map((driver) => {
+              return new DriversActions.SetDriver(driver);
+            }),
+            catchError(() => {
+              return of();
             })
           );
       })

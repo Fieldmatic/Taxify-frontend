@@ -1,3 +1,4 @@
+import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
 import * as AuthActions from '../auth/store/auth.actions';
 import { Store } from '@ngrx/store';
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
@@ -13,7 +14,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private userSub: Subscription;
   isAuthenticated = false;
   role: string = null;
-  loggedInUser: string = null;
+  loggedInUser: LoggedInUser = null;
 
   constructor(private store: Store<fromApp.AppState>) {}
 
@@ -23,6 +24,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
         this.isAuthenticated = !user ? false : true;
+        this.loggedInUser = user;
       });
   }
 
@@ -31,6 +33,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   onLogout() {
-    this.store.dispatch(new AuthActions.Logout());
+    this.store.dispatch(new AuthActions.LogoutStart());
   }
 }

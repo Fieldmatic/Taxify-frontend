@@ -48,6 +48,7 @@ export const createVehicleFeatures = function (vehicles: Vehicle[]): Feature[] {
           anchorYUnits: 'pixels',
           opacity: 1,
           src: '../assets/car_icon.png',
+          scale: 0.8,
         }),
       })
     );
@@ -123,6 +124,7 @@ export const createMapWithVehiclesLayer = function (
       }),
       createMapVehicleLayer(mapCenter, vehicles),
       createLocationsLayer(),
+      createRoutesLayer(),
       createRoutesLayer(),
     ],
     view: new View({

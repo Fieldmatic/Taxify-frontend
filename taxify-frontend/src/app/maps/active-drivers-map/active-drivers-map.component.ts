@@ -40,7 +40,8 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
     this.subscribeToWebSocket();
     this.store.select('maps').subscribe((mapsState) => {
       this.loading = mapsState.loading;
-      this.driver = mapsState.driver;
+      this.driver = mapsState.chosenDriverInfo;
+      this.mapsService.updateMapVehicleLayer();
     });
     this.mapsService.setTarget('map');
   }

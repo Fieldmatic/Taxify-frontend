@@ -9,6 +9,7 @@ export const DRIVER_SELECTED = '[Maps] Driver is selected';
 export const POPUP_CLOSE = '[Maps] Close driver popup';
 
 export const LOAD_DIRECTION_COORDINATES = '[Maps] Load direction coordinates';
+export const SEARCH_FOR_DRIVER = '[Maps] Search for driver';
 
 export const LOAD_PICKUP_LOCATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Load pickup location autocomplete results';
@@ -20,7 +21,11 @@ export const LOAD_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Load destination autocomplete results';
 export const SET_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Set destination autocomplete results';
-export const ADD_MARKER = '[Maps]';
+export const RIDE_FINISH = '[Maps] Ride finish';
+
+export const START_RIDE = '[Maps] Start ride';
+export const SET_PASSENGER_STATE_FORM_FILL =
+  '[Maps] Set passenger state form fill';
 export const SET_DIRECTION_COORDINATES = '[Maps] Set direction coordinates';
 
 export class MapLoadStart implements Action {
@@ -66,15 +71,53 @@ export class PopupClose implements Action {
 export class LoadDirectionCoordinates implements Action {
   readonly type = LOAD_DIRECTION_COORDINATES;
   constructor(
-    public payload: { coordinates: [longitude: number, latitude: number][] }
+    public payload: {
+      coordinates: [longitude: number, latitude: number][];
+    }
   ) {}
 }
 
 export class SetDirectionCoordinates implements Action {
   readonly type = SET_DIRECTION_COORDINATES;
   constructor(
-    public payload: { coordinates: [longitude: number, latitude: number][] }
+    public payload: {
+      coordinates: [longitude: number, latitude: number][];
+    }
   ) {}
+}
+
+export class SearchForDriver implements Action {
+  readonly type = SEARCH_FOR_DRIVER;
+
+  constructor(
+    public payload: {
+      clientLocation: Location;
+      route: [longitude: number, latitude: number][];
+    }
+  ) {}
+}
+
+export class StartRide implements Action {
+  readonly type = START_RIDE;
+
+  constructor(
+    public payload: {
+      driver: Driver;
+      route: [longitude: number, latitude: number][];
+    }
+  ) {}
+}
+
+export class RideFinished implements Action {
+  readonly type = RIDE_FINISH;
+
+  constructor() {}
+}
+
+export class SetPassengerStateFormFill implements Action {
+  readonly type = SET_PASSENGER_STATE_FORM_FILL;
+
+  constructor() {}
 }
 
 export type MapsActions =
@@ -87,4 +130,8 @@ export type MapsActions =
   | LoadDestinationAutocompleteResults
   | SetDestinationAutocompleteResults
   | LoadDirectionCoordinates
-  | SetDirectionCoordinates;
+  | SetDirectionCoordinates
+  | SearchForDriver
+  | StartRide
+  | RideFinished
+  | SetPassengerStateFormFill;

@@ -1,19 +1,19 @@
-import { Feature, Map } from 'ol';
+import { Feature, Map, Overlay } from 'ol';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../store/app.reducer';
-import { StompService } from '../stomp.service';
 import * as MapActions from './store/maps.actions';
 import * as MapUtils from './mapUtils';
 import { Driver } from '../shared/driver.model';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, Observable, Subscription } from 'rxjs';
 import { Vehicle } from '../shared/vehicle.model';
 import VectorSource from 'ol/source/Vector';
-import { Overlay } from 'ol';
 import { LineString, Point } from 'ol/geom';
 import { fromLonLat } from 'ol/proj';
 import { Icon, Style } from 'ol/style';
 import { Location } from './model/location';
+import { PassengerState } from './model/passengerState';
+import { Coordinate } from 'ol/coordinate';
 
 @Injectable()
 export class MapsService {
@@ -24,32 +24,59 @@ export class MapsService {
 
   mapsSubscription: Subscription;
 
-  loading: boolean;
-
   vehicles: Vehicle[] = [];
   error: number;
-  driver: Driver;
+  chosenDriverInfo: Driver;
+  rideDriver: Driver;
+  passengerState: PassengerState;
   locationsVectorSource: VectorSource;
   routesVectorSource: VectorSource;
+  drivingRouteVectorSource: VectorSource;
+  vehiclesVectorSource: VectorSource;
   route$: Observable<[longitude: number, latitude: number][]>;
 
   constructor(private store: Store<fromApp.AppState>) {
     this.recenterToUserLocation();
-    this.subscribeToDriversStore();
-    this.subscribeToMapsStore();
     this.addMapEvents();
+    this.vehiclesVectorSource = <VectorSource>(
+      this.mapSource.value.getAllLayers()[1].getSource()
+    );
+    this.subscribeToDriversStore();
     this.locationsVectorSource = <VectorSource>(
       this.mapSource.value.getAllLayers()[2].getSource()
     );
     this.routesVectorSource = <VectorSource>(
       this.mapSource.value.getAllLayers()[3].getSource()
     );
+    this.drivingRouteVectorSource = <VectorSource>(
+      this.mapSource.value.getAllLayers()[4].getSource()
+    );
     this.locationsVectorSource.on(
       'change',
       this.locationsVectorOnChangeCallback
     );
     this.route$ = this.store.select((store) => store.maps.route);
+    this.store
+      .select((store) => store.maps)
+      .subscribe((mapState) => {
+        this.rideDriver = mapState.rideDriver;
+        this.passengerState = mapState.passengerState;
+        this.handlePassengerStatusChange();
+      });
     this.drawRouteOnChange();
+  }
+
+  handlePassengerStatusChange() {
+    if (this.passengerState == PassengerState.RIDING) {
+      this.removeLocationIfExists('pickupLocation');
+    }
+
+    if (this.passengerState == PassengerState.RIDE_FINISH) {
+      this.removeLocationIfExists('destination');
+      this.locationsVectorSource.clear();
+      this.routesVectorSource.clear();
+      this.updateMapVehicleLayer();
+    }
   }
 
   locationsVectorOnChangeCallback = () => {
@@ -80,6 +107,32 @@ export class MapsService {
           geometry: route,
         });
         this.routesVectorSource.addFeature(routeFeature);
+      });
+  }
+
+  private redrawRouteDuringRide(updatedCurrentPosition: Coordinate) {
+    this.drivingRouteVectorSource.clear();
+    this.route$
+      .pipe(filter((routeArray) => routeArray.length > 1))
+      .subscribe((routeArray) => {
+        let currentPositionIndex = routeArray.findIndex(
+          (location) =>
+            location[0] == updatedCurrentPosition[0] &&
+            location[1] == updatedCurrentPosition[1]
+        );
+        let routeSubArray = routeArray.slice(
+          currentPositionIndex,
+          routeArray.length
+        );
+        let route = new LineString(routeSubArray).transform(
+          'EPSG:4326',
+          'EPSG:3857'
+        );
+        const routeFeature = new Feature({
+          type: 'route',
+          geometry: route,
+        });
+        this.drivingRouteVectorSource.addFeature(routeFeature);
       });
   }
 
@@ -132,14 +185,6 @@ export class MapsService {
     this.mapSource.value.addOverlay(overlay);
   }
 
-  subscribeToMapsStore() {
-    this.mapsSubscription = this.store.select('maps').subscribe((mapsState) => {
-      this.loading = mapsState.loading;
-      this.driver = mapsState.driver;
-      this.updateMapVehicleLayer();
-    });
-  }
-
   subscribeToDriversStore() {
     this.driversSubscription = this.store
       .select('drivers')
@@ -161,7 +206,7 @@ export class MapsService {
         new MapActions.MapLoadEnd(MapUtils.getMapData(event.map))
       );
     });
-    this.mapSource.value.on('click', (event) => {
+    this.mapSource.value.on('pointermove', (event) => {
       const feature = this.mapSource.value.forEachFeatureAtPixel(
         event.pixel,
         function (feature) {
@@ -179,17 +224,27 @@ export class MapsService {
           (extent[1] + extent[3]) / 2,
         ];
         this.mapSource.value.getOverlayById('drivers').setPosition(coordinate);
+      } else {
+        this.updateOverlay();
       }
     });
   }
 
   updateMapVehicleLayer() {
-    let vectorSource = <VectorSource>(
-      this.mapSource.value.getAllLayers()[1].getSource()
-    );
-    vectorSource.clear();
-    vectorSource.addFeatures(MapUtils.createVehicleFeatures(this.vehicles));
-    vectorSource.changed();
+    this.vehiclesVectorSource.clear();
+    if (this.passengerState === PassengerState.RIDING) {
+      let riderVehicle = this.vehicles.find(
+        (vehicle) => vehicle.id === this.rideDriver.vehicle.id
+      );
+      this.vehiclesVectorSource.addFeatures(
+        MapUtils.createVehicleFeatures([riderVehicle])
+      );
+      this.redrawRouteDuringRide(riderVehicle.location);
+    } else {
+      this.vehiclesVectorSource.addFeatures(
+        MapUtils.createVehicleFeatures(this.vehicles)
+      );
+    }
     this.mapSource.value.getOverlayById('drivers')?.setPosition(undefined);
   }
 
@@ -202,7 +257,7 @@ export class MapsService {
   }
 
   updateOverlay() {
-    if (!this.driver) {
+    if (!this.chosenDriverInfo) {
       this.mapSource.value?.getOverlayById('drivers')?.setPosition(undefined);
     }
   }

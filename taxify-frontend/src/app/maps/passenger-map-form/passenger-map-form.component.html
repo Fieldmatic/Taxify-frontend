@@ -1,9 +1,10 @@
-<div>
+<div [hidden]="!fillFormState">
   <mat-card>
   <form
     [formGroup]="ridingForm"
     #formDirective="ngForm"
     class="ridingForm"
+    (ngSubmit)="onSubmit(formDirective)"
     >
     <mat-grid-list
       flex

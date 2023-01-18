@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpParams,
+  HttpResponse,
+} from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/services/auth/auth.service';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
@@ -14,6 +19,7 @@ import {
   GeoJSONFeatureCollection,
   GeoJSONObject,
 } from 'ol/format/GeoJSON';
+import { Driver } from '../../shared/driver.model';
 
 @Injectable()
 export class MapsEffects {
@@ -82,6 +88,60 @@ export class MapsEffects {
             );
         }
       )
+    )
+  );
+
+  searchForDriver = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.SEARCH_FOR_DRIVER),
+      switchMap((searchForRideData: MapsActions.SearchForDriver) => {
+        return this.http
+          .post<Driver>(
+            this.config.apiEndpoint + 'simulation/to-client',
+            searchForRideData.payload.clientLocation
+          )
+          .pipe(
+            map((driver: Driver) => {
+              return new MapsActions.StartRide({
+                driver: driver,
+                route: searchForRideData.payload.route,
+              });
+            })
+          );
+      })
+    )
+  );
+
+  startRide = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.START_RIDE),
+      switchMap((startRide: MapsActions.StartRide) => {
+        let route = startRide.payload.route.map((coordinates) => ({
+          longitude: coordinates[0],
+          latitude: coordinates[1],
+          isStop: false,
+        }));
+        const body = {
+          id: startRide.payload.driver.vehicle.id,
+          waypoints: route,
+        };
+        return this.http
+          .post(this.config.apiEndpoint + 'simulation/through-route', body)
+          .pipe(
+            map((response: boolean) => {
+              return new MapsActions.RideFinished();
+            })
+          );
+      })
+    )
+  );
+
+  rideFinish = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.RIDE_FINISH),
+      map(() => {
+        return new MapsActions.SetPassengerStateFormFill();
+      })
     )
   );
 

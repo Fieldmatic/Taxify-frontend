@@ -16,7 +16,7 @@ export class SelectedDriverInfoComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.select('maps').subscribe((mapsState) => {
-      this.driver = mapsState.driver;
+      this.driver = mapsState.chosenDriverInfo;
     });
   }
 

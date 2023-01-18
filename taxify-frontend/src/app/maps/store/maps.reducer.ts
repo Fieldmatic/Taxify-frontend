@@ -3,14 +3,17 @@ import * as MapUtils from '../mapUtils';
 import * as MapsActions from './maps.actions';
 import { Driver } from '../../shared/driver.model';
 import { Location } from '../model/location';
+import { PassengerState } from '../model/passengerState';
 
 export interface State {
   mapData: MapData;
   pickupLocations: Location[];
   destinations: Location[];
   loading: boolean;
-  driver: Driver;
+  chosenDriverInfo: Driver;
+  rideDriver: Driver;
   route: [longitude: number, latitude: number][];
+  passengerState: PassengerState;
 }
 
 const createInitialState = function (): State {
@@ -18,10 +21,12 @@ const createInitialState = function (): State {
   return {
     mapData: MapUtils.getMapData(MapUtils.creatInitialMap(mapCenter)),
     loading: false,
-    driver: null,
+    chosenDriverInfo: null,
+    rideDriver: null,
     pickupLocations: null,
     destinations: null,
     route: [],
+    passengerState: PassengerState.FORM_FILL,
   };
 };
 
@@ -49,12 +54,12 @@ export function mapsReducer(
     case MapsActions.DRIVER_SELECTED:
       return {
         ...state,
-        driver: action.payload,
+        chosenDriverInfo: action.payload,
       };
     case MapsActions.POPUP_CLOSE:
       return {
         ...state,
-        driver: null,
+        chosenDriverInfo: null,
       };
     case MapsActions.SET_PICKUP_LOCATION_AUTOCOMPLETE_RESULTS:
       return {
@@ -66,6 +71,35 @@ export function mapsReducer(
         ...state,
         destinations: action.payload,
       };
+    case MapsActions.SEARCH_FOR_DRIVER:
+      return {
+        ...state,
+        passengerState: PassengerState.SEARCHING_FOR_DRIVER,
+      };
+    case MapsActions.START_RIDE:
+      return {
+        ...state,
+        rideDriver: action.payload.driver,
+        passengerState: PassengerState.RIDING,
+      };
+    case MapsActions.RIDE_FINISH: {
+      return {
+        ...state,
+        passengerState: PassengerState.RIDE_FINISH,
+        loading: false,
+        chosenDriverInfo: null,
+        rideDriver: null,
+        pickupLocations: null,
+        destinations: null,
+        route: [],
+      };
+    }
+    case MapsActions.SET_PASSENGER_STATE_FORM_FILL: {
+      return {
+        ...state,
+        passengerState: PassengerState.FORM_FILL,
+      };
+    }
     default:
       return state;
   }

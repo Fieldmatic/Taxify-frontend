@@ -1,20 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+} from '@angular/forms';
+import {
+  async,
   debounceTime,
   distinctUntilChanged,
   filter,
-  map,
   Observable,
-  tap,
 } from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
 import * as MapActions from '../store/maps.actions';
 import { Location } from '../model/location';
 import { Map } from 'ol';
-import { getMarker } from '../mapUtils';
 import { MapsService } from '../maps.service';
+import { PassengerState } from '../model/passengerState';
 
 @Component({
   selector: 'app-passenger-map-form',
@@ -26,7 +30,10 @@ export class PassengerMapFormComponent implements OnInit {
   pickupLocationAddresses$: Observable<Array<Location>>;
   destinationAddresses$: Observable<Array<Location>>;
   map: Map;
-  pinIds = [];
+  routeStops: { [key: string]: Location } = {};
+  route$: Observable<[longitude: number, latitude: number][]>;
+  routeArray: [longitude: number, latitude: number][];
+  fillFormState: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -39,6 +46,15 @@ export class PassengerMapFormComponent implements OnInit {
     this.initForm();
     this.initPickupLocationsAutocompleteOnChange();
     this.initDestinationAutocompleteOnChange();
+    this.route$ = this.store.select((store) => store.maps.route);
+    this.route$.subscribe((routeArray) => (this.routeArray = routeArray));
+    this.store
+      .select((store) => store.maps.passengerState)
+      .subscribe((passengerState: PassengerState) => {
+        passengerState == PassengerState.FORM_FILL
+          ? (this.fillFormState = true)
+          : (this.fillFormState = false);
+      });
   }
 
   private selectStoreStates() {
@@ -60,7 +76,7 @@ export class PassengerMapFormComponent implements OnInit {
   private initDestinationAutocompleteOnChange() {
     this.ridingForm.controls['destination'].valueChanges
       .pipe(
-        debounceTime(100),
+        debounceTime(25),
         distinctUntilChanged(),
         filter((value: string) => value.length > 0)
       )
@@ -74,7 +90,7 @@ export class PassengerMapFormComponent implements OnInit {
   private initPickupLocationsAutocompleteOnChange() {
     this.ridingForm.controls['pickupLocation'].valueChanges
       .pipe(
-        debounceTime(100),
+        debounceTime(25),
         distinctUntilChanged(),
         filter((value: string) => value.length > 0)
       )
@@ -85,7 +101,21 @@ export class PassengerMapFormComponent implements OnInit {
       });
   }
 
+  onSubmit(formDirective: FormGroupDirective) {
+    formDirective.resetForm();
+    this.ridingForm.reset();
+    this.store.dispatch(
+      new MapActions.SearchForDriver({
+        clientLocation: this.routeStops['start'],
+        route: this.routeArray,
+      })
+    );
+
+    this.routeStops = {};
+  }
+
   markPickupLocation(location: Location) {
+    this.routeStops['start'] = location;
     this.mapsService.drawLocation(
       location,
       'pickupLocation',
@@ -93,6 +123,7 @@ export class PassengerMapFormComponent implements OnInit {
     );
   }
   markDestination(location: Location) {
+    this.routeStops['end'] = location;
     this.mapsService.drawLocation(location, 'destination', '../assets/pin.png');
   }
 }

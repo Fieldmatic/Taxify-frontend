@@ -5,14 +5,12 @@ export interface State {
   drivers: Driver[];
   error: number;
   driver: Driver;
-  driverRemainingWorkTime: number;
 }
 
 const initialState: State = {
   drivers: [],
   error: null,
   driver: null,
-  driverRemainingWorkTime: 0,
 };
 
 export function driversReducer(
@@ -41,7 +39,10 @@ export function driversReducer(
       return {
         ...state,
         error: null,
-        driverRemainingWorkTime: action.payload.remainingTime,
+        driver: {
+          ...state.driver,
+          remainingWorkTime: action.payload.remainingTime,
+        },
       };
     default:
       return state;

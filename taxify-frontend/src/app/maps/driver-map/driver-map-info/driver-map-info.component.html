@@ -28,6 +28,9 @@
       type="button"
       mat-button
       class="changeStatusBtn"
+      [disabled]="
+        !driverRemainingWorkTime.hours && !driverRemainingWorkTime.minutes
+      "
       (click)="changeDriverStatus()"
     >
       {{ driver.active ? " Go offline" : "Go online" }}

@@ -63,17 +63,7 @@ export class DriversEffects {
           )
           .pipe(
             map((driver) => {
-              return new DriversActions.SetDriver({
-                id: driver.id,
-                name: driver.name,
-                surname: driver.surname,
-                phoneNumber: driver.phoneNumber,
-                email: driver.email,
-                profilePicture: driver.profilePicture,
-                city: driver.city,
-                active: driver.active,
-                vehicle: driver.vehicle,
-              });
+              return new DriversActions.SetDriver(driver);
             }),
             catchError(() => {
               return of();

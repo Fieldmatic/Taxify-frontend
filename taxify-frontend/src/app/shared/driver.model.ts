@@ -11,6 +11,7 @@ export class Driver extends User {
     profilePicture: string,
     city: string,
     public active: boolean,
+    public remainingWorkTime: number,
     public vehicle: Vehicle
   ) {
     super(id, name, surname, phoneNumber, email, profilePicture, city);

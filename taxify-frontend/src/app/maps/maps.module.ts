@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../directives/directives.module';
 import { NgModule } from '@angular/core';
 import { ActiveDriversMapComponent } from './active-drivers-map/active-drivers-map.component';
 import { MapsRoutingModule } from './maps-routing.module';
@@ -22,6 +23,7 @@ import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-
   imports: [
     RouterModule,
     SharedModule,
+    DirectivesModule,
     MapsRoutingModule,
     ReactiveFormsModule,
     MatAutocompleteModule,

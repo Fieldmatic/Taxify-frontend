@@ -1,4 +1,7 @@
 .changeStatusBtn {
+  position: absolute;
+  left: 5%;
+  width: 90%;
   background-color: black;
   color: white;
 }
@@ -8,5 +11,19 @@
 }
 
 .driverCard {
-  width: 70%;
+  width: 80%;
+}
+
+.statusIcon {
+  width: 15px;
+  height: 15px;
+}
+
+.fw-550 {
+font-weight: 550
+}
+
+.sandWatchIcon {
+  width: 30px;
+  height: 30px;
 }

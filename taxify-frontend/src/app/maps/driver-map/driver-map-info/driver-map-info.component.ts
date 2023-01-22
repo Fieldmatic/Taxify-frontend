@@ -16,7 +16,6 @@ import { state } from '@angular/animations';
   styleUrls: ['./driver-map-info.component.scss'],
 })
 export class DriverMapInfoComponent implements OnInit {
-  loggedInUser: LoggedInUser = null;
   driver: Driver;
   driverRemainingWorkTime = { hours: 8, minutes: 0 };
 
@@ -30,30 +29,31 @@ export class DriverMapInfoComponent implements OnInit {
       .select('auth')
       .pipe(map((authState) => authState.user))
       .subscribe((user: LoggedInUser) => {
-        this.loggedInUser = user;
-        this.store.dispatch(
-          new DriversActions.GetDriverInfo({ email: user?.email })
-        );
+        if (user) {
+          this.store.dispatch(
+            new DriversActions.GetDriverInfo({ email: user.email })
+          );
+        }
 
         this.store.select('drivers').subscribe((driverState) => {
           this.driver = driverState.driver;
-          let hours = this.driver?.remainingWorkTime / 60;
-          let roundHours = Math.floor(hours);
-          let minutes = Math.round((hours - roundHours) * 60);
-          this.driverRemainingWorkTime = {
-            hours: roundHours,
-            minutes: minutes,
-          };
-          this.checkRemainingWorkTime(user?.email, this.driver.active);
+          this.getRemainingTime();
+          this.checkIfTimeIsUp(user?.email, this.driver?.active);
         });
 
         //socket
         this.subscribeToWebSocket(user?.email);
       });
+  }
 
-    //ako nije ulogovan
-    // if (!this.loggedInUser)
-    //   this.store.dispatch(new DriversActions.SetDriver(null));
+  private getRemainingTime() {
+    let hours = this.driver?.remainingWorkTime / 60;
+    let roundHours = Math.floor(hours);
+    let minutes = Math.round((hours - roundHours) * 60);
+    this.driverRemainingWorkTime = {
+      hours: roundHours,
+      minutes: minutes,
+    };
   }
 
   public changeDriverStatus() {
@@ -67,13 +67,15 @@ export class DriverMapInfoComponent implements OnInit {
 
   subscribeToWebSocket(email: string) {
     this.stompService.subscribe('/topic/driver', (): any => {
-      this.store.dispatch(
-        new DriversActions.GetDriverRemainingWorkTime({ email: email })
-      );
+      if (email) {
+        this.store.dispatch(
+          new DriversActions.GetDriverRemainingWorkTime({ email: email })
+        );
+      }
     });
   }
 
-  checkRemainingWorkTime(email: string, active: boolean) {
+  checkIfTimeIsUp(email: string, active: boolean) {
     if (
       this.driverRemainingWorkTime.hours === 0 &&
       this.driverRemainingWorkTime.minutes === 0 &&

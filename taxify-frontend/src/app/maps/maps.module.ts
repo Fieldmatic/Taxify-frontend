@@ -9,20 +9,26 @@ import { PassengerMapFormComponent } from './passenger-map-form/passenger-map-fo
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MapsService } from './maps.service';
+import { FilterDriversComponent } from './passenger-map-form/filter-drivers/filter-drivers/filter-drivers.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
+  imports: [
+    RouterModule,
+    SharedModule,
+    FormsModule,
+    MapsRoutingModule,
+    ReactiveFormsModule,
+    MatCheckboxModule,
+    MatAutocompleteModule,
+  ],
   declarations: [
     MapsComponent,
     ActiveDriversMapComponent,
     SelectedDriverInfoComponent,
     PassengerMapFormComponent,
-  ],
-  imports: [
-    RouterModule,
-    SharedModule,
-    MapsRoutingModule,
-    ReactiveFormsModule,
-    MatAutocompleteModule,
+    FilterDriversComponent,
   ],
   providers: [MapsService],
 })

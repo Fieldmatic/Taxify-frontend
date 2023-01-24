@@ -1,0 +1,61 @@
+<mat-card class="mx-auto filterCard">
+  <mat-card-content>
+    <section class="example-section">
+      <span class="example-list-section">
+        <mat-checkbox
+          class="example-margin"
+          [checked]="allComplete"
+          color="primary"
+          [indeterminate]="markSomeVehicleTypes()"
+          (change)="setAllVehicleTypes($event.checked)"
+          >All Vehicle Types
+        </mat-checkbox>
+      </span>
+      <span class="example-list-section">
+        <ul class="vehicleTypes">
+          <li *ngFor="let number of this.checkboxPairs">
+            <mat-checkbox
+              class="w-50"
+              [(ngModel)]="vehicleTypes[number].completed"
+              color="primary"
+              (ngModelChange)="updateAllVehicleTypesSelected()"
+            >
+              <img
+                [src]="vehicleTypes[number].image"
+                style="width: 30px; height: 30px"
+              />
+              {{ vehicleTypes[number].name }}
+            </mat-checkbox>
+            <mat-checkbox
+              *ngIf="number + 1 <= this.checkboxPairs.length"
+              [(ngModel)]="vehicleTypes[number + 1].completed"
+              color="primary"
+              (ngModelChange)="updateAllVehicleTypesSelected()"
+            >
+              <img
+                [src]="vehicleTypes[number + 1].image"
+                style="width: 30px; height: 30px"
+              />
+              {{ vehicleTypes[number + 1].name }}
+            </mat-checkbox>
+          </li>
+        </ul>
+      </span>
+    </section>
+    <mat-checkbox [(ngModel)]="babyFriendly" class="w-50" color="primary"
+      >Baby friendly</mat-checkbox
+    >
+    <mat-checkbox [(ngModel)]="petFriendly" color="primary"
+      >Pet friendly</mat-checkbox
+    >
+
+    <button
+      mat-button
+      color="primary"
+      class="continueButton"
+      (click)="continue()"
+    >
+      Continue
+    </button>
+  </mat-card-content>
+</mat-card>

@@ -34,6 +34,7 @@ export class PassengerMapFormComponent implements OnInit {
   route$: Observable<[longitude: number, latitude: number][]>;
   routeArray: [longitude: number, latitude: number][];
   fillFormState: boolean;
+  filterDriversMode = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -112,6 +113,10 @@ export class PassengerMapFormComponent implements OnInit {
     );
 
     this.routeStops = {};
+  }
+
+  onSubmit2() {
+    this.filterDriversMode = true;
   }
 
   markPickupLocation(location: Location) {

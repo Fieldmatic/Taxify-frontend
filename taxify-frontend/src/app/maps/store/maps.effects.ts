@@ -20,32 +20,47 @@ import {
   GeoJSONObject,
 } from 'ol/format/GeoJSON';
 import { Driver } from '../../shared/driver.model';
+import {
+  LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS,
+  SetAvailableRoutesCoordinates,
+} from './maps.actions';
 
 @Injectable()
 export class MapsEffects {
-  loadDirectionCoordinates = createEffect(() =>
+  loadAvailableRoutesForTwoPoints = createEffect(() =>
     this.actions$.pipe(
-      ofType(MapsActions.LOAD_DIRECTION_COORDINATES),
+      ofType(MapsActions.LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS),
       switchMap(
-        (loadDirectionCoordinates: MapsActions.LoadDirectionCoordinates) => {
+        (
+          loadAvailableRoutesForTwoPoints: MapsActions.LoadAvailableRoutesForTwoPoints
+        ) => {
           const headers = new HttpHeaders({
             'Content-Type': 'application/json',
             Authorization:
-              '5b3ce3597851110001cf6248e39388eebabc4b62a4c73f8387f68638',
+              '5b3ce3597851110001cf6248b39bab9bc5c8470d9a7d66dd54e43ee5',
           });
           const requestOptions = { headers: headers };
           return this.http
             .post(
               'https://api.openrouteservice.org/v2/directions/driving-car/geojson',
               {
-                coordinates: loadDirectionCoordinates.payload.coordinates,
+                coordinates:
+                  loadAvailableRoutesForTwoPoints.payload.coordinates,
+                alternative_routes: { target_count: 3, weight_factor: 2 },
               },
               requestOptions
             )
             .pipe(
               map((data: GeoJSONFeatureCollection) => {
-                return new MapsActions.SetDirectionCoordinates({
-                  coordinates: data.features[0].geometry['coordinates'],
+                let availableRoutes: [longitude: number, latitude: number][][] =
+                  data.features.map((feature) => {
+                    return feature.geometry['coordinates'];
+                  });
+                console.log(availableRoutes);
+
+                return new MapsActions.SetAvailableRoutesCoordinates({
+                  id: loadAvailableRoutesForTwoPoints.payload.destinationId,
+                  routes: availableRoutes,
                 });
               })
             );
@@ -53,6 +68,7 @@ export class MapsEffects {
       )
     )
   );
+
   loadPickupLocationAutocompleteResults = createEffect(() =>
     this.actions$.pipe(
       ofType(MapsActions.LOAD_PICKUP_LOCATION_AUTOCOMPLETE_RESULTS),

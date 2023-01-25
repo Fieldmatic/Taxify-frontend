@@ -4,6 +4,8 @@ import * as MapsActions from './maps.actions';
 import { Driver } from '../../shared/driver.model';
 import { Location } from '../model/location';
 import { PassengerState } from '../model/passengerState';
+import { SET_SELECTED_ROUTE_COORDINATES } from './maps.actions';
+import { act } from '@ngrx/effects';
 
 export interface State {
   mapData: MapData;
@@ -12,7 +14,8 @@ export interface State {
   loading: boolean;
   chosenDriverInfo: Driver;
   rideDriver: Driver;
-  route: [longitude: number, latitude: number][];
+  selectedRoute: Map<string, [longitude: number, latitude: number][]>;
+  availableRoutes: Map<string, [longitude: number, latitude: number][][]>;
   passengerState: PassengerState;
 }
 
@@ -25,7 +28,11 @@ const createInitialState = function (): State {
     rideDriver: null,
     pickupLocations: null,
     destinations: null,
-    route: [],
+    selectedRoute: new Map<string, [longitude: number, latitude: number][]>(),
+    availableRoutes: new Map<
+      string,
+      [longitude: number, latitude: number][][]
+    >(),
     passengerState: PassengerState.FORM_FILL,
   };
 };
@@ -35,11 +42,6 @@ export function mapsReducer(
   action: MapsActions.MapsActions
 ) {
   switch (action.type) {
-    case MapsActions.SET_DIRECTION_COORDINATES:
-      return {
-        ...state,
-        route: action.payload.coordinates,
-      };
     case MapsActions.MAP_LOAD_START:
       return {
         ...state,
@@ -91,13 +93,59 @@ export function mapsReducer(
         rideDriver: null,
         pickupLocations: null,
         destinations: null,
-        route: [],
+        availableRoutes: new Map<
+          string,
+          [longitude: number, latitude: number][][]
+        >(),
+        selectedRoute: new Map<
+          string,
+          [longitude: number, latitude: number][]
+        >(),
       };
     }
     case MapsActions.SET_PASSENGER_STATE_FORM_FILL: {
       return {
         ...state,
         passengerState: PassengerState.FORM_FILL,
+      };
+    }
+    case MapsActions.CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS: {
+      return { ...state, destinations: null };
+    }
+    case MapsActions.SET_AVAILABLE_ROUTES_COORDINATES: {
+      let availableRoutes = new Map<
+        string,
+        [longitude: number, latitude: number][][]
+      >(state.availableRoutes);
+      availableRoutes.set(action.payload.id, action.payload.routes);
+      return {
+        ...state,
+        availableRoutes: availableRoutes,
+      };
+    }
+    case MapsActions.SET_SELECTED_ROUTE_COORDINATES: {
+      let selectedRoutes = new Map<
+        string,
+        [longitude: number, latitude: number][]
+      >(state.selectedRoute);
+      selectedRoutes.set(action.payload.key, action.payload.route);
+      return { ...state, selectedRoute: selectedRoutes };
+    }
+    case MapsActions.REMOVE_COORDINATES_FOR_DESTINATION: {
+      let availableRoutes = new Map<
+        string,
+        [longitude: number, latitude: number][][]
+      >(state.availableRoutes);
+      let selectedRoutes = new Map<
+        string,
+        [longitude: number, latitude: number][]
+      >(state.selectedRoute);
+      selectedRoutes.delete(action.payload.key);
+      availableRoutes.delete(action.payload.key);
+      return {
+        ...state,
+        selectedRoute: selectedRoutes,
+        availableRoutes: availableRoutes,
       };
     }
     default:

@@ -1,4 +1,4 @@
-import { LoggedInUser } from './../auth/model/logged-in-user';
+import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
 import * as AuthActions from '../auth/store/auth.actions';
 import * as PassengerActions from './../passengers/store/passengers.actions';
 import { Store } from '@ngrx/store';
@@ -54,7 +54,7 @@ export class NavbarComponent implements OnInit, DoCheck {
   }
 
   onLogout() {
-    this.store.dispatch(new AuthActions.Logout());
+    this.store.dispatch(new AuthActions.LogoutStart());
   }
 
   subscribeToWebSocket() {

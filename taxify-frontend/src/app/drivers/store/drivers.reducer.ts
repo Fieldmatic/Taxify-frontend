@@ -4,11 +4,13 @@ import * as DriversActions from './drivers.actions';
 export interface State {
   drivers: Driver[];
   error: number;
+  driver: Driver;
 }
 
 const initialState: State = {
   drivers: [],
   error: null,
+  driver: null,
 };
 
 export function driversReducer(
@@ -26,6 +28,21 @@ export function driversReducer(
       return {
         ...state,
         error: action.payload,
+      };
+    case DriversActions.SET_DRIVER:
+      return {
+        ...state,
+        driver: action.payload,
+        error: null,
+      };
+    case DriversActions.SET_DRIVER_REMAINING_WORK_TIME:
+      return {
+        ...state,
+        error: null,
+        driver: {
+          ...state.driver,
+          remainingWorkTime: action.payload.remainingTime,
+        },
       };
     default:
       return state;

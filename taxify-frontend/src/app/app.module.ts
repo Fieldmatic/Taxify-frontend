@@ -1,3 +1,4 @@
+import { PassengerEffects } from './passengers/store/passengers.effects';
 import { AuthEffects } from './auth/store/auth.effects';
 import { APP_CONFIG, APP_SERVICE_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
@@ -24,9 +25,11 @@ import { UsersModule } from './users/users.module';
 import { UsersEffects } from './users/store/users.effects';
 import { MapsEffects } from './maps/store/maps.effects';
 import { MapsService } from './maps/maps.service';
+import { ToastrModule } from 'ngx-toastr';
+import { NotificationsComponent } from './navbar/notifications/notifications/notifications.component';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent],
+  declarations: [AppComponent, NavbarComponent, NotificationsComponent],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -39,9 +42,12 @@ import { MapsService } from './maps/maps.service';
       AuthEffects,
       UsersEffects,
       MapsEffects,
+      PassengerEffects,
     ]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     UsersModule,
     MapsModule,
     AuthModule,

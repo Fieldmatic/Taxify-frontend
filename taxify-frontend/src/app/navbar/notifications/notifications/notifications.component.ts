@@ -1,0 +1,58 @@
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs';
+import { Notification } from 'src/app/passengers/model/notification';
+import * as fromApp from '../../../store/app.reducer';
+import * as PassengerActions from './../../../passengers/store/passengers.actions';
+
+@Component({
+  selector: 'app-notifications',
+  templateUrl: './notifications.component.html',
+  styleUrls: ['./notifications.component.scss'],
+})
+export class NotificationsComponent implements OnInit {
+  notifications: Notification[] = [];
+
+  constructor(private store: Store<fromApp.AppState>) {}
+  ngOnInit(): void {
+    this.store
+      .select('passengers')
+      .pipe(map((passengerState) => passengerState.notifications))
+      .subscribe((notifications) => {
+        this.notifications = notifications;
+      });
+  }
+
+  getNotificationTime(notification: Notification) {
+    var seconds =
+      (new Date().getTime() - new Date(notification.arrivalTime).getTime()) /
+      1000;
+    const mins = Math.floor(seconds / 60);
+    const hours = Math.floor(mins / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return days + ' day(s)';
+    } else if (hours > 0) {
+      return hours + ' hour(s)';
+    }
+    return mins + ' minute(s)';
+  }
+
+  getNotificationMessage(notification: Notification) {
+    switch (notification.type) {
+      case 'ADDED_TO_THE_RIDE':
+        return 'has invited you to the ride';
+      case 'RIDE_ACCEPTED':
+        return 'Your ride has been accepted';
+      case 'VEHICLE_ARRIVED':
+        return 'Vehicle has arrived on your destination';
+      default:
+        return 'Your ride has been scheduled';
+    }
+  }
+
+  showNotifications() {
+    this.store.dispatch(new PassengerActions.GetPassengerNotifications());
+  }
+}

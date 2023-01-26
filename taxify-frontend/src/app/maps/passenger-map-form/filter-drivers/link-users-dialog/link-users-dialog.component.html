@@ -1,0 +1,38 @@
+<div>
+  <div style="width: 30vw; height: 30vh" class="d-flex">
+    <div class="d-inline-flex align-self-center">
+      <mat-form-field style="appearance: none">
+        <mat-label>Enter email</mat-label>
+        <input id="linkedUserInput" matInput [(ngModel)]="linkedUser" />
+      </mat-form-field>
+      <div class="p-2" (click)="linkUser()" style="cursor: pointer">
+        <i class="arrow right ms-1"></i>
+      </div>
+    </div>
+    <div class="ms-5">
+      <ul class="vehicleTypes">
+        <li *ngFor="let user of this.allLinkedUsers">
+          <span>{{ user }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <button
+      mat-button
+      color="white"
+      class="ms-4 text-black border border-dark w-25"
+      (click)="closeDialog()"
+    >
+      Close
+    </button>
+    <button
+      style="float: right"
+      mat-button
+      class="me-4 bg-black text-white w-25"
+      (click)="saveLinkedUsers()"
+    >
+      Continue
+    </button>
+  </div>
+</div>

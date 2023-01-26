@@ -19,6 +19,7 @@ import * as MapUtils from '../mapUtils';
 import VectorSource from 'ol/source/Vector';
 import { Vehicle } from '../../shared/vehicle.model';
 import { MapsService } from '../maps.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-active-drivers-map',
@@ -33,7 +34,8 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
   constructor(
     private store: Store<fromApp.AppState>,
     private stompService: StompService,
-    private mapsService: MapsService
+    private mapsService: MapsService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -56,5 +58,18 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
     this.stompService.subscribe('/topic/vehicles', (): any => {
       this.store.dispatch(new DriversActions.FetchActiveDriversInArea());
     });
+
+    // this.stompService.subscribe(
+    //   '/topic/passenger-notification/uros@gmail.com',
+    //   () => {
+    //     this.toastr.info(this.stompService.message, 'Notification', {
+    //       disableTimeOut: true,
+    //       closeButton: true,
+    //       tapToDismiss: true,
+    //       newestOnTop: true,
+    //       positionClass: 'toast-top-center',
+    //     });
+    //   }
+    // );
   }
 }

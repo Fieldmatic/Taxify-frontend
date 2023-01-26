@@ -1,7 +1,12 @@
+import { MatDialog } from '@angular/material/dialog';
+import { LinkUsersDialogComponent } from './../link-users-dialog/link-users-dialog.component';
 import { map } from 'rxjs';
 import { FilterDriversService } from './services/filter-drivers.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { Location } from 'src/app/maps/model/location';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../../../store/app.reducer';
+import * as PassengerActions from '../../../../passengers/store/passengers.actions';
 
 export interface Task {
   name: string;
@@ -21,10 +26,14 @@ export class FilterDriversComponent implements OnInit {
   petFriendly: boolean = false;
   babyFriendly: boolean = false;
   allComplete: boolean = false;
-
+  linkedUsers: string[] = [];
   vehicleTypes: Task[] = [];
 
-  constructor(private filterDriversService: FilterDriversService) {}
+  constructor(
+    private filterDriversService: FilterDriversService,
+    public dialog: MatDialog,
+    private store: Store<fromApp.AppState>
+  ) {}
 
   ngOnInit(): void {
     this.filterDriversService.getVehicleTypes().subscribe((types) => {
@@ -63,9 +72,24 @@ export class FilterDriversComponent implements OnInit {
     this.vehicleTypes.forEach((t) => (t.completed = completed));
   }
 
+  openLinkUsersDialog() {
+    const dialogRef = this.dialog.open(LinkUsersDialogComponent, {
+      disableClose: true,
+      data: this.linkedUsers,
+    });
+
+    dialogRef.beforeClosed().subscribe((result) => {
+      this.linkedUsers.concat(result);
+    });
+  }
+
   continue() {
-    console.log(this.babyFriendly);
-    console.log(this.petFriendly);
-    console.log(this.vehicleTypes);
+    console.log(this.linkedUsers);
+    this.store.dispatch(
+      new PassengerActions.AddLinkedPassengers({
+        sender: 'ivana@gmail.com',
+        linkedUsers: this.linkedUsers,
+      })
+    );
   }
 }

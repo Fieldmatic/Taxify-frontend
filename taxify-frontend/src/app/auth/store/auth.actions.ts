@@ -22,6 +22,10 @@ export const USER_SIGNED_WITH_GOOGLE_EXISTS =
   '[Auth] User Signed With Google Exists';
 export const CHANGE_USER_EXISTS_STATE = '[Auth] Change User exists';
 export const USER_EXISTS_BY_EMAIL = '[Auth] User exists by email';
+export const SEND_FORGOT_PASSWORD_RESET_LINK =
+  '[Auth] Send forgot password reset link';
+
+export const RESET_PASSWORD = '[Auth] Reset password';
 
 export class LoginSuccess implements Action {
   readonly type = LOGIN_SUCCESS;
@@ -117,6 +121,22 @@ export class LogoutStartDriver implements Action {
   constructor(public payload: { email: string }) {}
 }
 
+export class SendForgotPasswordResetLink implements Action {
+  readonly type = SEND_FORGOT_PASSWORD_RESET_LINK;
+  constructor(public payload: { email: string }) {}
+}
+
+export class ResetPassword implements Action {
+  readonly type = RESET_PASSWORD;
+  constructor(
+    public payload: {
+      newPassword: string;
+      newPasswordConfirmation: string;
+      authToken: string;
+    }
+  ) {}
+}
+
 export type AuthActions =
   | LoginSuccess
   | LogoutEnd
@@ -132,4 +152,5 @@ export type AuthActions =
   | ChangeUserExistsState
   | UserExistsByEmail
   | FacebookSignup
-  | LogoutStartDriver;
+  | LogoutStartDriver
+  | ResetPassword;

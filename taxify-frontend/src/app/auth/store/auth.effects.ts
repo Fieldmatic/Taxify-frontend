@@ -1,9 +1,9 @@
 import { AuthService } from 'src/app/auth/services/auth/auth.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { tap } from 'rxjs';
+import { EMPTY, tap } from 'rxjs';
 import { catchError, map, of, switchMap } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
@@ -320,6 +320,52 @@ export class AuthEffects {
           );
       })
     )
+  );
+
+  sendForgotPasswordResetLink = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.SEND_FORGOT_PASSWORD_RESET_LINK),
+        switchMap(
+          (
+            sendForgotPasswordResetLink: AuthActions.SendForgotPasswordResetLink
+          ) => {
+            let queryParams = new HttpParams().append(
+              'email',
+              sendForgotPasswordResetLink.payload.email
+            );
+            return this.http.get(
+              this.config.apiEndpoint + `password/request-change`,
+              { params: queryParams }
+            );
+          }
+        )
+      ),
+    { dispatch: false }
+  );
+
+  resetPassword = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.RESET_PASSWORD),
+        switchMap((resetPassword: AuthActions.ResetPassword) => {
+          return this.http
+            .put<void>(
+              this.config.apiEndpoint + `password/change`,
+              resetPassword.payload
+            )
+            .pipe(
+              tap(() => {
+                this.router.navigate(['auth/login']);
+              }),
+              catchError((err) => {
+                console.error(err);
+                return EMPTY;
+              })
+            );
+        })
+      ),
+    { dispatch: false }
   );
 
   constructor(

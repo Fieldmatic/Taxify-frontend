@@ -9,8 +9,9 @@ import { MatCardModule } from '@angular/material/card';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   declarations: [LoadingSpinnerComponent, ConfirmationDialogComponent],
@@ -24,7 +25,8 @@ import { MatInputModule } from "@angular/material/input";
     MatCardModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatRadioModule,
   ],
   exports: [
     CommonModule,
@@ -37,7 +39,8 @@ import { MatInputModule } from "@angular/material/input";
     MatCardModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatRadioModule,
   ],
 })
 export class SharedModule {}

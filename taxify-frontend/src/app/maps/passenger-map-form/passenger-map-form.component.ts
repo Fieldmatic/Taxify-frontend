@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {
+  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -16,9 +17,9 @@ import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
 import * as MapActions from '../store/maps.actions';
 import { Location } from '../model/location';
-import { Map } from 'ol';
+import OLMap from 'ol/Map';
+
 import { MapsService } from '../maps.service';
-import { PassengerState } from '../model/passengerState';
 
 @Component({
   selector: 'app-passenger-map-form',
@@ -29,11 +30,10 @@ export class PassengerMapFormComponent implements OnInit {
   ridingForm!: FormGroup;
   pickupLocationAddresses$: Observable<Array<Location>>;
   destinationAddresses$: Observable<Array<Location>>;
-  map: Map;
-  routeStops: { [key: string]: Location } = {};
-  route$: Observable<[longitude: number, latitude: number][]>;
-  routeArray: [longitude: number, latitude: number][];
-  fillFormState: boolean;
+  map: OLMap;
+  routeStops: Map<string, Location> = new Map<string, Location>();
+
+  routeArray: [longitude: number, latitude: number][] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -46,17 +46,26 @@ export class PassengerMapFormComponent implements OnInit {
     this.initForm();
     this.initPickupLocationsAutocompleteOnChange();
     this.initDestinationAutocompleteOnChange();
-    this.route$ = this.store.select((store) => store.maps.route);
-    this.route$.subscribe((routeArray) => (this.routeArray = routeArray));
     this.store
-      .select((store) => store.maps.passengerState)
-      .subscribe((passengerState: PassengerState) => {
-        passengerState == PassengerState.FORM_FILL
-          ? (this.fillFormState = true)
-          : (this.fillFormState = false);
+      .select((store) => store.maps.selectedRoute)
+      .subscribe((selectedRouteMap) => {
+        this.routeArray = [];
+        selectedRouteMap.forEach((value) => {
+          this.routeArray.push(...value);
+        });
       });
   }
 
+  public additionalDestinations(): FormArray {
+    return this.ridingForm.get('additionalDestinations') as FormArray;
+  }
+  public addNewDestination() {
+    this.additionalDestinations().push(this.newDestination());
+  }
+
+  private newDestination(): FormControl {
+    return new FormControl('');
+  }
   private selectStoreStates() {
     this.pickupLocationAddresses$ = this.store.select(
       (store) => store.maps.pickupLocations
@@ -70,6 +79,7 @@ export class PassengerMapFormComponent implements OnInit {
     this.ridingForm = this.formBuilder.group({
       pickupLocation: new FormControl(''),
       destination: new FormControl(''),
+      additionalDestinations: this.formBuilder.array([]),
     });
   }
 
@@ -85,6 +95,23 @@ export class PassengerMapFormComponent implements OnInit {
           new MapActions.LoadDestinationAutocompleteResults({ value: value })
         );
       });
+  }
+
+  public getAdditionalDestination(i: number) {
+    return this.additionalDestinations().at(i) as FormControl;
+  }
+
+  public removeAdditionalDestination(i: number) {
+    this.additionalDestinations().removeAt(i);
+    this.mapsService.removeLocationIfExists(
+      'destination'.concat((i + 1).toString())
+    );
+  }
+
+  public updateDestinations(value: string) {
+    this.store.dispatch(
+      new MapActions.LoadDestinationAutocompleteResults({ value: value })
+    );
   }
 
   private initPickupLocationsAutocompleteOnChange() {
@@ -103,27 +130,28 @@ export class PassengerMapFormComponent implements OnInit {
 
   onSubmit(formDirective: FormGroupDirective) {
     formDirective.resetForm();
-    this.ridingForm.reset();
+    this.initForm();
     this.store.dispatch(
       new MapActions.SearchForDriver({
-        clientLocation: this.routeStops['start'],
+        clientLocation: this.routeStops.get('start'),
         route: this.routeArray,
       })
     );
-
-    this.routeStops = {};
+    this.routeStops.clear();
   }
 
   markPickupLocation(location: Location) {
-    this.routeStops['start'] = location;
+    this.routeStops.set('start', location);
     this.mapsService.drawLocation(
       location,
       'pickupLocation',
       '../assets/pickup.png'
     );
   }
-  markDestination(location: Location) {
-    this.routeStops['end'] = location;
-    this.mapsService.drawLocation(location, 'destination', '../assets/pin.png');
+  markDestination(location: Location, index: number) {
+    let id = 'destination'.concat(index.toString());
+    this.routeStops.set(id, location);
+    this.mapsService.drawLocation(location, id, '../assets/pin.png');
+    this.store.dispatch(new MapActions.ClearDestinationAutocompleteResults());
   }
 }

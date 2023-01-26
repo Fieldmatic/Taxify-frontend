@@ -8,7 +8,8 @@ export const MAP_LOAD_END = '[Maps] Map load ended';
 export const DRIVER_SELECTED = '[Maps] Driver is selected';
 export const POPUP_CLOSE = '[Maps] Close driver popup';
 
-export const LOAD_DIRECTION_COORDINATES = '[Maps] Load direction coordinates';
+export const LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS =
+  '[Maps] Load available routes for two points';
 export const SEARCH_FOR_DRIVER = '[Maps] Search for driver';
 
 export const LOAD_PICKUP_LOCATION_AUTOCOMPLETE_RESULTS =
@@ -26,7 +27,16 @@ export const RIDE_FINISH = '[Maps] Ride finish';
 export const START_RIDE = '[Maps] Start ride';
 export const SET_PASSENGER_STATE_FORM_FILL =
   '[Maps] Set passenger state form fill';
-export const SET_DIRECTION_COORDINATES = '[Maps] Set direction coordinates';
+export const SET_SELECTED_ROUTE_COORDINATES =
+  '[Maps] Set selected route coordinates';
+export const SET_AVAILABLE_ROUTES_COORDINATES =
+  '[Maps] Set available routes coordinates';
+
+export const CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS =
+  '[Maps] Clear destination autocomplete results';
+
+export const REMOVE_COORDINATES_FOR_DESTINATION =
+  '[Maps] Remove coordinates for destination ';
 
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
@@ -68,20 +78,41 @@ export class PopupClose implements Action {
   readonly type = POPUP_CLOSE;
 }
 
-export class LoadDirectionCoordinates implements Action {
-  readonly type = LOAD_DIRECTION_COORDINATES;
+export class LoadAvailableRoutesForTwoPoints implements Action {
+  readonly type = LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS;
   constructor(
     public payload: {
       coordinates: [longitude: number, latitude: number][];
+      destinationId: string;
     }
   ) {}
 }
 
-export class SetDirectionCoordinates implements Action {
-  readonly type = SET_DIRECTION_COORDINATES;
+export class SetSelectedRouteCoordinates implements Action {
+  readonly type = SET_SELECTED_ROUTE_COORDINATES;
   constructor(
     public payload: {
-      coordinates: [longitude: number, latitude: number][];
+      key: string;
+      route: [longitude: number, latitude: number][];
+    }
+  ) {}
+}
+
+export class RemoveCoordinatesForDestination implements Action {
+  readonly type = REMOVE_COORDINATES_FOR_DESTINATION;
+  constructor(
+    public payload: {
+      key: string;
+    }
+  ) {}
+}
+
+export class SetAvailableRoutesCoordinates implements Action {
+  readonly type = SET_AVAILABLE_ROUTES_COORDINATES;
+  constructor(
+    public payload: {
+      id: string;
+      routes: [longitude: number, latitude: number][][];
     }
   ) {}
 }
@@ -120,6 +151,12 @@ export class SetPassengerStateFormFill implements Action {
   constructor() {}
 }
 
+export class ClearDestinationAutocompleteResults implements Action {
+  readonly type = CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS;
+
+  constructor() {}
+}
+
 export type MapsActions =
   | MapLoadStart
   | MapLoadEnd
@@ -129,9 +166,12 @@ export type MapsActions =
   | SetPickupLocationAutocompleteResults
   | LoadDestinationAutocompleteResults
   | SetDestinationAutocompleteResults
-  | LoadDirectionCoordinates
-  | SetDirectionCoordinates
+  | LoadAvailableRoutesForTwoPoints
+  | SetSelectedRouteCoordinates
   | SearchForDriver
   | StartRide
   | RideFinished
-  | SetPassengerStateFormFill;
+  | SetPassengerStateFormFill
+  | ClearDestinationAutocompleteResults
+  | SetAvailableRoutesCoordinates
+  | RemoveCoordinatesForDestination;

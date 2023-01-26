@@ -7,7 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Map } from 'ol';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { Driver } from '../../shared/driver.model';
 import { StompService } from '../../stomp.service';
@@ -19,6 +19,7 @@ import * as MapUtils from '../mapUtils';
 import VectorSource from 'ol/source/Vector';
 import { Vehicle } from '../../shared/vehicle.model';
 import { MapsService } from '../maps.service';
+import { PassengerState } from '../model/passengerState';
 
 @Component({
   selector: 'app-active-drivers-map',
@@ -29,6 +30,8 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
   @ViewChild('popup') popup: ElementRef;
   loading: boolean;
   driver: Driver;
+  passengerState$: Observable<PassengerState>;
+  passengerStateEnum: typeof PassengerState = PassengerState;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -44,6 +47,9 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
       this.mapsService.updateMapVehicleLayer();
     });
     this.mapsService.setTarget('map');
+    this.passengerState$ = this.store.select(
+      (store) => store.maps.passengerState
+    );
   }
 
   ngAfterViewInit(): void {

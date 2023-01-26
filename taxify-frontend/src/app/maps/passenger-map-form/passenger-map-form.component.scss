@@ -1,14 +1,67 @@
 .continueButton{
   background-color: black;
   color: white;
-  width: 80%;
+  width: 75%;
 }
 
 .addressInput{
-  width: 80%;
+  width: 75%;
 }
 
 .mat-option {
   height: 25px;
   font-size: 12px;
+}
+
+.destinationsWrapper{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.plus-button,.minus-button {
+  border: 2px solid lightgrey;
+  background-color: #fff;
+  font-size: 10px;
+  height: 2.5em;
+  width: 2.5em;
+  border-radius: 999px;
+  position: absolute;
+  margin-left: 1.6em;
+}
+
+.plus-button{
+  margin-left: 4.1em;
+}
+
+.plus-button:before{
+  height: 1em;
+  width: 0.2em;
+  content: "";
+  display: block;
+  background-color: grey;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+
+.plus-button:after,.minus-button:after{
+  height: 0.2em;
+  width: 1em;
+  content: "";
+  display: block;
+  background-color: grey;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+}
+.routeRadioGroup{
+  padding: 0.8em;
+}
+mat-radio-button {
+  margin-left: 12px;
 }

@@ -40,6 +40,7 @@ export const createVehicleFeatures = function (vehicles: Vehicle[]): Feature[] {
       geometry: new Point(olProj.fromLonLat(vehicle.location)),
       id: vehicles.indexOf(vehicle),
     });
+    marker.setId(vehicles.indexOf(vehicle));
     marker.setStyle(
       new Style({
         image: new Icon({
@@ -50,6 +51,7 @@ export const createVehicleFeatures = function (vehicles: Vehicle[]): Feature[] {
           src: '../assets/car_icon.png',
           scale: 0.8,
         }),
+        zIndex: 999,
       })
     );
     markers.push(marker);

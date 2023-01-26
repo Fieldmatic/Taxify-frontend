@@ -1,15 +1,15 @@
 <app-filter-drivers
   [clientLocation]="this.routeStops['start']"
-  [hidden]="!filterDriversMode || !fillFormState"
+  [hidden]="!filterDriversMode"
 ></app-filter-drivers>
-<div [hidden]="!fillFormState || filterDriversMode">
+<div [hidden]="filterDriversMode">
   <mat-card>
     <mat-card-content>
       <form
         [formGroup]="ridingForm"
         #formDirective="ngForm"
         class="ridingForm"
-        (ngSubmit)="onSubmit(formDirective)"
+        (ngSubmit)="onSubmit2()"
       >
         <div class="destinationsWrapper">
           <mat-form-field appearance="fill" class="addressInput">

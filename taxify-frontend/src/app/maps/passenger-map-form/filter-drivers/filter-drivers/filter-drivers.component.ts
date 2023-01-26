@@ -1,3 +1,4 @@
+import { LoggedInUser } from './../../../../auth/model/logged-in-user';
 import { MatDialog } from '@angular/material/dialog';
 import { LinkUsersDialogComponent } from './../link-users-dialog/link-users-dialog.component';
 import { map } from 'rxjs';
@@ -28,6 +29,7 @@ export class FilterDriversComponent implements OnInit {
   allComplete: boolean = false;
   linkedUsers: string[] = [];
   vehicleTypes: Task[] = [];
+  loggedInUser: LoggedInUser;
 
   constructor(
     private filterDriversService: FilterDriversService,
@@ -47,6 +49,13 @@ export class FilterDriversComponent implements OnInit {
         if (i % 2 === 0) this.checkboxPairs.push(i);
       }
     });
+
+    this.store
+      .select('auth')
+      .pipe(map((authState) => authState.user))
+      .subscribe((user) => {
+        this.loggedInUser = user;
+      });
   }
 
   updateAllVehicleTypesSelected() {
@@ -79,15 +88,19 @@ export class FilterDriversComponent implements OnInit {
     });
 
     dialogRef.beforeClosed().subscribe((result) => {
-      this.linkedUsers.concat(result);
+      this.linkedUsers = result;
     });
   }
 
   continue() {
     console.log(this.linkedUsers);
+    console.log(this.babyFriendly);
+    console.log(this.petFriendly);
+    console.log(this.vehicleTypes);
+    console.log(this.clientLocation);
     this.store.dispatch(
       new PassengerActions.AddLinkedPassengers({
-        sender: 'ivana@gmail.com',
+        sender: this.loggedInUser.email,
         linkedUsers: this.linkedUsers,
       })
     );

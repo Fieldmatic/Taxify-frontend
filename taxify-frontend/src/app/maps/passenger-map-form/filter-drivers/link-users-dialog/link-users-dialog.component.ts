@@ -24,8 +24,10 @@ export class LinkUsersDialogComponent implements OnInit {
     document.getElementById('linkedUserInput')['value'] = '';
   }
 
-  closeDialog() {
-    this.dialogRef.close();
+  removeLinkedUser(userToDelete: string) {
+    this.allLinkedUsers = this.allLinkedUsers.filter(
+      (linkedUser) => linkedUser !== userToDelete
+    );
   }
 
   saveLinkedUsers() {

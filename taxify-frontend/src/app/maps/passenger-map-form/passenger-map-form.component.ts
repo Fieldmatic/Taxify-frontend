@@ -30,13 +30,12 @@ export class PassengerMapFormComponent implements OnInit {
   ridingForm!: FormGroup;
   pickupLocationAddresses$: Observable<Array<Location>>;
   destinationAddresses$: Observable<Array<Location>>;
-  //route$: Observable<[longitude: number, latitude: number][]>;
-  fillFormState: boolean;
-  filterDriversMode = false;
   map: OLMap;
   routeStops: Map<string, Location> = new Map<string, Location>();
 
   routeArray: [longitude: number, latitude: number][] = [];
+
+  filterDriversMode = false;
 
   constructor(
     private formBuilder: FormBuilder,

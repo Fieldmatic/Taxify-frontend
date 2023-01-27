@@ -1,14 +1,11 @@
-import { GetDriverRemainingWorkTime } from './../../../drivers/store/drivers.actions';
 import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducer';
-import { map, min } from 'rxjs';
+import { map } from 'rxjs';
 import * as DriversActions from 'src/app/drivers/store/drivers.actions';
-import { Driver } from 'src/app/shared/driver.model';
-import { LongDateFormatKey } from 'moment';
+import { Driver } from 'src/app/shared/model/driver.model';
 import { StompService } from 'src/app/stomp.service';
-import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-driver-map-info',

@@ -13,7 +13,6 @@ export interface State {
   loading: boolean;
   chosenDriverInfo: Driver;
   rideDriver: Driver;
-  driverToClientRoute: Route;
   selectedRoute: Map<string, Route>;
   availableRoutes: Map<string, Route[]>;
   passengerState: PassengerState;
@@ -26,7 +25,6 @@ const createInitialState = function (): State {
     loading: false,
     chosenDriverInfo: null,
     rideDriver: null,
-    driverToClientRoute: null,
     pickupLocations: null,
     destinations: null,
     selectedRoute: new Map<string, Route>(),
@@ -109,8 +107,10 @@ export function mapsReducer(
       let selectedRoute = new Map<string, Route>(state.selectedRoute);
       if (
         !selectedRoute.has(action.payload.id) ||
-        (selectedRoute.get(action.payload.id) &&
-          availableRoutes.get(action.payload.id) != action.payload.routes)
+        (selectedRoute.has(action.payload.id) &&
+          availableRoutes.has(action.payload.id) &&
+          availableRoutes.get(action.payload.id)[0].route[0][0] !==
+            action.payload.routes[0].route[0][0])
       ) {
         selectedRoute.set(action.payload.id, action.payload.routes[0]);
       }

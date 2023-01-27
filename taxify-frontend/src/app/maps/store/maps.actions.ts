@@ -118,10 +118,6 @@ export class SetAvailableRoutesCoordinates implements Action {
   ) {}
 }
 
-    }
-  ) {}
-}
-
 export class SearchForDriver implements Action {
   readonly type = SEARCH_FOR_DRIVER;
 

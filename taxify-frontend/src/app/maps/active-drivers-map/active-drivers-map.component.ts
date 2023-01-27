@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  DoCheck,
   ElementRef,
   OnDestroy,
   OnInit,
@@ -27,7 +28,9 @@ import { PassengerState } from '../model/passengerState';
   templateUrl: './active-drivers-map.component.html',
   styleUrls: ['./active-drivers-map.component.scss'],
 })
-export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
+export class ActiveDriversMapComponent
+  implements OnInit, AfterViewInit, DoCheck
+{
   @ViewChild('popup') popup: ElementRef;
   loading: boolean;
   driver: Driver;
@@ -40,9 +43,13 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
     private mapsService: MapsService,
     private toastr: ToastrService
   ) {}
+  ngDoCheck(): void {
+    if (!this.stompService.stompClient.connected) {
+      this.subscribeToWebSocket();
+    }
+  }
 
   ngOnInit(): void {
-    this.subscribeToWebSocket();
     this.store.select('maps').subscribe((mapsState) => {
       this.loading = mapsState.loading;
       this.driver = mapsState.chosenDriverInfo;

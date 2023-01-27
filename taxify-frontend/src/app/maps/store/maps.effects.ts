@@ -11,7 +11,7 @@ import { AuthService } from '../../auth/services/auth/auth.service';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import * as MapsActions from './maps.actions';
-import { catchError, map, switchMap, tap } from 'rxjs';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs';
 import { Location } from '../model/location';
 import { GeoJSON, GeoJsonObject } from 'geojson';
 import {
@@ -24,13 +24,14 @@ import {
   LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS,
   SetAvailableRoutesCoordinates,
 } from './maps.actions';
+import { Route } from '../model/route';
 
 @Injectable()
 export class MapsEffects {
   loadAvailableRoutesForTwoPoints = createEffect(() =>
     this.actions$.pipe(
       ofType(MapsActions.LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS),
-      switchMap(
+      mergeMap(
         (
           loadAvailableRoutesForTwoPoints: MapsActions.LoadAvailableRoutesForTwoPoints
         ) => {
@@ -38,6 +39,7 @@ export class MapsEffects {
             'Content-Type': 'application/json',
             Authorization:
               '5b3ce3597851110001cf6248b39bab9bc5c8470d9a7d66dd54e43ee5',
+            skip: 'true',
           });
           const requestOptions = { headers: headers };
           return this.http
@@ -52,10 +54,13 @@ export class MapsEffects {
             )
             .pipe(
               map((data: GeoJSONFeatureCollection) => {
-                let availableRoutes: [longitude: number, latitude: number][][] =
-                  data.features.map((feature) => {
-                    return feature.geometry['coordinates'];
-                  });
+                let availableRoutes: Route[] = data.features.map((feature) => {
+                  return new Route(
+                    feature.properties['summary']['distance'],
+                    feature.properties['summary']['duration'],
+                    feature.geometry['coordinates']
+                  );
+                });
                 console.log(availableRoutes);
 
                 return new MapsActions.SetAvailableRoutesCoordinates({
@@ -85,6 +90,7 @@ export class MapsEffects {
           return this.http
             .get('https://api.geoapify.com/v1/geocode/autocomplete', {
               params: params,
+              headers: { skip: 'true' },
             })
             .pipe(
               map((data) => {
@@ -177,6 +183,7 @@ export class MapsEffects {
           return this.http
             .get('https://api.geoapify.com/v1/geocode/autocomplete', {
               params: params,
+              headers: { skip: 'true' },
             })
             .pipe(
               map((data) => {

@@ -131,7 +131,7 @@ export const createMapWithVehiclesLayer = function (
     ],
     view: new View({
       center: olProj.fromLonLat(mapCenter),
-      zoom: 16,
+      zoom: 15,
     }),
   });
 };

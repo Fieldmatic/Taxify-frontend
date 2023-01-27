@@ -15,12 +15,12 @@ import { Location } from './model/location';
 import { PassengerState } from './model/passengerState';
 import { Coordinate } from 'ol/coordinate';
 import OLMap from 'ol/Map';
+import { Route } from './model/route';
 
 @Injectable()
 export class MapsService {
   private mapSource = new BehaviorSubject<OLMap>(this.initMap());
   map = this.mapSource.asObservable();
-  s;
   driversInArea: Driver[] = [];
   driversSubscription: Subscription;
 
@@ -35,13 +35,8 @@ export class MapsService {
   routesVectorSource: VectorSource;
   drivingRouteVectorSource: VectorSource;
   vehiclesVectorSource: VectorSource;
-  selectedRoute$: Observable<
-    Map<string, [longitude: number, latitude: number][]>
-  >;
-  availableRoutes$: Observable<
-    Map<string, [longitude: number, latitude: number][][]>
-  >;
-  availableRoutes: Map<string, [longitude: number, latitude: number][][]>;
+  selectedRoute$: Observable<Map<string, Route>>;
+  availableRoutes$: Observable<Map<string, Route[]>>;
 
   constructor(private store: Store<fromApp.AppState>) {
     this.recenterToUserLocation();
@@ -59,10 +54,6 @@ export class MapsService {
     this.drivingRouteVectorSource = <VectorSource>(
       this.mapSource.value.getAllLayers()[4].getSource()
     );
-    this.locationsVectorSource.on(
-      'change',
-      this.locationsVectorOnChangeCallback
-    );
     this.selectedRoute$ = this.store.select(
       (store) => store.maps.selectedRoute
     );
@@ -70,32 +61,37 @@ export class MapsService {
       (store) => store.maps.availableRoutes
     );
     this.store
-      .select((store) => store.maps)
-      .subscribe((mapState) => {
-        this.rideDriver = mapState.rideDriver;
-        this.passengerState = mapState.passengerState;
+      .select((store) => store.maps.rideDriver)
+      .subscribe((driver) => {
+        this.rideDriver = driver;
+      });
+    this.store
+      .select((store) => store.maps.passengerState)
+      .subscribe((passengerState) => {
+        this.passengerState = passengerState;
         this.handlePassengerStatusChange();
       });
-    this.setFastestRouteAsPreferred();
     this.drawRouteOnChange();
   }
 
   handlePassengerStatusChange() {
     if (this.passengerState == PassengerState.RIDING) {
-      this.removeLocationIfExists('pickupLocation');
+      this.removeLocationIfExists('location0');
     }
 
     if (this.passengerState == PassengerState.RIDE_FINISH) {
       this.locationsVectorSource.clear();
       this.routesVectorSource.clear();
       this.drivingRouteVectorSource.clear();
-      this.availableRoutes.clear();
       this.updateMapVehicleLayer();
     }
   }
 
-  locationsVectorOnChangeCallback = () => {
+  reloadAvailableRoutes() {
     let features = this.locationsVectorSource.getFeatures();
+    features.sort((a, b) =>
+      a.getId() > b.getId() ? 1 : b.getId() > a.getId() ? -1 : 0
+    );
     this.routesVectorSource.clear();
     if (features.length > 1 && this.passengerState !== PassengerState.RIDING) {
       for (let i = 1; i < features.length; i++) {
@@ -104,52 +100,36 @@ export class MapsService {
         let destination: Location = features[i].get('location');
         locations.push([start.longitude, start.latitude]);
         locations.push([destination.longitude, destination.latitude]);
+        let payload = {
+          coordinates: locations,
+          destinationId: features[i].getId().toString(),
+        };
         this.store.dispatch(
-          new MapActions.LoadAvailableRoutesForTwoPoints({
-            coordinates: locations,
-            destinationId: features[i].getId().toString(),
-          })
+          new MapActions.LoadAvailableRoutesForTwoPoints(payload)
         );
       }
     }
-  };
-
-  private setFastestRouteAsPreferred() {
-    this.availableRoutes$.subscribe(async (routesMap) => {
-      this.availableRoutes = routesMap;
-      this.selectedRoute$.pipe(take(1)).subscribe((selectedRouteMap) => {
-        for (let key of routesMap.keys()) {
-          if (!selectedRouteMap.has(key)) {
-            this.store.dispatch(
-              new MapActions.SetSelectedRouteCoordinates({
-                key: key,
-                route: routesMap.get(key)[0],
-              })
-            );
-          }
-        }
-      });
-    });
   }
 
   private drawRouteOnChange() {
     this.selectedRoute$.pipe().subscribe((routesMap) => {
+      let sortedMap = new Map([...routesMap].sort());
       if (this.passengerState == PassengerState.FORM_FILL) {
         this.routesVectorSource.clear();
-        for (let key of routesMap.keys()) {
+        for (let key of sortedMap.keys()) {
           const routeFeature = this.getRouteFeature(
-            routesMap.get(key),
+            sortedMap.get(key),
             key,
             '#4A89F3',
-            6,
+            4,
             200
           );
           this.routesVectorSource.addFeature(routeFeature);
           const routeFeatureBackground = this.getRouteFeature(
-            routesMap.get(key),
+            sortedMap.get(key),
             key.concat('bg'),
             '#002E6E',
-            10,
+            6,
             100
           );
           this.routesVectorSource.addFeature(routeFeatureBackground);
@@ -159,7 +139,7 @@ export class MapsService {
   }
 
   private getRouteFeature(
-    routeGeometry: [longitude: number, latitude: number][],
+    selectedRoute: Route,
     key: string,
     color: string,
     width: number,
@@ -169,7 +149,7 @@ export class MapsService {
       stroke: new Stroke({ color: color, width: width }),
       zIndex: zIndex,
     });
-    let route = new LineString(routeGeometry).transform(
+    let route = new LineString(selectedRoute.route).transform(
       'EPSG:4326',
       'EPSG:3857'
     );
@@ -177,7 +157,7 @@ export class MapsService {
       type: 'route',
       geometry: route,
     });
-    routeFeature.setProperties({ route: routeGeometry });
+    routeFeature.setProperties({ route: selectedRoute });
     routeFeature.setId(key);
     routeFeature.setStyle(style);
     return routeFeature;
@@ -185,22 +165,27 @@ export class MapsService {
 
   private redrawRouteDuringRide(updatedCurrentPosition: Coordinate) {
     this.selectedRoute$.pipe(take(1)).subscribe((selectedRoutesMap) => {
+      let sortedMap = new Map([...selectedRoutesMap].sort());
       if (this.passengerState == PassengerState.RIDING) {
         let routeArray = [];
-        for (let value in selectedRoutesMap.values()[0]) {
-        }
-        selectedRoutesMap.forEach((value) => {
-          routeArray.push(...value);
+        let duration = 0;
+        let distance = 0;
+        sortedMap.forEach((value) => {
+          routeArray.push(...value.route);
+          duration += value.duration;
+          distance += value.distance;
         });
+        this.recenterToLocation(
+          updatedCurrentPosition[0],
+          updatedCurrentPosition[1]
+        );
         let currentPositionIndex = routeArray.findIndex(
           (location) =>
             location[0] == updatedCurrentPosition[0] &&
             location[1] == updatedCurrentPosition[1]
         );
-        let firstMapValues = selectedRoutesMap.entries().next().value;
-        if (
-          routeArray[currentPositionIndex] == firstMapValues[1].slice(-1)[0]
-        ) {
+        let firstMapValues = sortedMap.entries().next().value;
+        if (currentPositionIndex == firstMapValues[1]['route'].length - 1) {
           this.store.dispatch(
             new MapActions.RemoveCoordinatesForDestination({
               key: firstMapValues[0],
@@ -211,18 +196,19 @@ export class MapsService {
           currentPositionIndex,
           routeArray.length
         );
+        let subDuration = duration - currentPositionIndex * 0.5;
         const routeFeature = this.getRouteFeature(
-          routeSubArray,
+          new Route(distance, subDuration, routeSubArray),
           currentPositionIndex.toString(),
           '#4A89F3',
-          6,
+          4,
           200
         );
         const routeFeatureBackground = this.getRouteFeature(
-          routeSubArray,
+          new Route(distance, subDuration, routeSubArray),
           currentPositionIndex.toString().concat('bg'),
           '#002E6E',
-          10,
+          6,
           100
         );
         this.drivingRouteVectorSource.clear();
@@ -245,7 +231,7 @@ export class MapsService {
     marker.setId(id);
     marker.setStyle(this.getMarkerStyle(icon));
     this.locationsVectorSource.addFeature(marker);
-    this.locationsVectorSource.changed();
+    this.reloadAvailableRoutes();
   }
 
   public removeLocationIfExists(id: string) {
@@ -312,47 +298,54 @@ export class MapsService {
           return feature;
         }
       );
-      if (feature && feature.get('type') == 'route') {
-        let featureId = feature.getId();
-        let selectedRoute = feature.getProperties()['route'];
-        let availableRoutes = this.availableRoutes.get(featureId.toString());
-        let selectedRouteIndex = availableRoutes.indexOf(selectedRoute);
-        let nextRoute =
-          selectedRouteIndex < availableRoutes.length - 1
-            ? availableRoutes[selectedRouteIndex + 1]
-            : availableRoutes[0];
-        this.routesVectorSource.removeFeature(
-          this.routesVectorSource.getFeatureById(feature.getId())
-        );
-        this.routesVectorSource.removeFeature(
-          this.routesVectorSource.getFeatureById(
-            featureId.toString().concat('bg')
-          )
-        );
-        const routeFeature = this.getRouteFeature(
-          nextRoute,
-          featureId.toString(),
-          '#4A89F3',
-          6,
-          200
-        );
-        this.store.dispatch(
-          new MapActions.SetSelectedRouteCoordinates({
-            key: featureId.toString(),
-            route: nextRoute,
-          })
-        );
-        const routeFeatureBackground = this.getRouteFeature(
-          nextRoute,
-          featureId.toString().concat('bg'),
-          '#002E6E',
-          10,
-          100
-        );
-        this.routesVectorSource.addFeature(routeFeatureBackground);
-        this.routesVectorSource.addFeature(routeFeature);
+      let featureId: string = feature.getId().toString();
+      if (feature && featureId.includes('location')) {
+        this.availableRoutes$.pipe(take(1)).subscribe((availableRoutes) => {
+          let featureId = feature.getId();
+          let selectedRoute = feature.getProperties()['route'];
+          let destinationAvailableRoutes = availableRoutes.get(
+            featureId.toString()
+          );
+          let selectedRouteIndex =
+            destinationAvailableRoutes.indexOf(selectedRoute);
+          let nextRoute =
+            selectedRouteIndex < destinationAvailableRoutes.length - 1
+              ? destinationAvailableRoutes[selectedRouteIndex + 1]
+              : destinationAvailableRoutes[0];
+          this.routesVectorSource.removeFeature(
+            this.routesVectorSource.getFeatureById(feature.getId())
+          );
+          this.routesVectorSource.removeFeature(
+            this.routesVectorSource.getFeatureById(
+              featureId.toString().concat('bg')
+            )
+          );
+          const routeFeature = this.getRouteFeature(
+            nextRoute,
+            featureId.toString(),
+            '#4A89F3',
+            6,
+            200
+          );
+          const routeFeatureBackground = this.getRouteFeature(
+            nextRoute,
+            featureId.toString().concat('bg'),
+            '#002E6E',
+            10,
+            100
+          );
+          this.routesVectorSource.addFeature(routeFeatureBackground);
+          this.routesVectorSource.addFeature(routeFeature);
+          this.store.dispatch(
+            new MapActions.SetSelectedRouteCoordinates({
+              key: featureId.toString(),
+              route: nextRoute,
+            })
+          );
+        });
       }
     });
+
     this.mapSource.value.on('pointermove', (event) => {
       const feature = this.mapSource.value.forEachFeatureAtPixel(
         event.pixel,
@@ -426,5 +419,8 @@ export class MapsService {
         }
       );
     }
+  }
+  recenterToLocation(longitude, latitude) {
+    this.mapSource.value.getView().setCenter(fromLonLat([longitude, latitude]));
   }
 }

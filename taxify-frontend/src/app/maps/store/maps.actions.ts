@@ -3,6 +3,7 @@ import { MapData } from '../model/mapData.model';
 import { Driver } from '../../shared/driver.model';
 import { Location } from '../model/location';
 import { Map } from 'ol';
+import { Route } from '../model/route';
 export const MAP_LOAD_START = '[Maps] Map load started';
 export const MAP_LOAD_END = '[Maps] Map load ended';
 export const DRIVER_SELECTED = '[Maps] Driver is selected';
@@ -93,7 +94,7 @@ export class SetSelectedRouteCoordinates implements Action {
   constructor(
     public payload: {
       key: string;
-      route: [longitude: number, latitude: number][];
+      route: Route;
     }
   ) {}
 }
@@ -112,7 +113,11 @@ export class SetAvailableRoutesCoordinates implements Action {
   constructor(
     public payload: {
       id: string;
-      routes: [longitude: number, latitude: number][][];
+      routes: Route[];
+    }
+  ) {}
+}
+
     }
   ) {}
 }

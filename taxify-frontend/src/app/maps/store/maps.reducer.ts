@@ -4,8 +4,7 @@ import * as MapsActions from './maps.actions';
 import { Driver } from '../../shared/driver.model';
 import { Location } from '../model/location';
 import { PassengerState } from '../model/passengerState';
-import { SET_SELECTED_ROUTE_COORDINATES } from './maps.actions';
-import { act } from '@ngrx/effects';
+import { Route } from '../model/route';
 
 export interface State {
   mapData: MapData;
@@ -14,8 +13,9 @@ export interface State {
   loading: boolean;
   chosenDriverInfo: Driver;
   rideDriver: Driver;
-  selectedRoute: Map<string, [longitude: number, latitude: number][]>;
-  availableRoutes: Map<string, [longitude: number, latitude: number][][]>;
+  driverToClientRoute: Route;
+  selectedRoute: Map<string, Route>;
+  availableRoutes: Map<string, Route[]>;
   passengerState: PassengerState;
 }
 
@@ -26,13 +26,11 @@ const createInitialState = function (): State {
     loading: false,
     chosenDriverInfo: null,
     rideDriver: null,
+    driverToClientRoute: null,
     pickupLocations: null,
     destinations: null,
-    selectedRoute: new Map<string, [longitude: number, latitude: number][]>(),
-    availableRoutes: new Map<
-      string,
-      [longitude: number, latitude: number][][]
-    >(),
+    selectedRoute: new Map<string, Route>(),
+    availableRoutes: new Map<string, Route[]>(),
     passengerState: PassengerState.FORM_FILL,
   };
 };
@@ -93,14 +91,8 @@ export function mapsReducer(
         rideDriver: null,
         pickupLocations: null,
         destinations: null,
-        availableRoutes: new Map<
-          string,
-          [longitude: number, latitude: number][][]
-        >(),
-        selectedRoute: new Map<
-          string,
-          [longitude: number, latitude: number][]
-        >(),
+        availableRoutes: new Map<string, Route[]>(),
+        selectedRoute: new Map<string, Route>(),
       };
     }
     case MapsActions.SET_PASSENGER_STATE_FORM_FILL: {
@@ -113,33 +105,30 @@ export function mapsReducer(
       return { ...state, destinations: null };
     }
     case MapsActions.SET_AVAILABLE_ROUTES_COORDINATES: {
-      let availableRoutes = new Map<
-        string,
-        [longitude: number, latitude: number][][]
-      >(state.availableRoutes);
+      let availableRoutes = new Map<string, Route[]>(state.availableRoutes);
+      let selectedRoute = new Map<string, Route>(state.selectedRoute);
+      if (
+        !selectedRoute.has(action.payload.id) ||
+        (selectedRoute.get(action.payload.id) &&
+          availableRoutes.get(action.payload.id) != action.payload.routes)
+      ) {
+        selectedRoute.set(action.payload.id, action.payload.routes[0]);
+      }
       availableRoutes.set(action.payload.id, action.payload.routes);
       return {
         ...state,
         availableRoutes: availableRoutes,
+        selectedRoute: selectedRoute,
       };
     }
     case MapsActions.SET_SELECTED_ROUTE_COORDINATES: {
-      let selectedRoutes = new Map<
-        string,
-        [longitude: number, latitude: number][]
-      >(state.selectedRoute);
+      let selectedRoutes = new Map<string, Route>(state.selectedRoute);
       selectedRoutes.set(action.payload.key, action.payload.route);
       return { ...state, selectedRoute: selectedRoutes };
     }
     case MapsActions.REMOVE_COORDINATES_FOR_DESTINATION: {
-      let availableRoutes = new Map<
-        string,
-        [longitude: number, latitude: number][][]
-      >(state.availableRoutes);
-      let selectedRoutes = new Map<
-        string,
-        [longitude: number, latitude: number][]
-      >(state.selectedRoute);
+      let availableRoutes = new Map<string, Route[]>(state.availableRoutes);
+      let selectedRoutes = new Map<string, Route>(state.selectedRoute);
       selectedRoutes.delete(action.payload.key);
       availableRoutes.delete(action.payload.key);
       return {

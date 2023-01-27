@@ -32,8 +32,9 @@ export class PassengerMapFormComponent implements OnInit {
   destinationAddresses$: Observable<Array<Location>>;
   map: OLMap;
   routeStops: Map<string, Location> = new Map<string, Location>();
-
   routeArray: [longitude: number, latitude: number][] = [];
+  distance: number;
+  duration: number;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -49,10 +50,17 @@ export class PassengerMapFormComponent implements OnInit {
     this.store
       .select((store) => store.maps.selectedRoute)
       .subscribe((selectedRouteMap) => {
+        let sortedMap = new Map([...selectedRouteMap].sort());
         this.routeArray = [];
-        selectedRouteMap.forEach((value) => {
-          this.routeArray.push(...value);
+        this.distance = 0;
+        this.duration = 0;
+        sortedMap.forEach((value) => {
+          this.routeArray.push(...value.route);
+          this.distance += value.distance;
+          this.duration += value.duration;
         });
+        this.distance = Number((this.distance / 1000).toFixed(2));
+        this.duration = Number((this.duration / 60).toFixed(2));
       });
   }
 
@@ -104,7 +112,7 @@ export class PassengerMapFormComponent implements OnInit {
   public removeAdditionalDestination(i: number) {
     this.additionalDestinations().removeAt(i);
     this.mapsService.removeLocationIfExists(
-      'destination'.concat((i + 1).toString())
+      'location'.concat((i + 2).toString())
     );
   }
 
@@ -133,7 +141,7 @@ export class PassengerMapFormComponent implements OnInit {
     this.initForm();
     this.store.dispatch(
       new MapActions.SearchForDriver({
-        clientLocation: this.routeStops.get('start'),
+        clientLocation: this.routeStops.get('location0'),
         route: this.routeArray,
       })
     );
@@ -141,15 +149,15 @@ export class PassengerMapFormComponent implements OnInit {
   }
 
   markPickupLocation(location: Location) {
-    this.routeStops.set('start', location);
+    this.routeStops.set('location0', location);
     this.mapsService.drawLocation(
       location,
-      'pickupLocation',
+      'location0',
       '../assets/pickup.png'
     );
   }
   markDestination(location: Location, index: number) {
-    let id = 'destination'.concat(index.toString());
+    let id = 'location'.concat(index.toString());
     this.routeStops.set(id, location);
     this.mapsService.drawLocation(location, id, '../assets/pin.png');
     this.store.dispatch(new MapActions.ClearDestinationAutocompleteResults());

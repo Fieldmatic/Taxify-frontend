@@ -17,6 +17,12 @@ export class AuthInterceptorService implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
+    if (req.headers.get('skip')) {
+      req = req.clone({
+        headers: req.headers.delete('skip'),
+      });
+      return next.handle(req);
+    }
     return this.store.select('auth').pipe(
       take(1),
       map((authState) => {

@@ -5,38 +5,89 @@
       #formDirective="ngForm"
       class="ridingForm"
       (ngSubmit)="onSubmit(formDirective)"
-      >
+    >
       <div class="destinationsWrapper">
-          <mat-form-field appearance="fill" class="addressInput">
-            <mat-label>Pickup location</mat-label>
-            <input matInput formControlName="pickupLocation" [matAutocomplete]="pickupLocations">
-            <mat-autocomplete #pickupLocations="matAutocomplete">
-              <mat-option *ngFor="let location of pickupLocationAddresses$ | async" [value]="location.address" (onSelectionChange)="markPickupLocation(location)">
-                {{location.address}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-          <mat-form-field appearance="fill" class="addressInput">
-            <mat-label>Destination</mat-label>
-            <input matInput formControlName="destination" [matAutocomplete]="destinations">
-            <button *ngIf="additionalDestinations().controls.length == 0" (click)="addNewDestination()" type="button" class="plus-button"></button>
-            <mat-autocomplete #destinations="matAutocomplete">
-              <mat-option *ngFor="let location of destinationAddresses$ | async" [value]="location.address" (onSelectionChange)="markDestination(location, 0)">
-                {{location.address}}
-              </mat-option>
-            </mat-autocomplete>
-          </mat-form-field>
-            <mat-form-field *ngFor="let destination of additionalDestinations().controls; let i = index" formGroupName="i" appearance="fill" class="addressInput">
-              <mat-label>Destination</mat-label>
-              <input matInput [formControl]="getAdditionalDestination(i)" [matAutocomplete]="destinations" (input)="updateDestinations(destination.value)">
-              <button *ngIf="i ==additionalDestinations().controls.length-1" (click)="addNewDestination()" type="button" class="plus-button"></button>
-              <button (click)="removeAdditionalDestination(i)" type="button" class="minus-button"></button>
-              <mat-autocomplete #destinations="matAutocomplete">
-                <mat-option *ngFor="let location of destinationAddresses$ | async" [value]="location.address" (onSelectionChange)="markDestination(location, i+1)">
-                  {{location.address}}
-                </mat-option>
-              </mat-autocomplete>
-            </mat-form-field>
+        <mat-form-field appearance="fill" class="addressInput">
+          <mat-label>Pickup location</mat-label>
+          <input
+            matInput
+            formControlName="pickupLocation"
+            [matAutocomplete]="pickupLocations"
+          />
+          <mat-autocomplete #pickupLocations="matAutocomplete">
+            <mat-option
+              *ngFor="let location of pickupLocationAddresses$ | async"
+              [value]="location.address"
+              (onSelectionChange)="markPickupLocation(location)"
+            >
+              {{ location.address }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="addressInput">
+          <mat-label>Destination</mat-label>
+          <input
+            matInput
+            formControlName="destination"
+            [matAutocomplete]="destinations"
+          />
+          <button
+            *ngIf="additionalDestinations().controls.length == 0"
+            (click)="addNewDestination()"
+            type="button"
+            class="plus-button"
+          ></button>
+          <mat-autocomplete #destinations="matAutocomplete">
+            <mat-option
+              *ngFor="let location of destinationAddresses$ | async"
+              [value]="location.address"
+              (onSelectionChange)="markDestination(location, 1)"
+            >
+              {{ location.address }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field
+          *ngFor="
+            let destination of additionalDestinations().controls;
+            let i = index
+          "
+          formGroupName="i"
+          appearance="fill"
+          class="addressInput"
+        >
+          <mat-label>Destination</mat-label>
+          <input
+            matInput
+            [formControl]="getAdditionalDestination(i)"
+            [matAutocomplete]="destinations"
+            (input)="updateDestinations(destination.value)"
+          />
+          <button
+            *ngIf="i == additionalDestinations().controls.length - 1"
+            (click)="addNewDestination()"
+            type="button"
+            class="plus-button"
+          ></button>
+          <button
+            (click)="removeAdditionalDestination(i)"
+            type="button"
+            class="minus-button"
+          ></button>
+          <mat-autocomplete #destinations="matAutocomplete">
+            <mat-option
+              *ngFor="let location of destinationAddresses$ | async"
+              [value]="location.address"
+              (onSelectionChange)="markDestination(location, i + 2)"
+            >
+              {{ location.address }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <div class="routeInfo">
+          <span>Distance: {{ distance }} km</span>
+          <span>Duration: {{ duration }} min</span>
+        </div>
         <button type="submit" mat-button color="primary" class="continueButton">
           Continue
         </button>

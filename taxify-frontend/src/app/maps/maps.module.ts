@@ -1,3 +1,4 @@
+import { DirectivesModule } from './../directives/directives.module';
 import { NgModule } from '@angular/core';
 import { ActiveDriversMapComponent } from './active-drivers-map/active-drivers-map.component';
 import { MapsRoutingModule } from './maps-routing.module';
@@ -9,6 +10,7 @@ import { PassengerMapFormComponent } from './passenger-map-form/passenger-map-fo
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MapsService } from './maps.service';
+import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
 
 @NgModule({
   declarations: [
@@ -16,10 +18,12 @@ import { MapsService } from './maps.service';
     ActiveDriversMapComponent,
     SelectedDriverInfoComponent,
     PassengerMapFormComponent,
+    DriverMapInfoComponent,
   ],
   imports: [
     RouterModule,
     SharedModule,
+    DirectivesModule,
     MapsRoutingModule,
     ReactiveFormsModule,
     MatAutocompleteModule,

@@ -1,0 +1,29 @@
+.changeStatusBtn {
+  position: absolute;
+  left: 5%;
+  width: 90%;
+  background-color: black;
+  color: white;
+}
+
+.changeStatusBtn:disabled {
+  background-color: rgba(128, 128, 128, 0.3);
+}
+
+.driverCard {
+  width: 80%;
+}
+
+.statusIcon {
+  width: 15px;
+  height: 15px;
+}
+
+.fw-550 {
+font-weight: 550
+}
+
+.sandWatchIcon {
+  width: 30px;
+  height: 30px;
+}

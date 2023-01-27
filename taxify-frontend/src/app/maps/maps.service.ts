@@ -353,11 +353,15 @@ export class MapsService {
           return feature;
         }
       );
+      let featureId = feature?.getId().toString();
+      event.map.getTargetElement().style.cursor =
+        feature && !featureId.includes('bg') ? 'pointer' : '';
       if (
         feature &&
         this.vehiclesVectorSource.getFeatureById(feature.getId()) &&
         !feature.get('type')
       ) {
+        event.map.getTargetElement().style.cursor = 'pointer';
         this.store.dispatch(
           new MapActions.DriverSelected(this.driversInArea[feature.get('id')])
         );

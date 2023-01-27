@@ -1,8 +1,9 @@
 <app-filter-drivers
-  [clientLocation]="this.routeStops['location0']"
+  [clientLocation]="this.clientLocation"
+  [route]="this.routeArray"
   [hidden]="!filterDriversMode"
 ></app-filter-drivers>
-<mat-card>
+<mat-card [hidden]="filterDriversMode">
   <mat-card-content>
     <form
       [formGroup]="ridingForm"

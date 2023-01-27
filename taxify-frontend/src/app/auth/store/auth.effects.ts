@@ -113,13 +113,49 @@ export class AuthEffects {
     )
   );
 
-  authLogout = createEffect(
+  authLogout = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.LOGOUT_START),
+      map(() => {
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData.role === 'DRIVER') {
+          return new AuthActions.LogoutStartDriver({ email: userData.email });
+        }
+        return new AuthActions.LogoutEnd();
+      })
+    )
+  );
+
+  driverlogout = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.LOGOUT_START_DRIVER),
+      switchMap((driverLogoutAction: AuthActions.LogoutStartDriver) => {
+        return this.http
+          .put<void>(
+            this.config.apiEndpoint +
+              'driver/goOffline/' +
+              driverLogoutAction.payload.email,
+            {}
+          )
+          .pipe(
+            map(() => {
+              return new AuthActions.LogoutEnd();
+            }),
+            catchError((errorResp) => {
+              return handleError(errorResp);
+            })
+          );
+      })
+    )
+  );
+
+  authLogoutEnd = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(AuthActions.LOGOUT),
+        ofType(AuthActions.LOGOUT_END),
         tap(() => {
-          this.authService.clearLogoutTimer();
           localStorage.removeItem('userData');
+          this.authService.clearLogoutTimer();
           this.router.navigate(['/']);
         })
       ),

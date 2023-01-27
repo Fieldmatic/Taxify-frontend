@@ -5,6 +5,7 @@ export class Notification {
     public senderName: string,
     public senderSurname: string,
     public arrivalTime: Date,
-    public read: boolean
+    public read: boolean,
+    public status: string
   ) {}
 }

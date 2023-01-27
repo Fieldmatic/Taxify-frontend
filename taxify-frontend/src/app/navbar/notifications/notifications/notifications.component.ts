@@ -12,6 +12,7 @@ import * as PassengerActions from './../../../passengers/store/passengers.action
 })
 export class NotificationsComponent implements OnInit {
   notifications: Notification[] = [];
+  unreadNotifications: number = 0;
 
   constructor(private store: Store<fromApp.AppState>) {}
   ngOnInit(): void {
@@ -20,6 +21,7 @@ export class NotificationsComponent implements OnInit {
       .pipe(map((passengerState) => passengerState.notifications))
       .subscribe((notifications) => {
         this.notifications = notifications;
+        this.getNumberOfUnreadNotifications();
       });
   }
 
@@ -53,6 +55,26 @@ export class NotificationsComponent implements OnInit {
   }
 
   showNotifications() {
-    this.store.dispatch(new PassengerActions.GetPassengerNotifications());
+    this.store.dispatch(
+      new PassengerActions.GetPassengerNotifications({
+        markNotificationsAsRead: true,
+      })
+    );
+  }
+
+  getNumberOfUnreadNotifications() {
+    this.unreadNotifications = 0;
+    this.notifications.forEach((notification) => {
+      if (!notification.read) this.unreadNotifications += 1;
+    });
+  }
+
+  answerOnAddingToTheRide(notification: Notification, answer: string) {
+    this.store.dispatch(
+      new PassengerActions.AnswerOnAddingToTheRide({
+        notificationId: notification.id,
+        answer: answer,
+      })
+    );
   }
 }

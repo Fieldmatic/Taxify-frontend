@@ -12,7 +12,7 @@
         >Log in</a
       >
 
-      <app-notifications *ngIf="isAuthenticated"></app-notifications>
+      <app-notifications *appHasRole="['PASSENGER']"></app-notifications>
 
       <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile"
         >Profile</a

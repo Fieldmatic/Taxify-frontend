@@ -7,7 +7,9 @@ import { FacebookSignupRequest } from '../model/facebook-signup-request';
 export const LOGIN_START = '[Auth] Login Start';
 export const LOGIN_SUCCESS = '[Auth] Login Success';
 export const AUTHENTICATE_FAIL = '[Auth] Authenticate Fail';
-export const LOGOUT = '[Auth] Logout';
+export const LOGOUT_END = '[Auth] Logout End';
+export const LOGOUT_START = '[Auth] Logout Start';
+export const LOGOUT_START_DRIVER = '[Auth] Logout_Start_Driver';
 export const AUTO_LOGIN = '[Auth] Auto Login';
 export const SIGNUP_START = '[Auth] Singup Start';
 export const SIGNUP_SUCCESS = '[Auth] Singup Success';
@@ -20,14 +22,19 @@ export const USER_SIGNED_WITH_GOOGLE_EXISTS =
   '[Auth] User Signed With Google Exists';
 export const CHANGE_USER_EXISTS_STATE = '[Auth] Change User exists';
 export const USER_EXISTS_BY_EMAIL = '[Auth] User exists by email';
+
 export class LoginSuccess implements Action {
   readonly type = LOGIN_SUCCESS;
 
   constructor(public user: LoggedInUser) {}
 }
 
-export class Logout implements Action {
-  readonly type = LOGOUT;
+export class LogoutStart implements Action {
+  readonly type = LOGOUT_START;
+}
+
+export class LogoutEnd implements Action {
+  readonly type = LOGOUT_END;
 }
 
 export class LoginStart implements Action {
@@ -104,9 +111,15 @@ export class ChangeUserExistsState implements Action {
   readonly type = CHANGE_USER_EXISTS_STATE;
   constructor(public payload: { userExists: boolean }) {}
 }
+
+export class LogoutStartDriver implements Action {
+  readonly type = LOGOUT_START_DRIVER;
+  constructor(public payload: { email: string }) {}
+}
+
 export type AuthActions =
   | LoginSuccess
-  | Logout
+  | LogoutEnd
   | LoginStart
   | AuthenticateFail
   | SignupStart
@@ -118,4 +131,5 @@ export type AuthActions =
   | UserSignedWithGoogleExists
   | ChangeUserExistsState
   | UserExistsByEmail
-  | FacebookSignup;
+  | FacebookSignup
+  | LogoutStartDriver;

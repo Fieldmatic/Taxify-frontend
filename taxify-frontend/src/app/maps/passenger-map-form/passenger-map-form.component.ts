@@ -36,6 +36,8 @@ export class PassengerMapFormComponent implements OnInit {
   distance: number;
   duration: number;
 
+  filterDriversMode = false;
+
   constructor(
     private formBuilder: FormBuilder,
     private store: Store<fromApp.AppState>,
@@ -146,6 +148,10 @@ export class PassengerMapFormComponent implements OnInit {
       })
     );
     this.routeStops.clear();
+  }
+
+  onSubmit2() {
+    this.filterDriversMode = true;
   }
 
   markPickupLocation(location: Location) {

@@ -1,0 +1,20 @@
+.notificationsMenu {
+  min-width: 25vw;
+  min-height: 15vh;
+  max-width: 25vw;
+  max-height: 30vh;
+  overflow-y: scroll;
+}
+
+.notification {
+  min-width: 10vw;
+}
+
+.notification>div {
+  cursor: pointer;
+  max-height: 8vh
+}
+
+.notification>div:hover {
+  box-shadow: 5px 5px 5px 5px lightgrey;
+}

@@ -11,7 +11,12 @@
         id="loginBtn"
         >Log in</a
       >
-      <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile">Profile</a>
+
+      <app-notifications *ngIf="isAuthenticated"></app-notifications>
+
+      <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile"
+        >Profile</a
+      >
       <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
       <a mat-raised-button *ngIf="!isAuthenticated" routerLink="/auth/signup"
         >Sign up</a

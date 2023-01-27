@@ -1,8 +1,9 @@
 <app-filter-drivers
+  *appHasRole="['PASSENGER']"
   [clientLocation]="this.routeStops['start']"
   [hidden]="!filterDriversMode"
 ></app-filter-drivers>
-<div [hidden]="filterDriversMode">
+<div [hidden]="filterDriversMode" *appHasRole="['PASSENGER']">
   <mat-card>
     <mat-card-content>
       <form

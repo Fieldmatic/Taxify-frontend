@@ -46,6 +46,7 @@ export class NavbarComponent implements OnInit, DoCheck {
       .subscribe((user) => {
         this.isAuthenticated = !user ? false : true;
         this.loggedInUser = user;
+        this.loadPassengerNotifications();
       });
   }
 
@@ -68,7 +69,16 @@ export class NavbarComponent implements OnInit, DoCheck {
           newestOnTop: true,
           positionClass: 'toast-top-center',
         });
+        this.loadPassengerNotifications();
       }
+    );
+  }
+
+  loadPassengerNotifications() {
+    this.store.dispatch(
+      new PassengerActions.GetPassengerNotifications({
+        markNotificationsAsRead: false,
+      })
     );
   }
 }

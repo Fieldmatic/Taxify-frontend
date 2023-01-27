@@ -16,16 +16,13 @@ export class PassengerEffects {
         ofType(PassengerActions.ADD_LINKED_PASSENGERS),
         switchMap(
           (addLinkedPassengers: PassengerActions.AddLinkedPassengers) => {
-            return this.http
-              .post(this.config.apiEndpoint + 'notification/addToTheRide', {
+            return this.http.post(
+              this.config.apiEndpoint + 'notification/addToTheRide',
+              {
                 senderEmail: addLinkedPassengers.payload.sender,
                 recipientsEmails: addLinkedPassengers.payload.linkedUsers,
-              })
-              .pipe(
-                map(() => {
-                  console.log('poslala si');
-                })
-              );
+              }
+            );
           }
         )
       ),
@@ -38,7 +35,12 @@ export class PassengerEffects {
       switchMap(
         (getNotifications: PassengerActions.GetPassengerNotifications) => {
           return this.http
-            .get(this.config.apiEndpoint + 'notification/all', {})
+            .get(
+              this.config.apiEndpoint +
+                'notification/all/' +
+                getNotifications.payload.markNotificationsAsRead,
+              {}
+            )
             .pipe(
               map((notifications: Notification[]) => {
                 return new PassengerActions.SetPassengerNotifications(
@@ -46,6 +48,47 @@ export class PassengerEffects {
                 );
               })
             );
+        }
+      )
+    )
+  );
+
+  answerOnAddingToTheRide = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.ANSWER_ON_ADDING_TO_THE_RIDE),
+      switchMap(
+        (answerOnAddingToTheRide: PassengerActions.AnswerOnAddingToTheRide) => {
+          if (answerOnAddingToTheRide.payload.answer === 'accept')
+            return this.http
+              .put(
+                this.config.apiEndpoint +
+                  'notification/acceptAddingToTheRide/' +
+                  answerOnAddingToTheRide.payload.notificationId,
+                {}
+              )
+              .pipe(
+                map((notification: Notification) => {
+                  return new PassengerActions.SetPassengerNotification(
+                    notification
+                  );
+                })
+              );
+          else {
+            return this.http
+              .put(
+                this.config.apiEndpoint +
+                  'notification/rejectAddingToTheRide/' +
+                  answerOnAddingToTheRide.payload.notificationId,
+                {}
+              )
+              .pipe(
+                map((notification: Notification) => {
+                  return new PassengerActions.SetPassengerNotification(
+                    notification
+                  );
+                })
+              );
+          }
         }
       )
     )

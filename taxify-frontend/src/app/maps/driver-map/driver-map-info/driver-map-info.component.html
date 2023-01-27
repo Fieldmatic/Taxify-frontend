@@ -19,6 +19,25 @@
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
+    <div class="d-flex justify-content-between mt-1 mb-3">
+      <button
+        type="button"
+        mat-button
+        class="startRideButton"
+        [disabled]="!driver.active"
+      >
+        Start ride
+      </button>
+      <button
+        type="button"
+        mat-button
+        class="rejectRideButton"
+        (click)="leaveDriveRejectionReason()"
+        [disabled]="!driver.active"
+      >
+        Reject ride
+      </button>
+    </div>
     <p class="fw-550">
       <img mat-card-avatar src="../assets/black_taxi.png" class="taxiIcon" />
       {{

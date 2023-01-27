@@ -1,3 +1,4 @@
+import { DriveRejectionReasonDialogComponent } from './../drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
 import { GetDriverRemainingWorkTime } from './../../../drivers/store/drivers.actions';
 import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
 import { Component, OnInit } from '@angular/core';
@@ -9,6 +10,7 @@ import { Driver } from 'src/app/shared/driver.model';
 import { LongDateFormatKey } from 'moment';
 import { StompService } from 'src/app/stomp.service';
 import { state } from '@angular/animations';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-driver-map-info',
@@ -21,7 +23,8 @@ export class DriverMapInfoComponent implements OnInit {
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private stompService: StompService
+    private stompService: StompService,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -85,5 +88,15 @@ export class DriverMapInfoComponent implements OnInit {
         new DriversActions.ChangeDriverStatus({ email: email, active: active })
       );
     }
+  }
+
+  leaveDriveRejectionReason() {
+    const dialogRef = this.dialog.open(DriveRejectionReasonDialogComponent, {
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((rejectionReason) => {
+      console.log(rejectionReason);
+    });
   }
 }

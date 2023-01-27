@@ -8,8 +8,9 @@ import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { LoggedInUser } from '../model/logged-in-user';
 import { LoginResponseData } from '../model/login-response-data';
+import { NotifierService } from '../../shared/services/notifier.service';
 import * as AuthActions from './auth.actions';
-import { NotifierService } from '../../shared/notifier.service';
+import * as UsersActions from '../../users/store/users.actions';
 
 const handleError = (errorRes: any) => {
   console.log(errorRes.error);
@@ -285,6 +286,15 @@ export class AuthEffects {
     )
   );
 
+  loginSuccess = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.LOGIN_SUCCESS),
+      switchMap(() => {
+        return of(new UsersActions.GetLoggedUser());
+      })
+    );
+  });
+
   reauthenticate = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.REAUTHENTICATE),
@@ -313,12 +323,31 @@ export class AuthEffects {
     );
   });
 
-  reauthenticateSuccess = createEffect(
+  notifySuccess = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(AuthActions.REAUTHENTICATE_SUCCESS),
+        tap((action: AuthActions.AuthActions) => {
+          switch (action.type) {
+            case AuthActions.REAUTHENTICATE_SUCCESS:
+              this.notifierService.notifySuccess(
+                'Successfully confirmed identity'
+              );
+              break;
+            default:
+              break;
+          }
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  reauthenticateSuccessRedirect = createEffect(
     () => {
       return this.actions$.pipe(
         ofType(AuthActions.REAUTHENTICATE_SUCCESS),
         tap(() => {
-          this.notifierService.notifySuccess('Successfully confirmed identity');
           this.router.navigate(['users', 'profile', 'pass']);
         })
       );

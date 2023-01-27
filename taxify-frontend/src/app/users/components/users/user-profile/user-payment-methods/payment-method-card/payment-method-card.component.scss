@@ -1,0 +1,23 @@
+.payment-card {
+  width: 70%;
+  margin-right: auto;
+  margin-left: auto;
+  background-color: #fafafa;
+}
+
+.payment-card:hover, .payment-card:active {
+  transform: translateY(-0.25em);
+}
+
+.card-brand {
+  width: 20%;
+  height: fit-content;
+  border-radius: 0;
+}
+
+button {
+  background-color: transparent;
+  color: black;
+  height: fit-content;
+  width: fit-content;
+}

@@ -1,4 +1,4 @@
-import { Driver } from '../../shared/driver.model';
+import { Driver } from '../../shared/model/driver.model';
 import * as DriversActions from './drivers.actions';
 
 export interface State {

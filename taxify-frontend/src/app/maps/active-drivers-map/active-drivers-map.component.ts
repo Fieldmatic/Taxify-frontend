@@ -2,22 +2,15 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { Map } from 'ol';
-import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { Driver } from '../../shared/driver.model';
+import { Driver } from '../../shared/model/driver.model';
 import { StompService } from '../../stomp.service';
 import * as fromApp from '../../store/app.reducer';
-import * as MapActions from '../store/maps.actions';
 import * as DriversActions from '../../drivers/store/drivers.actions';
-import { Coordinate } from 'ol/coordinate';
 import * as MapUtils from '../mapUtils';
-import VectorSource from 'ol/source/Vector';
-import { Vehicle } from '../../shared/vehicle.model';
 import { MapsService } from '../maps.service';
 
 @Component({

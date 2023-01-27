@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap, withLatestFrom } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Store } from '@ngrx/store';
-import { Driver } from '../../shared/driver.model';
+import { Driver } from '../../shared/model/driver.model';
 import * as fromApp from '../../store/app.reducer';
 import * as DriversActions from '../store/drivers.actions';
 import * as MapsActions from '../../maps/store/maps.actions';

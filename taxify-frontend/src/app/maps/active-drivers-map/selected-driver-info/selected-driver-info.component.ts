@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducer';
 import * as MapsActions from '../../store/maps.actions';
-import { Driver } from '../../../shared/driver.model';
+import { Driver } from '../../../shared/model/driver.model';
 
 @Component({
   selector: 'app-selected-driver-info',

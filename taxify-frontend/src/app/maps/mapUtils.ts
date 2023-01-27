@@ -3,7 +3,7 @@ import { Feature, Map, Overlay, View } from 'ol';
 import { Point } from 'ol/geom';
 import * as olProj from 'ol/proj';
 import { Icon, Stroke, Style } from 'ol/style';
-import { Vehicle } from '../shared/vehicle.model';
+import { Vehicle } from '../shared/model/vehicle.model';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import TileLayer from 'ol/layer/Tile';

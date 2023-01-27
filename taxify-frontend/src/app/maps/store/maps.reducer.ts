@@ -1,7 +1,7 @@
 import { MapData } from '../model/mapData.model';
 import * as MapUtils from '../mapUtils';
 import * as MapsActions from './maps.actions';
-import { Driver } from '../../shared/driver.model';
+import { Driver } from '../../shared/model/driver.model';
 import { Location } from '../model/location';
 
 export interface State {

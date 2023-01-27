@@ -1,0 +1,80 @@
+<div class="p-3 container">
+  <form class="editForm" [formGroup]="editForm" (ngSubmit)="onSubmit()">
+    <mat-grid-list
+      flex
+      layout="column"
+      cols="7"
+      rowHeight="1:1"
+      style="width: 100%"
+      gutterSize="0.5em"
+    >
+      <mat-grid-tile colspan="7">
+        <div class="title text-center">
+          <hr />
+          <p>NEW PAYMENT CARD</p>
+          <hr />
+        </div>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="7">
+        <mat-form-field appearance="fill">
+          <mat-label>Card Number</mat-label>
+          <input matInput formControlName="number"/>
+          <mat-error *ngIf="number.errors?.['required']">
+            Card Number is a mandatory field
+          </mat-error>
+          <mat-error *ngIf="!number.errors?.['required'] && number.errors?.['pattern']">
+            Card Number contains exactly 16 digits
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="2">
+        <mat-form-field appearance="fill">
+          <mat-label>Exp Month</mat-label>
+          <input type="number" min="1" max="12" matInput formControlName="expMonth"/>
+          <mat-error *ngIf="expMonth.errors?.['required']">
+            Exp Month is a mandatory field
+          </mat-error>
+          <mat-error *ngIf="!expMonth.errors?.['required'] && (expMonth.errors?.['min'] || expMonth.errors?.['max'])">
+            Exp Month must be between 1 and 12
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="2">
+        <mat-form-field appearance="fill">
+          <mat-label>Exp Year</mat-label>
+          <input type="number" [min]="currentYear" max="999" matInput formControlName="expYear"/>
+          <mat-error *ngIf="expYear.errors?.['required']">
+            Exp Month is a mandatory field
+          </mat-error>
+          <mat-error *ngIf="!expYear.errors?.['required'] && (expYear.errors?.['min'] || expYear.errors?.['max'])">
+            Exp Month must be between {{currentYear}} and 99
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="1">
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="2">
+        <mat-form-field appearance="fill">
+          <mat-label>CVC</mat-label>
+          <input matInput formControlName="cvc"/>
+          <mat-error *ngIf="cvc.errors?.['required']">
+            CVC is a mandatory field
+          </mat-error>
+          <mat-error *ngIf="!cvc.errors?.['required'] && cvc.errors?.['pattern']">
+            CVC contains 3 digits
+          </mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+
+      <mat-grid-tile colspan="7">
+        <button type="submit" mat-button class="black-btn" [disabled]="!editForm.valid">Add New Card</button>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </form>
+</div>
+

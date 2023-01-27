@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
-import { User } from '../../shared/user.model';
+import { User } from '../../shared/model/user.model';
+import { PaymentMethod } from '../../shared/model/payment-method.model';
 
 export const GET_LOGGED_USER = '[Users] Get logged user';
 export const SET_LOGGED_USER = '[Users] Set logged user';
@@ -21,6 +22,18 @@ export const SAVE_LOGGED_USER_PASSWORD_CHANGE =
   '[Users] Save logged user password change';
 export const SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS =
   '[Users] Save logged user password change successful';
+export const GET_LOGGED_PASSENGER_PAYMENT_METHODS =
+  "[Users] Get logged passenger's payment methods";
+export const ADD_LOGGED_PASSENGER_PAYMENT_METHOD =
+  "[Users] Add logged passenger's payment method";
+export const ADD_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS =
+  "[Users] Added logged passenger's payment method successfully";
+export const REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD =
+  "[Users] Remove logged passenger's payment method";
+export const REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS =
+  "[Users] Removed logged passenger's payment method successfully";
+export const SET_LOGGED_PASSENGER_PAYMENT_METHODS =
+  "[Users] Set logged passenger's payment methods";
 
 export class GetLoggedUser implements Action {
   readonly type = GET_LOGGED_USER;
@@ -94,6 +107,43 @@ export class SaveLoggedUserPasswordChangeSuccess implements Action {
   readonly type = SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS;
 }
 
+export class GetLoggedPassengerPaymentMethods implements Action {
+  readonly type = GET_LOGGED_PASSENGER_PAYMENT_METHODS;
+}
+
+export class AddLoggedPassengerPaymentMethod implements Action {
+  readonly type = ADD_LOGGED_PASSENGER_PAYMENT_METHOD;
+
+  constructor(
+    public payload: {
+      cvc: string;
+      expMonth: number;
+      expYear: number;
+      number: string;
+    }
+  ) {}
+}
+
+export class AddLoggedPassengerPaymentMethodSuccess implements Action {
+  readonly type = ADD_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS;
+}
+
+export class RemoveLoggedPassengerPaymentMethod implements Action {
+  readonly type = REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD;
+
+  constructor(public payload: string) {}
+}
+
+export class RemoveLoggedPassengerPaymentMethodSuccess implements Action {
+  readonly type = REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS;
+}
+
+export class SetLoggedPassengerPaymentMethods implements Action {
+  readonly type = SET_LOGGED_PASSENGER_PAYMENT_METHODS;
+
+  constructor(public payload: PaymentMethod[]) {}
+}
+
 export type UsersActions =
   | GetLoggedUser
   | SetLoggedUser
@@ -106,4 +156,10 @@ export type UsersActions =
   | SaveLoggedUserProfilePictureChange
   | SaveLoggedUserProfilePictureChangeSuccess
   | SaveLoggedUserPasswordChange
-  | SaveLoggedUserPasswordChangeSuccess;
+  | SaveLoggedUserPasswordChangeSuccess
+  | GetLoggedPassengerPaymentMethods
+  | AddLoggedPassengerPaymentMethod
+  | AddLoggedPassengerPaymentMethodSuccess
+  | RemoveLoggedPassengerPaymentMethod
+  | RemoveLoggedPassengerPaymentMethodSuccess
+  | SetLoggedPassengerPaymentMethods;

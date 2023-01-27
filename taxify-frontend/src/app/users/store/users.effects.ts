@@ -3,12 +3,13 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { catchError, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
-import { User } from '../../shared/user.model';
+import { User } from '../../shared/model/user.model';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import * as UsersActions from './users.actions';
 import * as fromApp from '../../store/app.reducer';
-import { NotifierService } from '../../shared/notifier.service';
+import { NotifierService } from '../../shared/services/notifier.service';
+import { PaymentMethod } from '../../shared/model/payment-method.model';
 
 @Injectable()
 export class UsersEffects {
@@ -169,7 +170,9 @@ export class UsersEffects {
       return this.actions$.pipe(
         ofType(
           UsersActions.SAVE_LOGGED_USER_PROFILE_PICTURE_CHANGE_SUCCESS,
-          UsersActions.SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS
+          UsersActions.SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS,
+          UsersActions.ADD_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS,
+          UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS
         ),
         tap((action: UsersActions.UsersActions) => {
           switch (action.type) {
@@ -181,6 +184,16 @@ export class UsersEffects {
             case UsersActions.SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS:
               this.notifierService.notifySuccess(
                 'Password changed successfully'
+              );
+              break;
+            case UsersActions.ADD_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS:
+              this.notifierService.notifySuccess(
+                'Successfully added a new payment method'
+              );
+              break;
+            case UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS:
+              this.notifierService.notifySuccess(
+                'Successfully removed a payment method'
               );
               break;
             default:
@@ -227,6 +240,81 @@ export class UsersEffects {
     },
     { dispatch: false }
   );
+
+  getLoggedPassengerPaymentMethods = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(UsersActions.GET_LOGGED_PASSENGER_PAYMENT_METHODS),
+      switchMap(() => {
+        return this.http
+          .get<PaymentMethod[]>(
+            this.config.apiEndpoint + 'auth/self-paymentMethods'
+          )
+          .pipe(
+            map((paymentMethods) => {
+              return new UsersActions.SetLoggedPassengerPaymentMethods(
+                paymentMethods
+              );
+            }),
+            catchError((errorRes) => {
+              return of(new UsersActions.GettingLoggedUserFailed(errorRes));
+            })
+          );
+      })
+    );
+  });
+
+  addLoggedPassengerPaymentMethod = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(UsersActions.ADD_LOGGED_PASSENGER_PAYMENT_METHOD),
+      switchMap((action: UsersActions.AddLoggedPassengerPaymentMethod) => {
+        return this.http
+          .post(
+            this.config.apiEndpoint + 'auth/self-paymentMethods',
+            action.payload
+          )
+          .pipe(
+            map(() => {
+              return new UsersActions.AddLoggedPassengerPaymentMethodSuccess();
+            }),
+            catchError((errorRes) => {
+              return of(new UsersActions.GettingLoggedUserFailed(errorRes));
+            })
+          );
+      })
+    );
+  });
+
+  removeLoggedPassengerPaymentMethod = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD),
+      switchMap((action: UsersActions.RemoveLoggedPassengerPaymentMethod) => {
+        return this.http
+          .delete(this.config.apiEndpoint + 'auth/self-paymentMethods', {
+            params: new HttpParams().append('paymentMethodId', action.payload),
+          })
+          .pipe(
+            map(() => {
+              return new UsersActions.RemoveLoggedPassengerPaymentMethodSuccess();
+            }),
+            catchError((errorRes) => {
+              return of(new UsersActions.GettingLoggedUserFailed(errorRes));
+            })
+          );
+      })
+    );
+  });
+
+  loggedPassengerPaymentMethodsUpdatedSuccess = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(
+        UsersActions.ADD_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS,
+        UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS
+      ),
+      map(() => {
+        return new UsersActions.GetLoggedPassengerPaymentMethods();
+      })
+    );
+  });
 
   constructor(
     private actions$: Actions,

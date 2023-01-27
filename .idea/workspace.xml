@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b06dbc7a-aab7-4a23-9668-1a601f6b0fa5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/auth/store/auth.effects.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/auth/store/auth.effects.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/reauth.guard.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/reauth.guard.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/reauth.guard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/reauth.guard.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-data-edit/user-data-edit.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-data-edit/user-data-edit.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-data-edit/user-data-edit.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-data-edit/user-data-edit.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-data-edit/user-data-edit.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-data-edit/user-data-edit.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-data-edit/user-data-edit.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-data-edit/user-data-edit.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-favourite-routes/user-favourite-routes.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-favourite-routes/user-favourite-routes.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-favourite-routes/user-favourite-routes.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-favourite-routes/user-favourite-routes.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-favourite-routes/user-favourite-routes.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-favourite-routes/user-favourite-routes.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-favourite-routes/user-favourite-routes.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-favourite-routes/user-favourite-routes.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-old-password-confirmation/user-old-password-confirmation.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-password-change/Validators.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-password-change/Validators.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-password-change/user-password-change.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-password-change/user-password-change.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-password-change/user-password-change.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-password-change/user-password-change.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-password-change/user-password-change.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-password-change/user-password-change.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-password-change/user-password-change.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-password-change/user-password-change.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-payment-methods/user-payment-methods.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-payment-methods/user-payment-methods.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-payment-methods/user-payment-methods.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-payment-methods/user-payment-methods.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-payment-methods/user-payment-methods.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-payment-methods/user-payment-methods.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-payment-methods/user-payment-methods.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-payment-methods/user-payment-methods.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-profile.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-profile.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-profile.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-profile.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-profile.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-profile.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-profile.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-profile.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-ride-history/user-ride-history.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-ride-history/user-ride-history.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-ride-history/user-ride-history.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-ride-history/user-ride-history.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-ride-history/user-ride-history.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-ride-history/user-ride-history.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/user-profile/user-ride-history/user-ride-history.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/user-profile/user-ride-history/user-ride-history.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users-resolver.service.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/services/users-resolver.service.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users-resolver.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/services/users-resolver.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/users-routing.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/users.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/users.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users.component.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/users.component.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/components/users/users.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/app/users/users.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/app/users/users.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/taxify-frontend/src/styles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/taxify-frontend/src/styles.scss" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2Jgr9Gll9WRz9y2NYd2V9Y0NLo0" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b06dbc7a-aab7-4a23-9668-1a601f6b0fa5" name="Changes" comment="" />
+      <created>1672510420622</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1672510420622</updated>
+      <workItem from="1672510422826" duration="15000" />
+      <workItem from="1672920662144" duration="18000" />
+      <workItem from="1674307970201" duration="224000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

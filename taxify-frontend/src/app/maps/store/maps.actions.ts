@@ -1,8 +1,8 @@
 import { Action } from '@ngrx/store';
 import { MapData } from '../model/mapData.model';
-import { Driver } from '../../shared/driver.model';
+import { Driver } from '../../shared/model/driver.model';
 import { Location } from '../model/location';
-import { Map } from 'ol';
+
 export const MAP_LOAD_START = '[Maps] Map load started';
 export const MAP_LOAD_END = '[Maps] Map load ended';
 export const DRIVER_SELECTED = '[Maps] Driver is selected';

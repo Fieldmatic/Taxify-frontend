@@ -1,15 +1,18 @@
-import { User } from '../../shared/user.model';
+import { User } from '../../shared/model/user.model';
 import * as UsersActions from './users.actions';
+import { PaymentMethod } from '../../shared/model/payment-method.model';
 
 export interface State {
   loggedUser: User;
   loggedUserProfilePicture: Blob;
+  loggedUserPaymentMethods: PaymentMethod[];
   loading: boolean;
 }
 
 const initialState: State = {
   loggedUser: null,
   loggedUserProfilePicture: null,
+  loggedUserPaymentMethods: [],
   loading: true,
 };
 
@@ -55,6 +58,27 @@ export function usersReducer(
         loading: true,
       };
     case UsersActions.SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+      };
+    case UsersActions.GET_LOGGED_PASSENGER_PAYMENT_METHODS:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UsersActions.SET_LOGGED_PASSENGER_PAYMENT_METHODS:
+      return {
+        ...state,
+        loggedUserPaymentMethods: action.payload,
+        loading: false,
+      };
+    case UsersActions.ADD_LOGGED_PASSENGER_PAYMENT_METHOD:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD:
       return {
         ...state,
         loading: false,

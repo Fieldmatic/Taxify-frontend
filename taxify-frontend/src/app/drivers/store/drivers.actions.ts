@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Driver } from '../../shared/driver.model';
+import { Driver } from '../../shared/model/driver.model';
 
 export const FETCH_ACTIVE_DRIVERS_IN_AREA =
   '[Drivers] Fetch active drivers in area';

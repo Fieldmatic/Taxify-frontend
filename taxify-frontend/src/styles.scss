@@ -42,3 +42,26 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   display: none;
   visibility: hidden;
 }
+.black-btn {
+  background-color: black;
+  color: white;
+  width: 100%;
+}
+.black-btn:disabled {
+  background-color: rgba(128, 128, 128, 0.3);
+}
+.container {
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.editForm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}

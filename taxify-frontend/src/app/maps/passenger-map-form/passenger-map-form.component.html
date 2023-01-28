@@ -1,8 +1,10 @@
 <app-filter-drivers
-  [clientLocation]="this.routeStops['location0']"
+  *appHasRole="['PASSENGER']"
+  [clientLocation]="this.clientLocation"
+  [route]="this.routeArray"
   [hidden]="!filterDriversMode"
 ></app-filter-drivers>
-<mat-card>
+<mat-card [hidden]="filterDriversMode" *appHasRole="['PASSENGER']">
   <mat-card-content>
     <form
       [formGroup]="ridingForm"

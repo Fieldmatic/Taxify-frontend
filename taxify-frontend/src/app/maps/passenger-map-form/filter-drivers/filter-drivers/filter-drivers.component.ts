@@ -22,6 +22,7 @@ export interface Task {
 })
 export class FilterDriversComponent implements OnInit {
   @Input() clientLocation: Location;
+  @Input() route: [longitude: number, latitude: number][];
 
   checkboxPairs: number[] = [];
   petFriendly: boolean = false;
@@ -98,11 +99,13 @@ export class FilterDriversComponent implements OnInit {
     console.log(this.petFriendly);
     console.log(this.vehicleTypes);
     console.log(this.clientLocation);
-    this.store.dispatch(
-      new PassengerActions.AddLinkedPassengers({
-        sender: this.loggedInUser.email,
-        linkedUsers: this.linkedUsers,
-      })
-    );
+    console.log(this.route);
+    console.log(this.clientLocation);
+    // this.store.dispatch(
+    //   new PassengerActions.AddLinkedPassengers({
+    //     sender: this.loggedInUser.email,
+    //     linkedUsers: this.linkedUsers,
+    //   })
+    // );
   }
 }

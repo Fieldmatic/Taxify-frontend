@@ -1,4 +1,5 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { DirectivesModule } from './../directives/directives.module';
 import { NgModule } from '@angular/core';
 import { ActiveDriversMapComponent } from './active-drivers-map/active-drivers-map.component';
 import { MapsRoutingModule } from './maps-routing.module';
@@ -15,6 +16,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { FormsModule } from '@angular/forms';
 import { LinkUsersDialogComponent } from './passenger-map-form/filter-drivers/link-users-dialog/link-users-dialog.component';
 import { ToastrModule } from 'ngx-toastr';
+import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
+import { DriveRejectionReasonDialogComponent } from './driver-map/drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
 
 @NgModule({
   imports: [
@@ -27,6 +30,7 @@ import { ToastrModule } from 'ngx-toastr';
     MatAutocompleteModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
+    DirectivesModule,
   ],
   declarations: [
     MapsComponent,
@@ -35,6 +39,8 @@ import { ToastrModule } from 'ngx-toastr';
     PassengerMapFormComponent,
     FilterDriversComponent,
     LinkUsersDialogComponent,
+    DriverMapInfoComponent,
+    DriveRejectionReasonDialogComponent,
   ],
   providers: [MapsService],
 })

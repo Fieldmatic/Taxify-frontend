@@ -33,6 +33,7 @@ export class PassengerMapFormComponent implements OnInit {
   map: OLMap;
   routeStops: Map<string, Location> = new Map<string, Location>();
   routeArray: [longitude: number, latitude: number][] = [];
+  clientLocation: Location;
   distance: number;
   duration: number;
 
@@ -139,15 +140,17 @@ export class PassengerMapFormComponent implements OnInit {
   }
 
   onSubmit(formDirective: FormGroupDirective) {
-    formDirective.resetForm();
-    this.initForm();
-    this.store.dispatch(
-      new MapActions.SearchForDriver({
-        clientLocation: this.routeStops.get('location0'),
-        route: this.routeArray,
-      })
-    );
-    this.routeStops.clear();
+    this.clientLocation = this.routeStops.get('location0');
+    this.filterDriversMode = true;
+    // formDirective.resetForm();
+    // this.initForm();
+    // this.store.dispatch(
+    //   new MapActions.SearchForDriver({
+    //     clientLocation: this.routeStops.get('location0'),
+    //     route: this.routeArray,
+    //   })
+    // );
+    // this.routeStops.clear();
   }
 
   onSubmit2() {

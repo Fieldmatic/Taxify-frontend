@@ -1,3 +1,4 @@
+import { DirectivesModule } from './directives/directives.module';
 import { PassengerEffects } from './passengers/store/passengers.effects';
 import { AuthEffects } from './auth/store/auth.effects';
 import { APP_CONFIG, APP_SERVICE_CONFIG } from './appConfig/appconfig.service';
@@ -52,6 +53,7 @@ import { NotificationsComponent } from './navbar/notifications/notifications/not
     MapsModule,
     AuthModule,
     AppRoutingModule,
+    DirectivesModule,
   ],
   providers: [
     StompService,

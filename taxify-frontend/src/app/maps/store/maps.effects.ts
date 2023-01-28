@@ -86,6 +86,7 @@ export class MapsEffects {
             format: 'json',
             apiKey: 'b66a7896d2774c2ba544b47fe1c270ce',
             lang: 'en',
+            filter: 'countrycode:rs',
           };
           return this.http
             .get('https://api.geoapify.com/v1/geocode/autocomplete', {
@@ -179,6 +180,7 @@ export class MapsEffects {
             format: 'json',
             apiKey: 'b66a7896d2774c2ba544b47fe1c270ce',
             lang: 'en',
+            filter: 'countrycode:rs',
           };
           return this.http
             .get('https://api.geoapify.com/v1/geocode/autocomplete', {

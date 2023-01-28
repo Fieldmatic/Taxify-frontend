@@ -52,6 +52,7 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
     this.passengerState$ = this.store.select(
       (store) => store.maps.passengerState
     );
+    this.subscribeToWebSocket()
   }
 
   ngAfterViewInit(): void {

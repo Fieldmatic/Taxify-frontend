@@ -1,5 +1,5 @@
 <a
   mat-icon-button
-  routerLink="/users/profile/history"
+  [routerLink]="getRouterLink()"
   [ngStyle]="{'background-image': !imageSnippet ? 'url(\'assets/avatar.jpg\')' : getBackgroundImageUrl(this.imageSnippet)}">
 </a>

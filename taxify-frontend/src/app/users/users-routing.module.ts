@@ -4,7 +4,7 @@ import { UserDataEditComponent } from './components/users/user-profile/user-data
 import { UserProfileComponent } from './components/users/user-profile/user-profile.component';
 import { AuthGuard } from '../auth/auth.guard';
 import { UsersComponent } from './components/users/users.component';
-import { UsersResolverService } from './services/users-resolver.service';
+import { LoggedUserResolverService } from './services/logged-user-resolver.service';
 import { UserPaymentMethodsComponent } from './components/users/user-profile/user-payment-methods/user-payment-methods.component';
 import { UserPasswordChangeComponent } from './components/users/user-profile/user-password-change/user-password-change.component';
 import { UserRideHistoryComponent } from './components/users/user-profile/user-ride-history/user-ride-history.component';
@@ -14,6 +14,9 @@ import { UserFavouriteRoutesComponent } from './components/users/user-profile/us
 import { PassengerGuard } from './passenger.guard';
 import { PaymentMethodsResolverService } from './services/payment-methods-resolver.service';
 import { PaymentMethodNewComponent } from './components/users/user-profile/user-payment-methods/payment-method-new/payment-method-new.component';
+import { UsersCrudComponent } from './components/users/users-crud/users-crud.component';
+import { AdminGuard } from './admin.guard';
+import { UsersResolverService } from './services/users-resolver.service';
 
 const routes: Routes = [
   {
@@ -24,7 +27,7 @@ const routes: Routes = [
       {
         path: 'profile',
         component: UserProfileComponent,
-        resolve: [UsersResolverService],
+        resolve: [LoggedUserResolverService],
         children: [
           { path: 'edit', component: UserDataEditComponent },
           { path: 'history', component: UserRideHistoryComponent },
@@ -52,6 +55,12 @@ const routes: Routes = [
           },
           { path: 'favouriteRoutes', component: UserFavouriteRoutesComponent },
         ],
+      },
+      {
+        path: 'all',
+        component: UsersCrudComponent,
+        canActivate: [AdminGuard],
+        resolve: [UsersResolverService],
       },
     ],
   },

@@ -6,6 +6,8 @@ export class User {
     public phoneNumber: string,
     public email: string,
     public profilePicture: string,
-    public city: string
+    public city: string,
+    public blocked: boolean,
+    public role: string
   ) {}
 }

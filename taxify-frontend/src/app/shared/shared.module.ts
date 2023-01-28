@@ -11,9 +11,15 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ConfirmationDialogWithNotesComponent } from './components/confirmation-dialog-with-notes/confirmation-dialog-with-notes.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [LoadingSpinnerComponent, ConfirmationDialogComponent],
+  declarations: [
+    LoadingSpinnerComponent,
+    ConfirmationDialogComponent,
+    ConfirmationDialogWithNotesComponent,
+  ],
   imports: [
     CommonModule,
     MatToolbarModule,
@@ -25,6 +31,7 @@ import { MatInputModule } from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    ReactiveFormsModule,
   ],
   exports: [
     CommonModule,

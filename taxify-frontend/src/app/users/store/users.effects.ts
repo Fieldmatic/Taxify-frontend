@@ -172,7 +172,8 @@ export class UsersEffects {
           UsersActions.SAVE_LOGGED_USER_PROFILE_PICTURE_CHANGE_SUCCESS,
           UsersActions.SAVE_LOGGED_USER_PASSWORD_CHANGE_SUCCESS,
           UsersActions.ADD_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS,
-          UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS
+          UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS,
+          UsersActions.TOGGLE_USER_IS_BLOCKED_SUCCESS
         ),
         tap((action: UsersActions.UsersActions) => {
           switch (action.type) {
@@ -194,6 +195,11 @@ export class UsersEffects {
             case UsersActions.REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS:
               this.notifierService.notifySuccess(
                 'Successfully removed a payment method'
+              );
+              break;
+            case UsersActions.TOGGLE_USER_IS_BLOCKED_SUCCESS:
+              this.notifierService.notifySuccess(
+                "Successfully toggled user's block status"
               );
               break;
             default:
@@ -229,13 +235,23 @@ export class UsersEffects {
     );
   });
 
-  gettingLoggedUserFailed = createEffect(
+  notifyFail = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(UsersActions.GETTING_LOGGED_USER_FAILED),
-        tap((action: UsersActions.GettingLoggedUserFailed) => {
-          this.notifierService.notifyError(action.payload);
-        })
+        ofType(
+          UsersActions.GETTING_LOGGED_USER_FAILED,
+          UsersActions.GETTING_ALL_USERS_FAILED,
+          UsersActions.TOGGLE_USER_IS_BLOCKED_FAILED
+        ),
+        tap(
+          (
+            action:
+              | UsersActions.GettingLoggedUserFailed
+              | UsersActions.GettingAllUsersFailed
+          ) => {
+            this.notifierService.notifyError(action.payload);
+          }
+        )
       );
     },
     { dispatch: false }
@@ -312,6 +328,43 @@ export class UsersEffects {
       ),
       map(() => {
         return new UsersActions.GetLoggedPassengerPaymentMethods();
+      })
+    );
+  });
+
+  getAllUsers = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(UsersActions.GET_ALL_USERS),
+      switchMap(() => {
+        return this.http.get<User[]>(this.config.apiEndpoint + 'user/all').pipe(
+          map((users) => {
+            return new UsersActions.SetAllUsers(users);
+          }),
+          catchError((errorRes) => {
+            return of(new UsersActions.GettingAllUsersFailed(errorRes));
+          })
+        );
+      })
+    );
+  });
+
+  toggleUserIsBlocked = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(UsersActions.TOGGLE_USER_IS_BLOCKED),
+      switchMap((action: UsersActions.ToggleUserIsBlocked) => {
+        return this.http
+          .put<User>(
+            this.config.apiEndpoint + 'user/toggle-blocked',
+            action.payload
+          )
+          .pipe(
+            map((user) => {
+              return new UsersActions.ToggleUserIsBlockedSuccess(user);
+            }),
+            catchError((errorRes) => {
+              return of(new UsersActions.ToggleUserIsBlockedFailed(errorRes));
+            })
+          );
       })
     );
   });

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { Store } from '@ngrx/store';
@@ -11,6 +11,7 @@ import * as fromApp from '../../store/app.reducer';
   styleUrls: ['./navbar-profile-menu.component.scss'],
 })
 export class NavbarProfileMenuComponent {
+  @Input() role: string;
   fileReader: FileReader = new FileReader();
   imageSnippet: SafeUrl = null;
   usersSubscription: Subscription;
@@ -45,5 +46,14 @@ export class NavbarProfileMenuComponent {
 
   getBackgroundImageUrl(url) {
     return `url("${url.changingThisBreaksApplicationSecurity}")`;
+  }
+
+  getRouterLink() {
+    switch (this.role) {
+      case 'PASSENGER':
+        return '/users/profile/history';
+      default:
+        return '/users/profile/edit';
+    }
   }
 }

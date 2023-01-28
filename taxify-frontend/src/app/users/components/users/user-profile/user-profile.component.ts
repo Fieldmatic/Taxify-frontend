@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {
@@ -8,6 +8,8 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../../../store/app.reducer';
 
 @Component({
   selector: 'app-user-profile',
@@ -41,13 +43,18 @@ import {
     ]),
   ],
 })
-export class UserProfileComponent implements OnInit {
-  activeRoute: string = 'history';
+export class UserProfileComponent implements OnInit, OnDestroy {
+  role: string;
+  activeRoute: string;
   routeSubscription: Subscription;
+  authSubscription: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
+    this.authSubscription = this.store.select('auth').subscribe((authState) => {
+      this.role = authState.user.role;
+    });
     this.routeSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         let url = event.url.split('/');
@@ -60,5 +67,11 @@ export class UserProfileComponent implements OnInit {
         }
       }
     });
+    this.activeRoute = this.role === 'PASSENGER' ? 'history' : 'edit';
+  }
+
+  ngOnDestroy(): void {
+    this.routeSubscription.unsubscribe();
+    this.authSubscription.unsubscribe();
   }
 }

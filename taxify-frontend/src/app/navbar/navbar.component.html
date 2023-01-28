@@ -11,7 +11,8 @@
         id="loginBtn"
         >Log in</a
       >
-      <app-navbar-profile-menu *ngIf="isAuthenticated"></app-navbar-profile-menu>
+      <a mat-button *ngIf="isAuthenticated && role === 'ADMIN'" routerLink="/users/all">Users</a>
+      <app-navbar-profile-menu *ngIf="isAuthenticated" [role]="role"></app-navbar-profile-menu>
       <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
       <a mat-raised-button *ngIf="!isAuthenticated" routerLink="/auth/signup"
         >Sign up</a

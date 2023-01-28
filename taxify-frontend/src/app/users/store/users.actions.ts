@@ -34,6 +34,14 @@ export const REMOVE_LOGGED_PASSENGER_PAYMENT_METHOD_SUCCESS =
   "[Users] Removed logged passenger's payment method successfully";
 export const SET_LOGGED_PASSENGER_PAYMENT_METHODS =
   "[Users] Set logged passenger's payment methods";
+export const GET_ALL_USERS = '[Users] Get all users';
+export const SET_ALL_USERS = '[Users] Set all users';
+export const GETTING_ALL_USERS_FAILED = '[Users] Getting all users failed';
+export const TOGGLE_USER_IS_BLOCKED = '[Users] Toggle if user is blocked';
+export const TOGGLE_USER_IS_BLOCKED_SUCCESS =
+  '[Users] Toggle if user is blocked successful';
+export const TOGGLE_USER_IS_BLOCKED_FAILED =
+  '[Users] Toggle if user is blocked failed';
 
 export class GetLoggedUser implements Action {
   readonly type = GET_LOGGED_USER;
@@ -144,6 +152,40 @@ export class SetLoggedPassengerPaymentMethods implements Action {
   constructor(public payload: PaymentMethod[]) {}
 }
 
+export class GetAllUsers implements Action {
+  readonly type = GET_ALL_USERS;
+}
+
+export class SetAllUsers implements Action {
+  readonly type = SET_ALL_USERS;
+
+  constructor(public payload: User[]) {}
+}
+
+export class GettingAllUsersFailed implements Action {
+  readonly type = GETTING_ALL_USERS_FAILED;
+
+  constructor(public payload: any) {}
+}
+
+export class ToggleUserIsBlocked implements Action {
+  readonly type = TOGGLE_USER_IS_BLOCKED;
+
+  constructor(public payload: { email: string; reason: string }) {}
+}
+
+export class ToggleUserIsBlockedSuccess implements Action {
+  readonly type = TOGGLE_USER_IS_BLOCKED_SUCCESS;
+
+  constructor(public payload: User) {}
+}
+
+export class ToggleUserIsBlockedFailed implements Action {
+  readonly type = TOGGLE_USER_IS_BLOCKED_FAILED;
+
+  constructor(public payload: any) {}
+}
+
 export type UsersActions =
   | GetLoggedUser
   | SetLoggedUser
@@ -162,4 +204,10 @@ export type UsersActions =
   | AddLoggedPassengerPaymentMethodSuccess
   | RemoveLoggedPassengerPaymentMethod
   | RemoveLoggedPassengerPaymentMethodSuccess
-  | SetLoggedPassengerPaymentMethods;
+  | SetLoggedPassengerPaymentMethods
+  | GetAllUsers
+  | SetAllUsers
+  | GettingAllUsersFailed
+  | ToggleUserIsBlocked
+  | ToggleUserIsBlockedSuccess
+  | ToggleUserIsBlockedFailed;

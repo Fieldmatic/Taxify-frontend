@@ -1,0 +1,20 @@
+table {
+  width: 100%;
+}
+
+.mat-mdc-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+td, th {
+  width: fit-content;
+}
+
+.mat-slide-toggle.mat-disabled .mat-slide-toggle-label, .mat-slide-toggle.mat-disabled .mat-slide-toggle-thumb-container {
+  cursor: pointer !important;
+}
+
+.mat-slide-toggle.mat-disabled {
+  opacity: 1;
+}

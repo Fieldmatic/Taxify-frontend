@@ -6,6 +6,7 @@ export interface State {
   loggedUser: User;
   loggedUserProfilePicture: Blob;
   loggedUserPaymentMethods: PaymentMethod[];
+  users: User[];
   loading: boolean;
 }
 
@@ -13,6 +14,7 @@ const initialState: State = {
   loggedUser: null,
   loggedUserProfilePicture: null,
   loggedUserPaymentMethods: [],
+  users: [],
   loading: true,
 };
 
@@ -82,6 +84,33 @@ export function usersReducer(
       return {
         ...state,
         loading: false,
+      };
+    case UsersActions.GET_ALL_USERS:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UsersActions.GETTING_ALL_USERS_FAILED:
+      return {
+        ...state,
+        loading: false,
+      };
+    case UsersActions.SET_ALL_USERS:
+      return {
+        ...state,
+        loading: false,
+        users: action.payload,
+      };
+    case UsersActions.TOGGLE_USER_IS_BLOCKED_SUCCESS:
+      const changedUser = action.payload;
+      let users = [...state.users];
+      const indexOfChangedUser = users.indexOf(
+        users.find((user) => user.id === changedUser.id)
+      );
+      users[indexOfChangedUser] = changedUser;
+      return {
+        ...state,
+        users,
       };
     default:
       return state;

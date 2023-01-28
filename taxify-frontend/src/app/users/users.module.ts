@@ -8,7 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserRideHistoryComponent } from './components/users/user-profile/user-ride-history/user-ride-history.component';
@@ -20,6 +20,13 @@ import { UserFavouriteRoutesComponent } from './components/users/user-profile/us
 import { NoPaymentMethodsComponent } from './components/users/user-profile/user-payment-methods/no-payment-methods/no-payment-methods.component';
 import { PaymentMethodCardComponent } from './components/users/user-profile/user-payment-methods/payment-method-card/payment-method-card.component';
 import { PaymentMethodNewComponent } from './components/users/user-profile/user-payment-methods/payment-method-new/payment-method-new.component';
+import { UsersCrudComponent } from './components/users/users-crud/users-crud.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -34,6 +41,7 @@ import { PaymentMethodNewComponent } from './components/users/user-profile/user-
     NoPaymentMethodsComponent,
     PaymentMethodCardComponent,
     PaymentMethodNewComponent,
+    UsersCrudComponent,
   ],
   imports: [
     SharedModule,
@@ -45,6 +53,13 @@ import { PaymentMethodNewComponent } from './components/users/user-profile/user-
     ReactiveFormsModule,
     MaterialFileInputModule,
     MatTooltipModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
+    FormsModule,
+    MatSelectModule,
   ],
   providers: [ReauthGuard],
 })

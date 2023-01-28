@@ -1,0 +1,71 @@
+<div class="row">
+  <div class="d-none d-sm-block col-md-2 col-lg-2"></div>
+  <div class="col-sm-12 col-md-8 col-lg-8 mt-4">
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="fill">
+          <mat-label>Search</mat-label>
+          <input matInput (keyup)="applyFilter()" [formControl]="searchControl">
+        </mat-form-field>
+      </div>
+      <div class="col-3">
+        <mat-form-field appearance="fill">
+          <mat-label>User Role</mat-label>
+          <mat-select [formControl]="selectedRole" (selectionChange)="applyFilter()" multiple>
+            <mat-select-trigger>
+              <span *ngIf="selectedRole.value?.length === roleList.length">
+                Any
+              </span>
+              <span *ngIf="selectedRole.value?.length < roleList.length">
+                              {{selectedRole.value?.[0] || '' | titlecase}}
+                <span *ngIf="(selectedRole.value?.length || 0) > 1">
+                ( +{{(selectedRole.value?.length || 0) - 1}} {{selectedRole.value?.length === 2 ? 'other' : 'others'}})
+              </span>
+      </span>
+            </mat-select-trigger>
+            <mat-option *ngFor="let role of roleList" [value]="role">{{role}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-3 d-flex align-items-center justify-content-end pb-3">
+        <mat-checkbox color="primary" [checked]="blockedUsers" (change)="toggleBlockedUsers()">Blocked users only</mat-checkbox>
+      </div>
+    </div>
+    <div class="mat-elevation-z8">
+      <table mat-table [dataSource]="dataSource" matSort>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+          <td mat-cell *matCellDef="let row"> {{row.name + " " + row.surname}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Email</th>
+          <td mat-cell *matCellDef="let row"> {{row.email}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Role </th>
+          <td mat-cell *matCellDef="let row"> {{row.role | uppercase}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="blocked">
+          <th mat-header-cell *matHeaderCellDef> Is Blocked </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-slide-toggle color="warn" [checked]="row.blocked" (click)="toggleIsBlocked(row)" disabled></mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No data for search: "{{searchControl.value ? searchControl.value : 'Blocked Users'}}"</td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+    </div>
+  </div>
+</div>

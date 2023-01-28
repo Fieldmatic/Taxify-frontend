@@ -27,6 +27,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { HotToastModule } from '@ngneat/hot-toast';
 import { MapsEffects } from './maps/store/maps.effects';
 import { MapsService } from './maps/maps.service';
+import { CustomerSupportModule } from './customer-support/customer-support.module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarProfileMenuComponent],
@@ -46,11 +48,13 @@ import { MapsService } from './maps/maps.service';
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
     HotToastModule.forRoot({ position: 'top-center', dismissible: true }),
+    CustomerSupportModule,
     UsersModule,
     MapsModule,
     AuthModule,
     AppRoutingModule,
     MatMenuModule,
+    MatTooltipModule,
   ],
   providers: [
     StompService,

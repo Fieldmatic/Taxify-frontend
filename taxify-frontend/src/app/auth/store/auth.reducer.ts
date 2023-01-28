@@ -2,6 +2,7 @@ import * as AuthActions from './auth.actions';
 import { LoggedInUser } from '../model/logged-in-user';
 
 export interface State {
+  isLoginMode: boolean;
   user: LoggedInUser;
   authError: string;
   loading: boolean;
@@ -10,6 +11,7 @@ export interface State {
 }
 
 const initialState: State = {
+  isLoginMode: true,
   user: null,
   authError: null,
   loading: false,
@@ -22,6 +24,11 @@ export function authReducer(
   action: AuthActions.AuthActions
 ) {
   switch (action.type) {
+    case AuthActions.CHANGE_AUTH_MODE:
+      return {
+        ...state,
+        isLoginMode: action.payload,
+      };
     case AuthActions.LOGIN_SUCCESS:
       return {
         ...state,
@@ -29,7 +36,6 @@ export function authReducer(
         user: action.user,
         loading: false,
       };
-
     case AuthActions.LOGOUT_END:
       return {
         ...state,

@@ -1,6 +1,6 @@
 import { Store } from '@ngrx/store';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { map, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import * as fromApp from '../store/app.reducer';
 import * as AuthActions from '../auth/store/auth.actions';
 import { LoggedInUser } from '../auth/model/logged-in-user';
@@ -14,18 +14,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private userSub: Subscription;
   isAuthenticated = false;
   role: string = null;
+  isLoginMode: boolean;
   loggedInUser: LoggedInUser = null;
 
   constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
-    this.userSub = this.store
-      .select('auth')
-      .pipe(map((authState) => authState.user))
-      .subscribe((user) => {
-        this.isAuthenticated = !user ? false : true;
-        this.loggedInUser = user;
-      });
+    this.userSub = this.store.select('auth').subscribe((authState) => {
+      this.isAuthenticated = Boolean(authState.user);
+      this.loggedInUser = authState.user;
+      this.isLoginMode = authState.isLoginMode;
+    });
   }
 
   ngOnDestroy(): void {

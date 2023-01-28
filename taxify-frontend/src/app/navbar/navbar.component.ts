@@ -54,6 +54,7 @@ export class NavbarComponent implements OnInit {
         (response): any => {
           let message = this.getNotificationMessageFromWebSocket(response.body);
           this.showNotificationToast(message);
+          this.loadPassengerNotifications();
         }
       );
     });

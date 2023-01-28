@@ -22,10 +22,9 @@ import { Notification } from '../passengers/model/notification';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnInit, DoCheck {
+export class NavbarComponent implements OnInit {
   private userSub: Subscription;
   isAuthenticated = false;
-  loggedInUser: LoggedInUser = null;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -33,21 +32,55 @@ export class NavbarComponent implements OnInit, DoCheck {
     private toastr: ToastrService
   ) {}
 
-  ngDoCheck(): void {
-    if (!this.stompService.stompClient.connected) {
-      this.subscribeToWebSocket();
-    }
-  }
-
   ngOnInit(): void {
     this.userSub = this.store
       .select('auth')
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
         this.isAuthenticated = !user ? false : true;
-        this.loggedInUser = user;
-        this.loadPassengerNotifications();
+
+        if (user?.role === 'PASSENGER') {
+          this.subscribeOnWebSocket(user.email);
+          this.loadPassengerNotifications();
+        }
       });
+  }
+
+  subscribeOnWebSocket(email: string) {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe(
+        '/topic/passenger-notification/' + email,
+        (response): any => {
+          let message = this.getNotificationMessageFromWebSocket(response.body);
+          this.showNotificationToast(message);
+        }
+      );
+    });
+  }
+
+  getNotificationMessageFromWebSocket(socketMessage): string {
+    switch (socketMessage) {
+      case 'ADDED_TO_THE_RIDE':
+        return 'You have been added to the ride.';
+      case 'RIDE_ACCEPTED':
+        return 'Your ride has been accepted.';
+        break;
+      case 'VEHICLE_ARRIVED':
+        return 'Vehicle has arrived on your destination.';
+      default:
+        return 'Your ride has been scheduled.';
+    }
+  }
+
+  showNotificationToast(message: string) {
+    this.toastr.info(message, 'Notification', {
+      disableTimeOut: true,
+      closeButton: true,
+      tapToDismiss: true,
+      newestOnTop: true,
+      positionClass: 'toast-top-center',
+    });
   }
 
   ngOnDestroy(): void {
@@ -56,22 +89,6 @@ export class NavbarComponent implements OnInit, DoCheck {
 
   onLogout() {
     this.store.dispatch(new AuthActions.LogoutStart());
-  }
-
-  subscribeToWebSocket() {
-    this.stompService.subscribe(
-      '/topic/passenger-notification/' + this.loggedInUser?.email,
-      () => {
-        this.toastr.info(this.stompService.message, 'Notification', {
-          disableTimeOut: true,
-          closeButton: true,
-          tapToDismiss: true,
-          newestOnTop: true,
-          positionClass: 'toast-top-center',
-        });
-        this.loadPassengerNotifications();
-      }
-    );
   }
 
   loadPassengerNotifications() {

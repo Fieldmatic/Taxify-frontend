@@ -28,9 +28,7 @@ import { PassengerState } from '../model/passengerState';
   templateUrl: './active-drivers-map.component.html',
   styleUrls: ['./active-drivers-map.component.scss'],
 })
-export class ActiveDriversMapComponent
-  implements OnInit, AfterViewInit, DoCheck
-{
+export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
   @ViewChild('popup') popup: ElementRef;
   loading: boolean;
   driver: Driver;
@@ -43,11 +41,6 @@ export class ActiveDriversMapComponent
     private mapsService: MapsService,
     private toastr: ToastrService
   ) {}
-  ngDoCheck(): void {
-    if (!this.stompService.stompClient.connected) {
-      this.subscribeToWebSocket();
-    }
-  }
 
   ngOnInit(): void {
     this.store.select('maps').subscribe((mapsState) => {
@@ -68,21 +61,11 @@ export class ActiveDriversMapComponent
   }
 
   subscribeToWebSocket() {
-    this.stompService.subscribe('/topic/vehicles', (): any => {
-      this.store.dispatch(new DriversActions.FetchActiveDriversInArea());
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/vehicles', (): any => {
+        this.store.dispatch(new DriversActions.FetchActiveDriversInArea());
+      });
     });
-
-    // this.stompService.subscribe(
-    //   '/topic/passenger-notification/uros@gmail.com',
-    //   () => {
-    //     this.toastr.info(this.stompService.message, 'Notification', {
-    //       disableTimeOut: true,
-    //       closeButton: true,
-    //       tapToDismiss: true,
-    //       newestOnTop: true,
-    //       positionClass: 'toast-top-center',
-    //     });
-    //   }
-    // );
   }
 }

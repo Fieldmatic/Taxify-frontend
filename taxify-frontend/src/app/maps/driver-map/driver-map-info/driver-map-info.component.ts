@@ -69,12 +69,15 @@ export class DriverMapInfoComponent implements OnInit {
   }
 
   subscribeToWebSocket(email: string) {
-    this.stompService.subscribe('/topic/driver', (): any => {
-      if (email) {
-        this.store.dispatch(
-          new DriversActions.GetDriverRemainingWorkTime({ email: email })
-        );
-      }
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/driver', (): any => {
+        if (email) {
+          this.store.dispatch(
+            new DriversActions.GetDriverRemainingWorkTime({ email: email })
+          );
+        }
+      });
     });
   }
 

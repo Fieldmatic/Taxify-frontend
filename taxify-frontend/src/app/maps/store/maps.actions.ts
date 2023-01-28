@@ -125,6 +125,9 @@ export class SearchForDriver implements Action {
     public payload: {
       clientLocation: Location;
       route: [longitude: number, latitude: number][];
+      vehicleTypes: string[];
+      petFriendly: boolean;
+      babyFriendly: boolean;
     }
   ) {}
 }

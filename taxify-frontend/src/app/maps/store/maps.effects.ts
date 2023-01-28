@@ -61,8 +61,6 @@ export class MapsEffects {
                     feature.geometry['coordinates']
                   );
                 });
-                console.log(availableRoutes);
-
                 return new MapsActions.SetAvailableRoutesCoordinates({
                   id: loadAvailableRoutesForTwoPoints.payload.destinationId,
                   routes: availableRoutes,
@@ -120,11 +118,17 @@ export class MapsEffects {
       switchMap((searchForRideData: MapsActions.SearchForDriver) => {
         return this.http
           .post<Driver>(
-            this.config.apiEndpoint + 'simulation/to-client',
-            searchForRideData.payload.clientLocation
+            this.config.apiEndpoint + 'driver/suitableDriverForRide',
+            {
+              clientLocation: searchForRideData.payload.clientLocation,
+              vehicleTypes: searchForRideData.payload.vehicleTypes,
+              petFriendly: searchForRideData.payload.petFriendly,
+              babyFriendly: searchForRideData.payload.babyFriendly,
+            }
           )
           .pipe(
             map((driver: Driver) => {
+              console.log(driver);
               return new MapsActions.StartRide({
                 driver: driver,
                 route: searchForRideData.payload.route,

@@ -8,6 +8,9 @@ import { Location } from 'src/app/maps/model/location';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../../store/app.reducer';
 import * as PassengerActions from '../../../../passengers/store/passengers.actions';
+import { StompService } from 'src/app/stomp.service';
+import { ToastrService } from 'ngx-toastr';
+import * as MapActions from '../../../store/maps.actions';
 
 export interface Task {
   name: string;
@@ -31,11 +34,14 @@ export class FilterDriversComponent implements OnInit {
   linkedUsers: string[] = [];
   vehicleTypes: Task[] = [];
   loggedInUser: LoggedInUser;
+  chosenVehicleTypes: string[] = [];
 
   constructor(
     private filterDriversService: FilterDriversService,
     public dialog: MatDialog,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    private stompService: StompService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -94,18 +100,51 @@ export class FilterDriversComponent implements OnInit {
   }
 
   continue() {
+    this.vehicleTypes.forEach((type) => {
+      if (type.completed) this.chosenVehicleTypes.push(type.name);
+    });
+
     console.log(this.linkedUsers);
     console.log(this.babyFriendly);
     console.log(this.petFriendly);
-    console.log(this.vehicleTypes);
-    console.log(this.clientLocation);
+    console.log(this.chosenVehicleTypes);
     console.log(this.route);
     console.log(this.clientLocation);
-    // this.store.dispatch(
-    //   new PassengerActions.AddLinkedPassengers({
-    //     sender: this.loggedInUser.email,
-    //     linkedUsers: this.linkedUsers,
-    //   })
-    // );
+
+    this.store.dispatch(
+      new PassengerActions.AddLinkedPassengers({
+        sender: this.loggedInUser.email,
+        linkedUsers: this.linkedUsers,
+      })
+    );
+    this.subscribeOnWebSocket();
+  }
+
+  subscribeOnWebSocket() {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe(
+        '/topic/acceptedRideByLinkedPassengers/' + this.loggedInUser.email,
+        (response): any => {
+          this.toastr.info(response.body, 'Notification', {
+            disableTimeOut: true,
+            closeButton: true,
+            tapToDismiss: true,
+            newestOnTop: true,
+            positionClass: 'toast-top-center',
+          });
+
+          this.store.dispatch(
+            new MapActions.SearchForDriver({
+              clientLocation: this.clientLocation,
+              route: this.route,
+              vehicleTypes: this.chosenVehicleTypes,
+              petFriendly: this.petFriendly,
+              babyFriendly: this.babyFriendly,
+            })
+          );
+        }
+      );
+    });
   }
 }

@@ -74,12 +74,6 @@ export function mapsReducer(
         ...state,
         passengerState: PassengerState.SEARCHING_FOR_DRIVER,
       };
-    case MapsActions.START_RIDE:
-      return {
-        ...state,
-        rideDriver: action.payload.driver,
-        passengerState: PassengerState.RIDING,
-      };
     case MapsActions.RIDE_FINISH: {
       return {
         ...state,
@@ -93,10 +87,10 @@ export function mapsReducer(
         selectedRoute: new Map<string, Route>(),
       };
     }
-    case MapsActions.SET_PASSENGER_STATE_FORM_FILL: {
+    case MapsActions.SET_PASSENGER_STATE: {
       return {
         ...state,
-        passengerState: PassengerState.FORM_FILL,
+        passengerState: action.payload,
       };
     }
     case MapsActions.CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS: {
@@ -135,6 +129,13 @@ export function mapsReducer(
         ...state,
         selectedRoute: selectedRoutes,
         availableRoutes: availableRoutes,
+      };
+    }
+    case MapsActions.SET_RIDE_DRIVER: {
+      return {
+        ...state,
+        rideDriver: action.payload.driver,
+        passengerState: action.payload.passengerState
       };
     }
     default:

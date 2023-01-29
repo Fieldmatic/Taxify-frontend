@@ -17,6 +17,8 @@ import { StompService } from '../stomp.service';
 import { ToastrService } from 'ngx-toastr';
 import { Notification } from '../passengers/model/notification';
 import * as MapActions from '../maps/store/maps.actions';
+import * as DriversActions from '../drivers/store/drivers.actions'
+import { DriverState } from '../drivers/model/driverState';
 
 @Component({
   selector: 'app-navbar',
@@ -69,6 +71,7 @@ export class NavbarComponent implements OnInit {
       stompClient.subscribe('/topic/driver/' + email, (response): any => {
         let message = this.getNotificationMessageFromWebSocket(response.body);
         this.showNotificationToast(message);
+        this.store.dispatch(new DriversActions.SetDriverState({state: DriverState.RIDING_TO_CLIENT}))
         this.store.dispatch(new MapActions.SimulateDriverRideToClient());
       });
     });

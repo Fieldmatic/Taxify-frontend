@@ -4,6 +4,7 @@ import { Driver } from '../../shared/driver.model';
 import { Location } from '../model/location';
 import { Map } from 'ol';
 import { Route } from '../model/route';
+import { PassengerState } from '../model/passengerState';
 export const MAP_LOAD_START = '[Maps] Map load started';
 export const MAP_LOAD_END = '[Maps] Map load ended';
 export const DRIVER_SELECTED = '[Maps] Driver is selected';
@@ -25,9 +26,9 @@ export const SET_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Set destination autocomplete results';
 export const RIDE_FINISH = '[Maps] Ride finish';
 
-export const START_RIDE = '[Maps] Start ride';
-export const SET_PASSENGER_STATE_FORM_FILL =
-  '[Maps] Set passenger state form fill';
+export const START_RIDE_DRIVER = '[Maps] Start ride driver';
+export const SET_PASSENGER_STATE =
+  '[Maps] Set passenger state';
 export const SET_SELECTED_ROUTE_COORDINATES =
   '[Maps] Set selected route coordinates';
 export const SET_AVAILABLE_ROUTES_COORDINATES =
@@ -41,6 +42,10 @@ export const REMOVE_COORDINATES_FOR_DESTINATION =
 
 export const SIMULATE_DRIVER_RIDE_TO_CLIENT =
   '[Maps] Simulate driver ride to client';
+
+export const SET_RIDE_DRIVER = '[Maps] Set ride driver';
+
+export const RIDE_STARTED_PASSENGER = '[Maps] Ride started';
 
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
@@ -135,13 +140,12 @@ export class SearchForDriver implements Action {
   ) {}
 }
 
-export class StartRide implements Action {
-  readonly type = START_RIDE;
+export class StartRideDriver implements Action {
+  readonly type = START_RIDE_DRIVER;
 
   constructor(
     public payload: {
-      driver: Driver;
-      route: [longitude: number, latitude: number][];
+      assignedRideId: string
     }
   ) {}
 }
@@ -152,10 +156,10 @@ export class RideFinished implements Action {
   constructor() {}
 }
 
-export class SetPassengerStateFormFill implements Action {
-  readonly type = SET_PASSENGER_STATE_FORM_FILL;
+export class SetPassengerState implements Action {
+  readonly type = SET_PASSENGER_STATE;
 
-  constructor() {}
+  constructor(public payload: PassengerState) {}
 }
 
 export class ClearDestinationAutocompleteResults implements Action {
@@ -166,6 +170,18 @@ export class ClearDestinationAutocompleteResults implements Action {
 
 export class SimulateDriverRideToClient implements Action {
   readonly type = SIMULATE_DRIVER_RIDE_TO_CLIENT;
+
+  constructor() {}
+}
+
+export class SetRideDriver implements Action {
+  readonly type = SET_RIDE_DRIVER;
+
+  constructor(public payload:{driver: Driver, passengerState: PassengerState}) {}
+}
+
+export class RideStartedPassenger implements Action {
+  readonly type = RIDE_STARTED_PASSENGER;
 
   constructor() {}
 }
@@ -182,10 +198,11 @@ export type MapsActions =
   | LoadAvailableRoutesForTwoPoints
   | SetSelectedRouteCoordinates
   | SearchForDriver
-  | StartRide
+  | StartRideDriver
   | RideFinished
-  | SetPassengerStateFormFill
+  | SetPassengerState
   | ClearDestinationAutocompleteResults
   | SetAvailableRoutesCoordinates
   | RemoveCoordinatesForDestination
-  | SimulateDriverRideToClient;
+  | SimulateDriverRideToClient
+  | SetRideDriver;

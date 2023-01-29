@@ -25,6 +25,9 @@ import {
   SetAvailableRoutesCoordinates,
 } from './maps.actions';
 import { Route } from '../model/route';
+import * as DriverActions from '../../drivers/store/drivers.actions'
+import { DriverState } from 'src/app/drivers/model/driverState';
+import { PassengerState } from '../model/passengerState';
 
 @Injectable()
 export class MapsEffects {
@@ -134,12 +137,7 @@ export class MapsEffects {
           )
           .pipe(
             map((driver: Driver) => {
-              console.log(driver);
-              return new MapsActions.DriverSelected(driver);
-              // return new MapsActions.StartRide({
-              //   driver: driver,
-              //   route: searchForRideData.payload.route,
-              // });
+              return new MapsActions.SetRideDriver({driver: driver, passengerState: PassengerState.WAITING_FOR_DRIVER_TO_ARRIVE});
             })
           );
       })
@@ -148,19 +146,10 @@ export class MapsEffects {
 
   startRide = createEffect(() =>
     this.actions$.pipe(
-      ofType(MapsActions.START_RIDE),
-      switchMap((startRide: MapsActions.StartRide) => {
-        let route = startRide.payload.route.map((coordinates) => ({
-          longitude: coordinates[0],
-          latitude: coordinates[1],
-          isStop: false,
-        }));
-        const body = {
-          id: startRide.payload.driver.vehicle.id,
-          waypoints: route,
-        };
+      ofType(MapsActions.START_RIDE_DRIVER),
+      switchMap((startRide: MapsActions.StartRideDriver) => {
         return this.http
-          .post(this.config.apiEndpoint + 'simulation/through-route', body)
+          .post(this.config.apiEndpoint + 'simulation/through-route/' + startRide.payload.assignedRideId, {})
           .pipe(
             map((response: boolean) => {
               return new MapsActions.RideFinished();
@@ -170,11 +159,20 @@ export class MapsEffects {
     )
   );
 
+  rideStarted = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.RIDE_STARTED_PASSENGER),
+      map(() => {
+        return new MapsActions.SetPassengerState(PassengerState.RIDING);
+      })
+    )
+  );
+
   rideFinish = createEffect(() =>
     this.actions$.pipe(
       ofType(MapsActions.RIDE_FINISH),
       map(() => {
-        return new MapsActions.SetPassengerStateFormFill();
+        return new MapsActions.SetPassengerState(PassengerState.FORM_FILL);
       })
     )
   );
@@ -227,12 +225,16 @@ export class MapsEffects {
           return this.http.post<Driver>(
             this.config.apiEndpoint + 'simulation/to-client',
             {}
-          );
+          ).pipe(
+            map(() => {
+              return new DriverActions.GetDriverAssignedRide();
+            })
+          );;
         })
       );
     },
-    { dispatch: false }
   );
+
 
   constructor(
     private actions$: Actions,

@@ -1,5 +1,6 @@
 import { Vehicle } from './vehicle.model';
 import { User } from './user.model';
+import { Ride } from './ride.model';
 
 export class Driver extends User {
   constructor(
@@ -12,7 +13,8 @@ export class Driver extends User {
     city: string,
     public active: boolean,
     public remainingWorkTime: number,
-    public vehicle: Vehicle
+    public vehicle: Vehicle,
+    public ride?: Ride
   ) {
     super(id, name, surname, phoneNumber, email, profilePicture, city);
   }

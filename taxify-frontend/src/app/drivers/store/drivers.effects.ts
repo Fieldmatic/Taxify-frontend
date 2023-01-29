@@ -1,5 +1,5 @@
 import { GetDriverInfo } from './drivers.actions';
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap, withLatestFrom } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -8,6 +8,10 @@ import { Driver } from '../../shared/driver.model';
 import * as fromApp from '../../store/app.reducer';
 import * as DriversActions from '../store/drivers.actions';
 import * as MapsActions from '../../maps/store/maps.actions';
+import { Ride } from 'src/app/shared/ride.model';
+import { AppConfig } from 'src/app/appConfig/appconfig.interface';
+import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
+import { DriverState } from '../model/driverState';
 
 @Injectable()
 export class DriversEffects {
@@ -135,9 +139,29 @@ export class DriversEffects {
     );
   });
 
+  getDriverAssignedRide = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DriversActions.GET_DRIVER_ASSIGNED_RIDE),
+      switchMap(() => {
+        return this.http
+          .get<Ride>(
+            this.config.apiEndpoint + 'driver/assignedRide',
+            {}
+          )
+          .pipe(
+            map((ride: Ride) => {
+              return new DriversActions.AssignRideToDriver({ride: new Ride(ride.id), state: DriverState.ARRIVED_TO_CLIENT});
+            }),
+          );
+      })
+    );
+  });
+  
+
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    @Inject(APP_SERVICE_CONFIG) private config: AppConfig
   ) {}
 }

@@ -24,7 +24,8 @@
         type="button"
         mat-button
         class="startRideButton"
-        [disabled]="!driver.active"
+        (click)="startRide()"
+        [disabled]="!driver.active || (driverState$ | async) !== driverStateEnum.ARRIVED_TO_CLIENT"
       >
         Start ride
       </button>
@@ -33,7 +34,7 @@
         mat-button
         class="rejectRideButton"
         (click)="leaveDriveRejectionReason()"
-        [disabled]="!driver.active"
+        [disabled]="!driver.active || ((driverState$ | async) !== driverStateEnum.ARRIVED_TO_CLIENT && (driverState$ | async) !== driverStateEnum.RIDING_TO_CLIENT)"
       >
         Reject ride
       </button>

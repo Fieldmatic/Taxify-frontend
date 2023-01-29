@@ -16,6 +16,7 @@ import * as fromApp from '../store/app.reducer';
 import { StompService } from '../stomp.service';
 import { ToastrService } from 'ngx-toastr';
 import { Notification } from '../passengers/model/notification';
+import * as MapActions from '../maps/store/maps.actions';
 
 @Component({
   selector: 'app-navbar',
@@ -40,13 +41,15 @@ export class NavbarComponent implements OnInit {
         this.isAuthenticated = !user ? false : true;
 
         if (user?.role === 'PASSENGER') {
-          this.subscribeOnWebSocket(user.email);
+          this.subscribeOnWebSocketAsPassenger(user.email);
           this.loadPassengerNotifications();
+        } else if (user?.role === 'DRIVER') {
+          this.subscribeOnWebSocketAsDriver(user.email);
         }
       });
   }
 
-  subscribeOnWebSocket(email: string) {
+  subscribeOnWebSocketAsPassenger(email: string) {
     const stompClient = this.stompService.connect();
     stompClient.connect({}, () => {
       stompClient.subscribe(
@@ -57,6 +60,17 @@ export class NavbarComponent implements OnInit {
           this.loadPassengerNotifications();
         }
       );
+    });
+  }
+
+  subscribeOnWebSocketAsDriver(email: string) {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/driver/' + email, (response): any => {
+        let message = this.getNotificationMessageFromWebSocket(response.body);
+        this.showNotificationToast(message);
+        this.store.dispatch(new MapActions.SimulateDriverRideToClient());
+      });
     });
   }
 

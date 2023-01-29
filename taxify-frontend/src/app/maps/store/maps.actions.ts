@@ -39,6 +39,9 @@ export const CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS =
 export const REMOVE_COORDINATES_FOR_DESTINATION =
   '[Maps] Remove coordinates for destination ';
 
+export const SIMULATE_DRIVER_RIDE_TO_CLIENT =
+  '[Maps] Simulate driver ride to client';
+
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
 }
@@ -161,6 +164,12 @@ export class ClearDestinationAutocompleteResults implements Action {
   constructor() {}
 }
 
+export class SimulateDriverRideToClient implements Action {
+  readonly type = SIMULATE_DRIVER_RIDE_TO_CLIENT;
+
+  constructor() {}
+}
+
 export type MapsActions =
   | MapLoadStart
   | MapLoadEnd
@@ -178,4 +187,5 @@ export type MapsActions =
   | SetPassengerStateFormFill
   | ClearDestinationAutocompleteResults
   | SetAvailableRoutesCoordinates
-  | RemoveCoordinatesForDestination;
+  | RemoveCoordinatesForDestination
+  | SimulateDriverRideToClient;

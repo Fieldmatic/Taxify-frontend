@@ -153,10 +153,6 @@ export class PassengerMapFormComponent implements OnInit {
     // this.routeStops.clear();
   }
 
-  onSubmit2() {
-    this.filterDriversMode = true;
-  }
-
   markPickupLocation(location: Location) {
     this.routeStops.set('location0', location);
     this.mapsService.drawLocation(

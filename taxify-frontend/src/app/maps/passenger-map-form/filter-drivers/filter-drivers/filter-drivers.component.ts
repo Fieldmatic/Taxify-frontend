@@ -100,24 +100,14 @@ export class FilterDriversComponent implements OnInit {
   }
 
   continue() {
-    this.vehicleTypes.forEach((type) => {
-      if (type.completed) this.chosenVehicleTypes.push(type.name);
-    });
+    this.setChosenVehicleTypes();
 
-    console.log(this.linkedUsers);
-    console.log(this.babyFriendly);
-    console.log(this.petFriendly);
-    console.log(this.chosenVehicleTypes);
-    console.log(this.route);
-    console.log(this.clientLocation);
-
-    this.store.dispatch(
-      new PassengerActions.AddLinkedPassengers({
-        sender: this.loggedInUser.email,
-        linkedUsers: this.linkedUsers,
-      })
-    );
-    this.subscribeOnWebSocket();
+    if (this.linkedUsers.length > 0) {
+      this.sentNotificationToLinkedPassengers();
+      this.subscribeOnWebSocket();
+    } else {
+      this.searchForDriver();
+    }
   }
 
   subscribeOnWebSocket() {
@@ -126,25 +116,47 @@ export class FilterDriversComponent implements OnInit {
       stompClient.subscribe(
         '/topic/acceptedRideByLinkedPassengers/' + this.loggedInUser.email,
         (response): any => {
-          this.toastr.info(response.body, 'Notification', {
-            disableTimeOut: true,
-            closeButton: true,
-            tapToDismiss: true,
-            newestOnTop: true,
-            positionClass: 'toast-top-center',
-          });
-
-          this.store.dispatch(
-            new MapActions.SearchForDriver({
-              clientLocation: this.clientLocation,
-              route: this.route,
-              vehicleTypes: this.chosenVehicleTypes,
-              petFriendly: this.petFriendly,
-              babyFriendly: this.babyFriendly,
-            })
-          );
+          this.showNotificationToast(response.body);
+          this.searchForDriver();
         }
       );
+    });
+  }
+
+  showNotificationToast(message: string) {
+    this.toastr.info(message, 'Notification', {
+      disableTimeOut: true,
+      closeButton: true,
+      tapToDismiss: true,
+      newestOnTop: true,
+      positionClass: 'toast-top-center',
+    });
+  }
+
+  sentNotificationToLinkedPassengers() {
+    this.store.dispatch(
+      new PassengerActions.AddLinkedPassengers({
+        sender: this.loggedInUser.email,
+        linkedUsers: this.linkedUsers,
+      })
+    );
+  }
+
+  searchForDriver() {
+    this.store.dispatch(
+      new MapActions.SearchForDriver({
+        clientLocation: this.clientLocation,
+        route: this.route,
+        vehicleTypes: this.chosenVehicleTypes,
+        petFriendly: this.petFriendly,
+        babyFriendly: this.babyFriendly,
+      })
+    );
+  }
+
+  setChosenVehicleTypes() {
+    this.vehicleTypes.forEach((type) => {
+      if (type.completed) this.chosenVehicleTypes.push(type.name);
     });
   }
 }

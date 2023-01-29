@@ -116,11 +116,17 @@ export class MapsEffects {
     this.actions$.pipe(
       ofType(MapsActions.SEARCH_FOR_DRIVER),
       switchMap((searchForRideData: MapsActions.SearchForDriver) => {
+        let route = searchForRideData.payload.route.map((coordinates) => ({
+          longitude: coordinates[0],
+          latitude: coordinates[1],
+          isStop: false,
+        }));
         return this.http
           .post<Driver>(
             this.config.apiEndpoint + 'driver/suitableDriverForRide',
             {
               clientLocation: searchForRideData.payload.clientLocation,
+              routeRequest: { waypoints: route },
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,
@@ -129,10 +135,11 @@ export class MapsEffects {
           .pipe(
             map((driver: Driver) => {
               console.log(driver);
-              return new MapsActions.StartRide({
-                driver: driver,
-                route: searchForRideData.payload.route,
-              });
+              return new MapsActions.DriverSelected(driver);
+              // return new MapsActions.StartRide({
+              //   driver: driver,
+              //   route: searchForRideData.payload.route,
+              // });
             })
           );
       })
@@ -210,6 +217,21 @@ export class MapsEffects {
         }
       )
     )
+  );
+
+  simulateDriverRideToClient = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT),
+        switchMap(() => {
+          return this.http.post<Driver>(
+            this.config.apiEndpoint + 'simulation/to-client',
+            {}
+          );
+        })
+      );
+    },
+    { dispatch: false }
   );
 
   constructor(

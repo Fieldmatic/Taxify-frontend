@@ -27,8 +27,7 @@ export const SET_DESTINATION_AUTOCOMPLETE_RESULTS =
 export const RIDE_FINISH_PASSENGER = '[Maps] Ride finish passenger';
 
 export const START_RIDE_DRIVER = '[Maps] Start ride driver';
-export const SET_PASSENGER_STATE =
-  '[Maps] Set passenger state';
+export const SET_PASSENGER_STATE = '[Maps] Set passenger state';
 export const SET_SELECTED_ROUTE_COORDINATES =
   '[Maps] Set selected route coordinates';
 export const SET_AVAILABLE_ROUTES_COORDINATES =
@@ -46,6 +45,10 @@ export const SIMULATE_DRIVER_RIDE_TO_CLIENT =
 export const SET_RIDE_DRIVER = '[Maps] Set ride driver';
 
 export const RIDE_STARTED_PASSENGER = '[Maps] Ride started';
+export const LOAD_TIME_FROM_DRIVER_TO_CLIENT =
+  '[Maps] Load time from driver to client';
+export const SET_TIME_LEFT = '[Maps] Set time left';
+export const SUBTRACT_TIME_LEFT = '[Maps] Subtract time left';
 
 export const FINISH_RIDE_DRIVER = '[Maps] Finish ride';
 
@@ -150,7 +153,7 @@ export class StartRideDriver implements Action {
 
   constructor(
     public payload: {
-      assignedRideId: string
+      assignedRideId: string;
     }
   ) {}
 }
@@ -182,7 +185,9 @@ export class SimulateDriverRideToClient implements Action {
 export class SetRideDriver implements Action {
   readonly type = SET_RIDE_DRIVER;
 
-  constructor(public payload:{driver: Driver, passengerState: PassengerState}) {}
+  constructor(
+    public payload: { driver: Driver; passengerState: PassengerState }
+  ) {}
 }
 
 export class RideStartedPassenger implements Action {
@@ -199,6 +204,24 @@ export class FinishRide implements Action {
       assignedRideId: string
     }
   ) {}}
+export class LoadTimeFromDriverToClient implements Action {
+  readonly type = LOAD_TIME_FROM_DRIVER_TO_CLIENT;
+  constructor(
+    public payload: {
+      coordinates: [longitude: number, latitude: number][];
+    }
+  ) {}
+}
+
+export class SetTimeLeft implements Action {
+  readonly type = SET_TIME_LEFT;
+  constructor(public payload: { timeLeft: number }) {}
+}
+
+export class SubtractTimeLeft implements Action {
+  readonly type = SUBTRACT_TIME_LEFT;
+  constructor(public payload: { value: number }) {}
+}
 
 export type MapsActions =
   | MapLoadStart
@@ -220,4 +243,7 @@ export type MapsActions =
   | RemoveCoordinatesForDestination
   | SimulateDriverRideToClient
   | SetRideDriver
-  | FinishRide;
+  | FinishRide
+  | LoadTimeFromDriverToClient
+  | SetTimeLeft
+  | SubtractTimeLeft;

@@ -25,7 +25,7 @@ import {
   SetAvailableRoutesCoordinates,
 } from './maps.actions';
 import { Route } from '../model/route';
-import * as DriverActions from '../../drivers/store/drivers.actions'
+import * as DriverActions from '../../drivers/store/drivers.actions';
 import { DriverState } from 'src/app/drivers/model/driverState';
 import { PassengerState } from '../model/passengerState';
 
@@ -67,6 +67,42 @@ export class MapsEffects {
                 return new MapsActions.SetAvailableRoutesCoordinates({
                   id: loadAvailableRoutesForTwoPoints.payload.destinationId,
                   routes: availableRoutes,
+                });
+              })
+            );
+        }
+      )
+    )
+  );
+
+  loadTimeFromDriverToClient = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.LOAD_TIME_FROM_DRIVER_TO_CLIENT),
+      mergeMap(
+        (
+          loadTimeFromDriverToClient: MapsActions.LoadTimeFromDriverToClient
+        ) => {
+          const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            Authorization:
+              '5b3ce3597851110001cf6248b39bab9bc5c8470d9a7d66dd54e43ee5',
+            skip: 'true',
+          });
+          const requestOptions = { headers: headers };
+          return this.http
+            .post(
+              'https://api.openrouteservice.org/v2/directions/driving-car/geojson',
+              {
+                coordinates: loadTimeFromDriverToClient.payload.coordinates,
+              },
+              requestOptions
+            )
+            .pipe(
+              map((data: GeoJSONFeatureCollection) => {
+                let numberOfPoints: number =
+                  data.features[0]['geometry']['coordinates'].length;
+                return new MapsActions.SetTimeLeft({
+                  timeLeft: numberOfPoints,
                 });
               })
             );
@@ -141,7 +177,10 @@ export class MapsEffects {
           )
           .pipe(
             map((driver: Driver) => {
-              return new MapsActions.SetRideDriver({driver: driver, passengerState: PassengerState.WAITING_FOR_DRIVER_TO_ARRIVE});
+              return new MapsActions.SetRideDriver({
+                driver: driver,
+                passengerState: PassengerState.WAITING_FOR_DRIVER_TO_ARRIVE,
+              });
             })
           );
       })
@@ -153,7 +192,12 @@ export class MapsEffects {
       ofType(MapsActions.START_RIDE_DRIVER),
       switchMap((startRide: MapsActions.StartRideDriver) => {
         return this.http
-          .post(this.config.apiEndpoint + 'simulation/through-route/' + startRide.payload.assignedRideId, {})
+          .post(
+            this.config.apiEndpoint +
+              'simulation/through-route/' +
+              startRide.payload.assignedRideId,
+            {}
+          )
           .pipe(
             map(() => {
               return new MapsActions.FinishRide({assignedRideId: startRide.payload.assignedRideId});
@@ -236,15 +280,13 @@ export class MapsEffects {
     )
   );
 
-  simulateDriverRideToClient = createEffect(
-    () => {
-      return this.actions$.pipe(
-        ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT),
-        switchMap(() => {
-          return this.http.post<Driver>(
-            this.config.apiEndpoint + 'simulation/to-client',
-            {}
-          ).pipe(
+  simulateDriverRideToClient = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT),
+      switchMap(() => {
+        return this.http
+          .post<Driver>(this.config.apiEndpoint + 'simulation/to-client', {})
+          .pipe(
             map(() => {
               return new DriverActions.GetDriverAssignedRide();
             })

@@ -16,6 +16,7 @@ export interface State {
   selectedRoute: Map<string, Route>;
   availableRoutes: Map<string, Route[]>;
   passengerState: PassengerState;
+  timeLeft: number;
 }
 
 const createInitialState = function (): State {
@@ -30,6 +31,7 @@ const createInitialState = function (): State {
     selectedRoute: new Map<string, Route>(),
     availableRoutes: new Map<string, Route[]>(),
     passengerState: PassengerState.FORM_FILL,
+    timeLeft: null,
   };
 };
 
@@ -135,7 +137,20 @@ export function mapsReducer(
       return {
         ...state,
         rideDriver: action.payload.driver,
-        passengerState: action.payload.passengerState
+        passengerState: action.payload.passengerState,
+      };
+    }
+    case MapsActions.SET_TIME_LEFT: {
+      return {
+        ...state,
+        timeLeft: action.payload.timeLeft,
+      };
+    }
+    case MapsActions.SUBTRACT_TIME_LEFT: {
+      let newTimeLeft = state.timeLeft - action.payload.value;
+      return {
+        ...state,
+        timeLeft: newTimeLeft,
       };
     }
     default:

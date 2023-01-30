@@ -23,9 +23,7 @@ export class MapsService {
   map = this.mapSource.asObservable();
   driversInArea: Driver[] = [];
   driversSubscription: Subscription;
-
   mapsSubscription: Subscription;
-
   vehicles: Vehicle[] = [];
   error: number;
   chosenDriverInfo: Driver;
@@ -37,6 +35,8 @@ export class MapsService {
   vehiclesVectorSource: VectorSource;
   selectedRoute$: Observable<Map<string, Route>>;
   availableRoutes$: Observable<Map<string, Route[]>>;
+  clientStartLocation: [longitude: number, latitude: number];
+  currentDriverLocation: [longitude: number, latitude: number] = null;
 
   constructor(private store: Store<fromApp.AppState>) {
     this.recenterToUserLocation();
@@ -224,6 +224,8 @@ export class MapsService {
   }
   drawLocation(location: Location, id: string, icon: string) {
     this.removeLocationIfExists(id);
+    if (id === 'location0')
+      this.clientStartLocation = [location.longitude, location.latitude];
     let marker = new Feature({
       geometry: new Point(fromLonLat([location.longitude, location.latitude])),
       location: location,
@@ -380,19 +382,57 @@ export class MapsService {
 
   updateMapVehicleLayer() {
     this.vehiclesVectorSource.clear();
-    if (this.passengerState === PassengerState.RIDING) {
-      this.routesVectorSource.clear();
-      let riderVehicle = this.vehicles.find(
-        (vehicle) => vehicle.id === this.rideDriver.vehicle.id
-      );
-      this.vehiclesVectorSource.addFeatures(
-        MapUtils.createVehicleFeatures([riderVehicle])
-      );
-      this.redrawRouteDuringRide(riderVehicle.location);
-    } else {
-      this.vehiclesVectorSource.addFeatures(
-        MapUtils.createVehicleFeatures(this.vehicles)
-      );
+    switch (this.passengerState) {
+      case PassengerState.RIDING: {
+        this.routesVectorSource.clear();
+        let riderVehicle = this.vehicles.find(
+          (vehicle) => vehicle.id === this.rideDriver.vehicle.id
+        );
+        this.vehiclesVectorSource.addFeatures(
+          MapUtils.createVehicleFeatures([riderVehicle])
+        );
+        this.redrawRouteDuringRide(riderVehicle.location);
+        break;
+      }
+      case PassengerState.WAITING_FOR_DRIVER_TO_ARRIVE: {
+        let riderVehicle: Vehicle = this.vehicles.find(
+          (vehicle) => vehicle.id === this.rideDriver.vehicle.id
+        );
+        this.vehiclesVectorSource.addFeatures(
+          MapUtils.createVehicleFeatures([riderVehicle])
+        );
+        let driverLocation: [longitude: number, latitude: number] = [
+          riderVehicle.location[0],
+          riderVehicle.location[1],
+        ];
+        if (this.currentDriverLocation == null) {
+          this.currentDriverLocation = driverLocation;
+          this.recenterToLocation(driverLocation[0], driverLocation[1]);
+          this.store.dispatch(
+            new MapActions.LoadTimeFromDriverToClient({
+              coordinates: [
+                this.currentDriverLocation,
+                this.clientStartLocation,
+              ],
+            })
+          );
+        }
+        if (
+          driverLocation[0] !== this.currentDriverLocation[0] &&
+          driverLocation[1] !== this.currentDriverLocation[1]
+        ) {
+          this.recenterToLocation(driverLocation[0], driverLocation[1]);
+          this.currentDriverLocation = driverLocation;
+          this.store.dispatch(new MapActions.SubtractTimeLeft({ value: 1 }));
+        }
+        break;
+      }
+      default: {
+        this.vehiclesVectorSource.addFeatures(
+          MapUtils.createVehicleFeatures(this.vehicles)
+        );
+        break;
+      }
     }
     this.mapSource.value.getOverlayById('drivers')?.setPosition(undefined);
   }

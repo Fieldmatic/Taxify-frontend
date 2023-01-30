@@ -24,7 +24,6 @@ export class UserDataEditComponent implements OnInit, OnDestroy {
   imageSnippet: SafeUrl = null;
   usersSubscription: Subscription;
   loading: boolean;
-  readonly maxProfilePictureSize = 10 * 2 ** 20;
 
   constructor(
     @Inject(DOCUMENT) private document: Document,

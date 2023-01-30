@@ -1,0 +1,12 @@
+mat-card {
+  height: 80vh;
+}
+
+cdk-virtual-scroll-viewport {
+  height: 100%;
+  width: 100%;
+}
+
+cdk-virtual-scroll-viewport ::ng-deep .cdk-virtual-scroll-content-wrapper {
+  max-width: 100%;
+}

@@ -4,6 +4,7 @@ import { CustomerSupportComponent } from './components/customer-support/customer
 import { AuthGuard } from '../auth/auth.guard';
 import { AllChatsComponent } from './components/customer-support/all-chats/all-chats.component';
 import { ChatComponent } from './components/customer-support/chat/chat.component';
+import { ChatsResolverService } from './services/chats-resolver.service';
 
 const routes: Routes = [
   {
@@ -13,10 +14,11 @@ const routes: Routes = [
     children: [
       {
         path: 'chats',
+        resolve: [ChatsResolverService],
         component: AllChatsComponent,
       },
       {
-        path: 'chat',
+        path: 'chat/:id',
         pathMatch: 'full',
         component: ChatComponent,
       },

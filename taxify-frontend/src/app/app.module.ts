@@ -29,6 +29,7 @@ import { MapsEffects } from './maps/store/maps.effects';
 import { MapsService } from './maps/maps.service';
 import { CustomerSupportModule } from './customer-support/customer-support.module';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { CustomerSupportEffects } from './customer-support/store/customer-support.effects';
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NavbarProfileMenuComponent],
@@ -44,6 +45,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       AuthEffects,
       UsersEffects,
       MapsEffects,
+      CustomerSupportEffects,
     ]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),

@@ -1,0 +1,49 @@
+#sendBtn:disabled {
+  background-image: url("/assets/send-disabled.png");
+};
+
+#sendBtn {
+  border: none;
+  background-image: url("/assets/send.png");
+}
+
+button:disabled {
+  transform: none !important;
+}
+
+button:hover, label.image-btn:hover {
+  transform: translateY(-0.25em);
+}
+
+.col-1, .col-2 {
+  padding-top: 0.8rem !important;
+}
+
+.image-btn {
+  min-width: 20px;
+  max-width: 40px;
+  min-height: 20px;
+  max-height: 40px;
+  width: 100%;
+  aspect-ratio: 1/1;
+}
+
+.image-preview {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 30vh;
+}
+
+.image-canceler {
+  text-decoration: none;
+  right: 1rem;
+}
+
+.image-canceler:after {
+  content: "✖";
+  min-font-size: 20px;
+  max-font-size: 40px;
+  color: black;
+}
+

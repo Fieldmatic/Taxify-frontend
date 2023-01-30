@@ -25,7 +25,7 @@ export interface Task {
 })
 export class FilterDriversComponent implements OnInit {
   @Input() clientLocation: Location;
-  @Input() route: [longitude: number, latitude: number][];
+  @Input() route: [longitude: number, latitude: number, stop:boolean][];
 
   checkboxPairs: number[] = [];
   petFriendly: boolean = false;

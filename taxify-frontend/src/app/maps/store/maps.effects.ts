@@ -11,7 +11,7 @@ import { AuthService } from '../../auth/services/auth/auth.service';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import * as MapsActions from './maps.actions';
-import { catchError, map, mergeMap, switchMap, tap } from 'rxjs';
+import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs';
 import { Location } from '../model/location';
 import { GeoJSON, GeoJsonObject } from 'geojson';
 import {
@@ -27,7 +27,10 @@ import {
 import { Route } from '../model/route';
 import * as DriverActions from '../../drivers/store/drivers.actions';
 import { DriverState } from 'src/app/drivers/model/driverState';
-import { PassengerState } from '../model/passengerState';
+import { RideStatus } from '../model/rideStatus';
+import { RideRouteResponse } from '../model/rideRouteResponse';
+import { MapsService } from '../maps.service';
+import { Store } from '@ngrx/store';
 
 @Injectable()
 export class MapsEffects {
@@ -59,11 +62,12 @@ export class MapsEffects {
               map((data: GeoJSONFeatureCollection) => {
                 let availableRoutes: Route[] = data.features.map((feature) => {
                   return new Route(
+                    feature.geometry['coordinates'].map((coordinates) => {return [coordinates[0], coordinates[1], false]}),
                     feature.properties['summary']['distance'],
                     feature.properties['summary']['duration'],
-                    feature.geometry['coordinates']
                   );
-                });
+                }); 
+                console.log(availableRoutes)
                 return new MapsActions.SetAvailableRoutesCoordinates({
                   id: loadAvailableRoutesForTwoPoints.payload.destinationId,
                   routes: availableRoutes,
@@ -155,10 +159,10 @@ export class MapsEffects {
     this.actions$.pipe(
       ofType(MapsActions.SEARCH_FOR_DRIVER),
       switchMap((searchForRideData: MapsActions.SearchForDriver) => {
-        let route = searchForRideData.payload.route.map((coordinates) => ({
-          longitude: coordinates[0],
-          latitude: coordinates[1],
-          isStop: false,
+        let route = searchForRideData.payload.route.map((data) => ({
+          longitude: data[0],
+          latitude: data[1],
+          stop: data[2],
         }));
         return this.http
           .post<Driver>(
@@ -179,7 +183,28 @@ export class MapsEffects {
             map((driver: Driver) => {
               return new MapsActions.SetRideDriver({
                 driver: driver,
-                passengerState: PassengerState.WAITING_FOR_DRIVER_TO_ARRIVE,
+                rideStatus: RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE,
+              });
+            })
+          );
+      })
+    )
+  );
+
+  loadActiveRoute = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.LOAD_ACTIVE_ROUTE),
+      switchMap((loadActiveRoute: MapsActions.LoadActiveRoute) => {
+        return this.http
+          .get<RideRouteResponse>(
+            this.config.apiEndpoint + 'ride/assignedRideRoute',
+          )
+          .pipe(
+            map((rideRouteResponse : RideRouteResponse) => {
+              console.log("uradjeno")
+              console.log(rideRouteResponse)
+              if (!rideRouteResponse) return { type: 'DUMMY' };
+              else return new MapsActions.SetActiveRideAndDriver({rideRouteInfo: rideRouteResponse
               });
             })
           );
@@ -200,7 +225,7 @@ export class MapsEffects {
           )
           .pipe(
             map(() => {
-              return new MapsActions.FinishRide({assignedRideId: startRide.payload.assignedRideId});
+              return new MapsActions.RideFinish();
             })
           );
       })
@@ -226,16 +251,16 @@ export class MapsEffects {
     this.actions$.pipe(
       ofType(MapsActions.RIDE_STARTED_PASSENGER),
       map(() => {
-        return new MapsActions.SetPassengerState(PassengerState.RIDING);
+        return new MapsActions.SetRideStatus(RideStatus.RIDING);
       })
     )
   );
 
   rideFinish = createEffect(() =>
     this.actions$.pipe(
-      ofType(MapsActions.RIDE_FINISH_PASSENGER),
+      ofType(MapsActions.RIDE_FINISH),
       map(() => {
-        return new MapsActions.SetPassengerState(PassengerState.FORM_FILL);
+        return new MapsActions.SetRideStatus(RideStatus.FORM_FILL);
       })
     )
   );
@@ -287,7 +312,7 @@ export class MapsEffects {
         return this.http
           .post<Driver>(this.config.apiEndpoint + 'simulation/to-client', {})
           .pipe(
-            map(() => {
+            map(() => {          
               return new DriverActions.GetDriverAssignedRide();
             })
           );;
@@ -300,6 +325,8 @@ export class MapsEffects {
     private actions$: Actions,
     private http: HttpClient,
     private router: Router,
+    private mapService: MapsService,
+    private store: Store,
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig
   ) {}
 }

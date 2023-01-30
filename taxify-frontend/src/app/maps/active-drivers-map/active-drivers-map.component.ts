@@ -21,7 +21,7 @@ import VectorSource from 'ol/source/Vector';
 import { Vehicle } from '../../shared/vehicle.model';
 import { MapsService } from '../maps.service';
 import { ToastrService } from 'ngx-toastr';
-import { PassengerState } from '../model/passengerState';
+import { RideStatus } from '../model/rideStatus';
 
 @Component({
   selector: 'app-active-drivers-map',
@@ -32,8 +32,8 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
   @ViewChild('popup') popup: ElementRef;
   loading: boolean;
   driver: Driver;
-  passengerState$: Observable<PassengerState>;
-  passengerStateEnum: typeof PassengerState = PassengerState;
+  rideStatus$: Observable<RideStatus>;
+  rideStatusEnum: typeof RideStatus = RideStatus;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -49,8 +49,8 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
       this.mapsService.updateMapVehicleLayer();
     });
     this.mapsService.setTarget('map');
-    this.passengerState$ = this.store.select(
-      (store) => store.maps.passengerState
+    this.rideStatus$ = this.store.select(
+      (store) => store.maps.rideStatus
     );
     this.subscribeToWebSocket()
   }

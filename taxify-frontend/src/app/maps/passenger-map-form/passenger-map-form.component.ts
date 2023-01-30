@@ -32,7 +32,7 @@ export class PassengerMapFormComponent implements OnInit {
   destinationAddresses$: Observable<Array<Location>>;
   map: OLMap;
   routeStops: Map<string, Location> = new Map<string, Location>();
-  routeArray: [longitude: number, latitude: number][] = [];
+  routeArray: [longitude: number, latitude: number, stop: boolean][] = [];
   clientLocation: Location;
   distance: number;
   duration: number;
@@ -58,7 +58,8 @@ export class PassengerMapFormComponent implements OnInit {
         this.distance = 0;
         this.duration = 0;
         sortedMap.forEach((value) => {
-          this.routeArray.push(...value.route);
+          value.route.forEach((coordinates) => {this.routeArray.push([coordinates[0], coordinates[1], false]);})
+          this.routeArray[this.routeArray.length-1][2] = true;
           this.distance += value.distance;
           this.duration += value.duration;
         });

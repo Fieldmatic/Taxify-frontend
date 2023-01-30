@@ -3,6 +3,7 @@ import * as AuthActions from '../auth/store/auth.actions';
 import * as PassengerActions from './../passengers/store/passengers.actions';
 import { Store } from '@ngrx/store';
 import {
+  AfterViewInit,
   Component,
   DoCheck,
   OnChanges,
@@ -19,6 +20,7 @@ import { Notification } from '../passengers/model/notification';
 import * as MapActions from '../maps/store/maps.actions';
 import * as DriversActions from '../drivers/store/drivers.actions'
 import { DriverState } from '../drivers/model/driverState';
+import { MapsService } from '../maps/maps.service';
 
 @Component({
   selector: 'app-navbar',
@@ -32,7 +34,8 @@ export class NavbarComponent implements OnInit {
   constructor(
     private store: Store<fromApp.AppState>,
     private stompService: StompService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private mapService: MapsService
   ) {}
 
   ngOnInit(): void {
@@ -41,14 +44,17 @@ export class NavbarComponent implements OnInit {
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
         this.isAuthenticated = !user ? false : true;
-
         if (user?.role === 'PASSENGER') {
           this.subscribeOnWebSocketAsPassenger(user.email);
           this.loadPassengerNotifications();
         } else if (user?.role === 'DRIVER') {
           this.subscribeOnWebSocketAsDriver(user.email);
         }
+        if (this.isAuthenticated){
+        this.mapService.loadActiveRide()
+        }
       });
+
   }
 
   subscribeOnWebSocketAsPassenger(email: string) {
@@ -72,6 +78,7 @@ export class NavbarComponent implements OnInit {
         let message = this.getNotificationMessageFromWebSocket(response.body);
         this.showNotificationToast(message);
         this.store.dispatch(new DriversActions.SetDriverState({state: DriverState.RIDING_TO_CLIENT}))
+        this.store.dispatch(new MapActions.LoadActiveRoute());
         this.store.dispatch(new MapActions.SimulateDriverRideToClient());
       });
     });
@@ -82,22 +89,28 @@ export class NavbarComponent implements OnInit {
       case 'ADDED_TO_THE_RIDE':
         return 'You have been added to the ride.';
       case 'RIDE_ACCEPTED':
+        this.mapService.loadActiveRide()
         return 'Your ride has been accepted.';
       case 'VEHICLE_ARRIVED':
         return 'Vehicle has arrived on your destination.';
       case 'RIDE_STARTED':
         this.startRideForPassenger()
         return 'Your ride has started.';
-      case 'RIDE_FINISHED':
-        this.finishRideForPassenger()
+      case 'RIDE_FINISHED_PASSENGER':
+        this.finishRide()
         return 'You have arrived on destination.'
+      case 'RIDE_FINISHED_DRIVER':
+        this.finishRide()
+        return 'You successfully finished a ride.'
+      case 'RIDE_ASSIGNED':
+        return 'Ride has been assigned to you.'
       default:
         return 'Your ride has been scheduled.';
     }
   }
 
-  finishRideForPassenger() {
-    this.store.dispatch(new MapActions.RideFinishedPassenger())
+  finishRide() {
+    this.store.dispatch(new MapActions.RideFinish())
   }
 
   startRideForPassenger() {

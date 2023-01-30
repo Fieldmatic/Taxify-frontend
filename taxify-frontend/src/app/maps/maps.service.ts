@@ -5,17 +5,19 @@ import * as MapActions from './store/maps.actions';
 import * as MapUtils from './mapUtils';
 import { Driver } from '../shared/driver.model';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, take } from 'rxjs';
+import { BehaviorSubject, map, Observable, Subscription, take } from 'rxjs';
 import { Vehicle } from '../shared/vehicle.model';
 import VectorSource from 'ol/source/Vector';
 import { LineString, Point } from 'ol/geom';
 import { fromLonLat } from 'ol/proj';
 import { Icon, Stroke, Style } from 'ol/style';
 import { Location } from './model/location';
-import { PassengerState } from './model/passengerState';
+import { RideStatus } from './model/rideStatus';
 import { Coordinate } from 'ol/coordinate';
 import OLMap from 'ol/Map';
 import { Route } from './model/route';
+import { LoggedInUser } from '../auth/model/logged-in-user';
+import { DriverState } from '../drivers/model/driverState';
 
 @Injectable()
 export class MapsService {
@@ -28,7 +30,8 @@ export class MapsService {
   error: number;
   chosenDriverInfo: Driver;
   rideDriver: Driver;
-  passengerState: PassengerState;
+  rideStatus: RideStatus;
+  driverState: DriverState;
   locationsVectorSource: VectorSource;
   routesVectorSource: VectorSource;
   drivingRouteVectorSource: VectorSource;
@@ -64,22 +67,30 @@ export class MapsService {
       .select((store) => store.maps.rideDriver)
       .subscribe((driver) => {
         this.rideDriver = driver;
+        this.addMarkers()
       });
     this.store
-      .select((store) => store.maps.passengerState)
-      .subscribe((passengerState) => {
-        this.passengerState = passengerState;
+      .select((store) => store.maps.rideStatus)
+      .subscribe((rideStatus) => {
+        this.rideStatus = rideStatus;
         this.handlePassengerStatusChange();
       });
+    this.store.select((store) => store.drivers.driverState).subscribe((driverState) => {
+      this.driverState = driverState;
+    })
     this.drawRouteOnChange();
   }
 
+  loadActiveRide() {
+      this.store.dispatch(new MapActions.LoadActiveRoute())
+  }
+
   handlePassengerStatusChange() {
-    if (this.passengerState == PassengerState.RIDING) {
+    if (this.rideStatus == RideStatus.RIDING) {
       this.removeLocationIfExists('location0');
     }
 
-    if (this.passengerState == PassengerState.RIDE_FINISH) {
+    if (this.rideStatus == RideStatus.RIDE_FINISH) {
       this.locationsVectorSource.clear();
       this.routesVectorSource.clear();
       this.drivingRouteVectorSource.clear();
@@ -93,7 +104,7 @@ export class MapsService {
       a.getId() > b.getId() ? 1 : b.getId() > a.getId() ? -1 : 0
     );
     this.routesVectorSource.clear();
-    if (features.length > 1 && this.passengerState !== PassengerState.RIDING) {
+    if (features.length > 1 && this.rideStatus !== RideStatus.RIDING) {
       for (let i = 1; i < features.length; i++) {
         let locations: [longitude: number, latitude: number][] = [];
         let start: Location = features[i - 1].get('location');
@@ -114,7 +125,7 @@ export class MapsService {
   private drawRouteOnChange() {
     this.selectedRoute$.pipe().subscribe((routesMap) => {
       let sortedMap = new Map([...routesMap].sort());
-      if (this.passengerState == PassengerState.FORM_FILL) {
+      if (this.rideStatus === RideStatus.FORM_FILL){
         this.routesVectorSource.clear();
         for (let key of sortedMap.keys()) {
           const routeFeature = this.getRouteFeature(
@@ -134,8 +145,7 @@ export class MapsService {
           );
           this.routesVectorSource.addFeature(routeFeatureBackground);
         }
-      }
-    });
+      }});
   }
 
   private getRouteFeature(
@@ -149,7 +159,7 @@ export class MapsService {
       stroke: new Stroke({ color: color, width: width }),
       zIndex: zIndex,
     });
-    let route = new LineString(selectedRoute.route).transform(
+    let route = new LineString(selectedRoute.route.map((route) => {return [route[0], route[1]]})).transform(
       'EPSG:4326',
       'EPSG:3857'
     );
@@ -166,7 +176,8 @@ export class MapsService {
   private redrawRouteDuringRide(updatedCurrentPosition: Coordinate) {
     this.selectedRoute$?.pipe(take(1)).subscribe((selectedRoutesMap) => {
       let sortedMap = new Map([...selectedRoutesMap].sort());
-      if (this.passengerState == PassengerState.RIDING) {
+      if (this.rideStatus == RideStatus.RIDING || this.driverState == DriverState.RIDE_START && sortedMap.size > 0) {
+        this.routesVectorSource.clear()
         let routeArray = [];
         let duration = 0;
         let distance = 0;
@@ -185,27 +196,28 @@ export class MapsService {
             location[1] == updatedCurrentPosition[1]
         );
         let firstMapValues = sortedMap.entries().next().value;
-        if (currentPositionIndex == firstMapValues[1]['route'].length - 1) {
+        if (firstMapValues && currentPositionIndex == firstMapValues[1]['route'].length - 1) {
           this.store.dispatch(
             new MapActions.RemoveCoordinatesForDestination({
               key: firstMapValues[0],
             })
           );
+          this.removeLocationIfExists(firstMapValues[0])
         }
         let routeSubArray = routeArray.slice(
           currentPositionIndex,
           routeArray.length
         );
-        let subDuration = duration - currentPositionIndex * 0.5;
+        let subDuration = duration - currentPositionIndex * 15;
         const routeFeature = this.getRouteFeature(
-          new Route(distance, subDuration, routeSubArray),
+          new Route( routeSubArray, distance, subDuration),
           currentPositionIndex.toString(),
           '#4A89F3',
           4,
           200
         );
         const routeFeatureBackground = this.getRouteFeature(
-          new Route(distance, subDuration, routeSubArray),
+          new Route( routeSubArray, distance, subDuration),
           currentPositionIndex.toString().concat('bg'),
           '#002E6E',
           6,
@@ -221,6 +233,34 @@ export class MapsService {
   ngOnDestroy(): void {
     this.mapsSubscription.unsubscribe();
     this.driversSubscription.unsubscribe();
+  }
+
+  addMarkers() {
+    this.selectedRoute$?.pipe(take(1)).subscribe((selectedRoutesMap) => {
+      console.log(selectedRoutesMap)
+      let sortedMap = new Map([...selectedRoutesMap].sort());
+        this.routesVectorSource.clear();
+        for (let key of sortedMap.keys()) {
+          if (key === 'location1') this.drawLocation(new Location(sortedMap.get(key).route[0][1], sortedMap.get(key).route[0][0]), 'location0',  '../assets/pickup.png');
+          this.drawLocation(new Location(sortedMap.get(key).route[sortedMap.get(key).route.length-1][1], sortedMap.get(key).route[sortedMap.get(key).route.length-1][0]), key,'../assets/pin.png');
+          const routeFeature = this.getRouteFeature(
+            sortedMap.get(key),
+            key,
+            '#4A89F3',
+            4,
+            200
+          );
+          this.routesVectorSource.addFeature(routeFeature);
+          const routeFeatureBackground = this.getRouteFeature(
+            sortedMap.get(key),
+            key.concat('bg'),
+            '#002E6E',
+            6,
+            100
+          );
+          this.routesVectorSource.addFeature(routeFeatureBackground);
+        }
+    });
   }
   drawLocation(location: Location, id: string, icon: string) {
     this.removeLocationIfExists(id);
@@ -301,7 +341,7 @@ export class MapsService {
         }
       );
       let featureId: string = feature.getId().toString();
-      if (feature && featureId.includes('location')) {
+      if (feature && featureId.includes('location') && !featureId.includes('bg') && this.rideStatus == RideStatus.FORM_FILL) {
         this.availableRoutes$.pipe(take(1)).subscribe((availableRoutes) => {
           let featureId = feature.getId();
           let selectedRoute = feature.getProperties()['route'];
@@ -382,58 +422,60 @@ export class MapsService {
 
   updateMapVehicleLayer() {
     this.vehiclesVectorSource.clear();
-    switch (this.passengerState) {
-      case PassengerState.RIDING: {
-        this.routesVectorSource.clear();
-        let riderVehicle = this.vehicles.find(
-          (vehicle) => vehicle.id === this.rideDriver.vehicle.id
+    if (this.rideStatus === RideStatus.RIDING || this.driverState === DriverState.RIDE_START && this.vehicles.length > 0) {
+      console.log("voznja")
+      console.log(this.rideDriver)
+      this.routesVectorSource.clear();
+      console.log(this.vehicles)
+      let riderVehicle = this.vehicles.find(
+        (vehicle) => vehicle.id === this.rideDriver.vehicle.id
+      );
+      this.vehiclesVectorSource.addFeatures(
+        MapUtils.createVehicleFeatures([riderVehicle])
+      );
+      this.redrawRouteDuringRide(riderVehicle.location);
+    }
+    else if (this.rideStatus === RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE && this.vehicles.length > 0) {
+      console.log("cekanje")
+      console.log(this.rideDriver)
+      console.log(this.vehicles)
+      let riderVehicle: Vehicle = this.vehicles.find(
+        (vehicle) => vehicle.id === this.rideDriver.vehicle.id
+      );
+      this.vehiclesVectorSource.addFeatures(
+        MapUtils.createVehicleFeatures([riderVehicle])
+      );
+      let driverLocation: [longitude: number, latitude: number] = [
+        riderVehicle.location[0],
+        riderVehicle.location[1],
+      ];
+      if (this.currentDriverLocation == null) {
+        this.currentDriverLocation = driverLocation;
+        this.recenterToLocation(driverLocation[0], driverLocation[1]);
+        this.store.dispatch(
+          new MapActions.LoadTimeFromDriverToClient({
+            coordinates: [
+              this.currentDriverLocation,
+              this.clientStartLocation,
+            ],
+          })
         );
-        this.vehiclesVectorSource.addFeatures(
-          MapUtils.createVehicleFeatures([riderVehicle])
-        );
-        this.redrawRouteDuringRide(riderVehicle.location);
-        break;
       }
-      case PassengerState.WAITING_FOR_DRIVER_TO_ARRIVE: {
-        let riderVehicle: Vehicle = this.vehicles.find(
-          (vehicle) => vehicle.id === this.rideDriver.vehicle.id
-        );
-        this.vehiclesVectorSource.addFeatures(
-          MapUtils.createVehicleFeatures([riderVehicle])
-        );
-        let driverLocation: [longitude: number, latitude: number] = [
-          riderVehicle.location[0],
-          riderVehicle.location[1],
-        ];
-        if (this.currentDriverLocation == null) {
-          this.currentDriverLocation = driverLocation;
-          this.recenterToLocation(driverLocation[0], driverLocation[1]);
-          this.store.dispatch(
-            new MapActions.LoadTimeFromDriverToClient({
-              coordinates: [
-                this.currentDriverLocation,
-                this.clientStartLocation,
-              ],
-            })
-          );
-        }
-        if (
-          driverLocation[0] !== this.currentDriverLocation[0] &&
-          driverLocation[1] !== this.currentDriverLocation[1]
-        ) {
-          this.recenterToLocation(driverLocation[0], driverLocation[1]);
-          this.currentDriverLocation = driverLocation;
-          this.store.dispatch(new MapActions.SubtractTimeLeft({ value: 1 }));
-        }
-        break;
-      }
-      default: {
-        this.vehiclesVectorSource.addFeatures(
-          MapUtils.createVehicleFeatures(this.vehicles)
-        );
-        break;
+      if (
+        driverLocation[0] !== this.currentDriverLocation[0] &&
+        driverLocation[1] !== this.currentDriverLocation[1]
+      ) {
+        this.recenterToLocation(driverLocation[0], driverLocation[1]);
+        this.currentDriverLocation = driverLocation;
+        this.store.dispatch(new MapActions.SubtractTimeLeft({ value: 1 }));
       }
     }
+    else {
+      this.vehiclesVectorSource.addFeatures(
+        MapUtils.createVehicleFeatures(this.vehicles)
+      );
+    }
+ 
     this.mapSource.value.getOverlayById('drivers')?.setPosition(undefined);
   }
 

@@ -1,9 +1,9 @@
 <div class="wrapper">
   <app-passenger-map-form
-    *ngIf="(passengerState$ | async) === passengerStateEnum.FORM_FILL"
+    *ngIf="(rideStatus$ | async) === rideStatusEnum.FORM_FILL"
   ></app-passenger-map-form>
   <app-ride-driver-info
-    *ngIf="(passengerState$ | async) !== passengerStateEnum.FORM_FILL"
+    *ngIf="(rideStatus$ | async) !== rideStatusEnum.FORM_FILL"
   ></app-ride-driver-info>
   <app-driver-map-info *appHasRole="['DRIVER']"></app-driver-map-info>
   <div id="map" class="map col-12"></div>

@@ -1,4 +1,4 @@
-export enum PassengerState {
+export enum RideStatus {
   FORM_FILL,
   SEARCHING_FOR_DRIVER,
   WAITING_FOR_DRIVER_TO_ARRIVE,

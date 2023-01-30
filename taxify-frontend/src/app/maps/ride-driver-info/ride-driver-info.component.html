@@ -1,4 +1,4 @@
-<mat-card class="driverCard mx-auto" *ngIf="driver">
+<mat-card class="driverCard mx-auto" *ngIf="driver$ | async as driver">
   <mat-card-header>
     <img
       mat-card-avatar
@@ -8,35 +8,13 @@
       {{ driver.name + " " + driver.surname }}
     </mat-card-title>
     <mat-card-subtitle>
-      <div *ngIf="driver.active">
-        <img mat-card-avatar src="../assets/online.png" class="statusIcon" />
-        Online
-      </div>
-      <div *ngIf="!driver.active">
-        <img mat-card-avatar src="../assets/offline.png" class="statusIcon" />
-        Offline
-      </div>
+      <div>Your driver</div>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <div class="d-flex justify-content-between mt-1 mb-3">
-      <button
-        type="button"
-        mat-button
-        class="startRideButton"
-        (click)="startRide()"
-        [disabled]="!driver.active || (driverState$ | async) !== driverStateEnum.ARRIVED_TO_CLIENT"
-      >
-        Start ride
-      </button>
-      <button
-        type="button"
-        mat-button
-        class="rejectRideButton"
-        (click)="leaveDriveRejectionReason()"
-        [disabled]="!driver.active || ((driverState$ | async) !== driverStateEnum.ARRIVED_TO_CLIENT && (driverState$ | async) !== driverStateEnum.RIDING_TO_CLIENT)"
-      >
-        Reject ride
+    <div class="d-flex justify-content-center mt-1 mb-3">
+      <button type="button" mat-button class="complainButton">
+        Make a complaint
       </button>
     </div>
     <p class="fw-550">
@@ -49,27 +27,13 @@
           driver.vehicle.type | titlecase
       }}
     </p>
-    <p class="fw-550">
+    <p class="fw-550" *ngIf="timeLeft$ | async as timeLeft">
       <img
         mat-card-avatar
         src="../assets/sand-watch.png"
         class="sandWatchIcon"
       />
-      {{ driverRemainingWorkTime.hours }}H
-      {{ driverRemainingWorkTime.minutes }}min
+      {{ convertTimeLeft(timeLeft) }}
     </p>
-    <div class="position-relative">
-      <button
-        type="button"
-        mat-button
-        class="changeStatusBtn"
-        [disabled]="
-          !driverRemainingWorkTime.hours && !driverRemainingWorkTime.minutes
-        "
-        (click)="changeDriverStatus()"
-      >
-        {{ driver.active ? " Go offline" : "Go online" }}
-      </button>
-    </div>
   </mat-card-content>
 </mat-card>

@@ -90,7 +90,7 @@
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
-        <div class="routeInfo">
+        <div class="routeInfo" *ngIf="routeArray.length > 1">
           <span>Distance: {{ distance }} km</span>
           <span>Duration: {{ duration }} min</span>
         </div>

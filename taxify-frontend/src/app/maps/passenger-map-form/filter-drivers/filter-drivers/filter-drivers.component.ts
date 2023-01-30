@@ -150,6 +150,8 @@ export class FilterDriversComponent implements OnInit {
         vehicleTypes: this.chosenVehicleTypes,
         petFriendly: this.petFriendly,
         babyFriendly: this.babyFriendly,
+        sender: this.loggedInUser.email,
+        linkedUsers: this.linkedUsers,
       })
     );
   }

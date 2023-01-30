@@ -16,6 +16,7 @@ export interface State {
   selectedRoute: Map<string, Route>;
   availableRoutes: Map<string, Route[]>;
   passengerState: PassengerState;
+  timeLeft: number;
 }
 
 const createInitialState = function (): State {
@@ -30,6 +31,7 @@ const createInitialState = function (): State {
     selectedRoute: new Map<string, Route>(),
     availableRoutes: new Map<string, Route[]>(),
     passengerState: PassengerState.FORM_FILL,
+    timeLeft: null,
   };
 };
 
@@ -74,13 +76,7 @@ export function mapsReducer(
         ...state,
         passengerState: PassengerState.SEARCHING_FOR_DRIVER,
       };
-    case MapsActions.START_RIDE:
-      return {
-        ...state,
-        rideDriver: action.payload.driver,
-        passengerState: PassengerState.RIDING,
-      };
-    case MapsActions.RIDE_FINISH: {
+    case MapsActions.RIDE_FINISH_PASSENGER: {
       return {
         ...state,
         passengerState: PassengerState.RIDE_FINISH,
@@ -93,10 +89,10 @@ export function mapsReducer(
         selectedRoute: new Map<string, Route>(),
       };
     }
-    case MapsActions.SET_PASSENGER_STATE_FORM_FILL: {
+    case MapsActions.SET_PASSENGER_STATE: {
       return {
         ...state,
-        passengerState: PassengerState.FORM_FILL,
+        passengerState: action.payload,
       };
     }
     case MapsActions.CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS: {
@@ -135,6 +131,26 @@ export function mapsReducer(
         ...state,
         selectedRoute: selectedRoutes,
         availableRoutes: availableRoutes,
+      };
+    }
+    case MapsActions.SET_RIDE_DRIVER: {
+      return {
+        ...state,
+        rideDriver: action.payload.driver,
+        passengerState: action.payload.passengerState,
+      };
+    }
+    case MapsActions.SET_TIME_LEFT: {
+      return {
+        ...state,
+        timeLeft: action.payload.timeLeft,
+      };
+    }
+    case MapsActions.SUBTRACT_TIME_LEFT: {
+      let newTimeLeft = state.timeLeft - action.payload.value;
+      return {
+        ...state,
+        timeLeft: newTimeLeft,
       };
     }
     default:

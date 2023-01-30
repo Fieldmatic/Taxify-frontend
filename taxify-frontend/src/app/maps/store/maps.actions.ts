@@ -24,7 +24,7 @@ export const LOAD_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Load destination autocomplete results';
 export const SET_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Set destination autocomplete results';
-export const RIDE_FINISH = '[Maps] Ride finish';
+export const RIDE_FINISH_PASSENGER = '[Maps] Ride finish passenger';
 
 export const START_RIDE_DRIVER = '[Maps] Start ride driver';
 export const SET_PASSENGER_STATE =
@@ -46,6 +46,9 @@ export const SIMULATE_DRIVER_RIDE_TO_CLIENT =
 export const SET_RIDE_DRIVER = '[Maps] Set ride driver';
 
 export const RIDE_STARTED_PASSENGER = '[Maps] Ride started';
+
+export const FINISH_RIDE_DRIVER = '[Maps] Finish ride';
+
 
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
@@ -136,6 +139,8 @@ export class SearchForDriver implements Action {
       vehicleTypes: string[];
       petFriendly: boolean;
       babyFriendly: boolean;
+      sender: string;
+      linkedUsers: string[];
     }
   ) {}
 }
@@ -150,8 +155,8 @@ export class StartRideDriver implements Action {
   ) {}
 }
 
-export class RideFinished implements Action {
-  readonly type = RIDE_FINISH;
+export class RideFinishedPassenger implements Action {
+  readonly type = RIDE_FINISH_PASSENGER;
 
   constructor() {}
 }
@@ -186,6 +191,15 @@ export class RideStartedPassenger implements Action {
   constructor() {}
 }
 
+export class FinishRide implements Action {
+  readonly type = FINISH_RIDE_DRIVER;
+
+  constructor(
+    public payload: {
+      assignedRideId: string
+    }
+  ) {}}
+
 export type MapsActions =
   | MapLoadStart
   | MapLoadEnd
@@ -199,10 +213,11 @@ export type MapsActions =
   | SetSelectedRouteCoordinates
   | SearchForDriver
   | StartRideDriver
-  | RideFinished
+  | RideFinishedPassenger
   | SetPassengerState
   | ClearDestinationAutocompleteResults
   | SetAvailableRoutesCoordinates
   | RemoveCoordinatesForDestination
   | SimulateDriverRideToClient
-  | SetRideDriver;
+  | SetRideDriver
+  | FinishRide;

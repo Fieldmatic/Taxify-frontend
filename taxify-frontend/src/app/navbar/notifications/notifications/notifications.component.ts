@@ -46,9 +46,13 @@ export class NotificationsComponent implements OnInit {
       case 'ADDED_TO_THE_RIDE':
         return 'has invited you to the ride';
       case 'RIDE_ACCEPTED':
-        return 'Your ride has been accepted';
+        return 'Your ride has been accepted.';
       case 'VEHICLE_ARRIVED':
-        return 'Vehicle has arrived on your destination';
+        return 'Vehicle has arrived at your destination.';
+      case 'RIDE_STARTED':
+        return 'Your ride has started.'
+      case 'RIDE_FINISHED':
+        return 'You have arrived at your destination.'
       default:
         return 'Your ride has been scheduled';
     }

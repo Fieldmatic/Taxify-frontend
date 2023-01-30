@@ -133,6 +133,10 @@ export class MapsEffects {
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,
+              passengers:  {
+                senderEmail: searchForRideData.payload.sender,
+                recipientsEmails: searchForRideData.payload.linkedUsers,
+              }
             }
           )
           .pipe(
@@ -151,8 +155,23 @@ export class MapsEffects {
         return this.http
           .post(this.config.apiEndpoint + 'simulation/through-route/' + startRide.payload.assignedRideId, {})
           .pipe(
-            map((response: boolean) => {
-              return new MapsActions.RideFinished();
+            map(() => {
+              return new MapsActions.FinishRide({assignedRideId: startRide.payload.assignedRideId});
+            })
+          );
+      })
+    )
+  );
+
+  finishRide = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.FINISH_RIDE_DRIVER),
+      switchMap((finishRide: MapsActions.FinishRide) => {
+        return this.http
+          .put(this.config.apiEndpoint + 'driver/finishRide/' + finishRide.payload.assignedRideId, {})
+          .pipe(
+            map(() => {
+              return new DriverActions.SetDriverState({state: DriverState.RIDE_FINISHED});
             })
           );
       })
@@ -170,7 +189,7 @@ export class MapsEffects {
 
   rideFinish = createEffect(() =>
     this.actions$.pipe(
-      ofType(MapsActions.RIDE_FINISH),
+      ofType(MapsActions.RIDE_FINISH_PASSENGER),
       map(() => {
         return new MapsActions.SetPassengerState(PassengerState.FORM_FILL);
       })
@@ -234,7 +253,6 @@ export class MapsEffects {
       );
     },
   );
-
 
   constructor(
     private actions$: Actions,

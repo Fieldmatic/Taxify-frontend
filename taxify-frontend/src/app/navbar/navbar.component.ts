@@ -83,17 +83,30 @@ export class NavbarComponent implements OnInit {
         return 'You have been added to the ride.';
       case 'RIDE_ACCEPTED':
         return 'Your ride has been accepted.';
-        break;
       case 'VEHICLE_ARRIVED':
         return 'Vehicle has arrived on your destination.';
+      case 'RIDE_STARTED':
+        this.startRideForPassenger()
+        return 'Your ride has started.';
+      case 'RIDE_FINISHED':
+        this.finishRideForPassenger
+        return 'You have arrived on destination.'
       default:
         return 'Your ride has been scheduled.';
     }
   }
 
+  finishRideForPassenger() {
+    this.store.dispatch(new MapActions.RideFinishedPassenger())
+  }
+
+  startRideForPassenger() {
+    this.store.dispatch(new MapActions.RideStartedPassenger())
+  }
+
   showNotificationToast(message: string) {
     this.toastr.info(message, 'Notification', {
-      disableTimeOut: true,
+      timeOut: 5000,
       closeButton: true,
       tapToDismiss: true,
       newestOnTop: true,

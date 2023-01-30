@@ -13,7 +13,13 @@
   </mat-card-header>
   <mat-card-content>
     <div class="d-flex justify-content-center mt-1 mb-3">
-      <button type="button" mat-button class="complainButton">
+      <button
+        type="button"
+        mat-button
+        class="complainButton"
+        (click)="makeComplaint()"
+        [disabled]="(passengerState$ | async) !== passengerStateEnum.RIDING"
+      >
         Make a complaint
       </button>
     </div>

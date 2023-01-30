@@ -52,6 +52,10 @@ export const SUBTRACT_TIME_LEFT = '[Maps] Subtract time left';
 
 export const FINISH_RIDE_DRIVER = '[Maps] Finish ride';
 
+export const REJECT_RIDE_DRIVER = '[Maps] Reject ride driver';
+
+export const SIMULATE_DRIVER_RIDE_TO_CLIENT_END =
+  '[Maps] End of driver ride to client simulation';
 
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
@@ -151,11 +155,7 @@ export class SearchForDriver implements Action {
 export class StartRideDriver implements Action {
   readonly type = START_RIDE_DRIVER;
 
-  constructor(
-    public payload: {
-      assignedRideId: string;
-    }
-  ) {}
+  constructor() {}
 }
 
 export class RideFinishedPassenger implements Action {
@@ -182,6 +182,12 @@ export class SimulateDriverRideToClient implements Action {
   constructor() {}
 }
 
+export class SimulateDriverRideToClientEnd implements Action {
+  readonly type = SIMULATE_DRIVER_RIDE_TO_CLIENT_END;
+
+  constructor(public payload: { simulationResult: number }) {}
+}
+
 export class SetRideDriver implements Action {
   readonly type = SET_RIDE_DRIVER;
 
@@ -199,11 +205,8 @@ export class RideStartedPassenger implements Action {
 export class FinishRide implements Action {
   readonly type = FINISH_RIDE_DRIVER;
 
-  constructor(
-    public payload: {
-      assignedRideId: string
-    }
-  ) {}}
+  constructor() {}
+}
 export class LoadTimeFromDriverToClient implements Action {
   readonly type = LOAD_TIME_FROM_DRIVER_TO_CLIENT;
   constructor(
@@ -221,6 +224,11 @@ export class SetTimeLeft implements Action {
 export class SubtractTimeLeft implements Action {
   readonly type = SUBTRACT_TIME_LEFT;
   constructor(public payload: { value: number }) {}
+}
+
+export class RejectRideDriver implements Action {
+  readonly type = REJECT_RIDE_DRIVER;
+  constructor(public payload: { rejectReason: string }) {}
 }
 
 export type MapsActions =
@@ -246,4 +254,5 @@ export type MapsActions =
   | FinishRide
   | LoadTimeFromDriverToClient
   | SetTimeLeft
-  | SubtractTimeLeft;
+  | SubtractTimeLeft
+  | RejectRideDriver;

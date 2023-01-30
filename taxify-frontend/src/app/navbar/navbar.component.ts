@@ -17,7 +17,7 @@ import { StompService } from '../stomp.service';
 import { ToastrService } from 'ngx-toastr';
 import { Notification } from '../passengers/model/notification';
 import * as MapActions from '../maps/store/maps.actions';
-import * as DriversActions from '../drivers/store/drivers.actions'
+import * as DriversActions from '../drivers/store/drivers.actions';
 import { DriverState } from '../drivers/model/driverState';
 
 @Component({
@@ -71,7 +71,11 @@ export class NavbarComponent implements OnInit {
       stompClient.subscribe('/topic/driver/' + email, (response): any => {
         let message = this.getNotificationMessageFromWebSocket(response.body);
         this.showNotificationToast(message);
-        this.store.dispatch(new DriversActions.SetDriverState({state: DriverState.RIDING_TO_CLIENT}))
+        this.store.dispatch(
+          new DriversActions.SetDriverState({
+            state: DriverState.RIDING_TO_CLIENT,
+          })
+        );
         this.store.dispatch(new MapActions.SimulateDriverRideToClient());
       });
     });
@@ -86,22 +90,25 @@ export class NavbarComponent implements OnInit {
       case 'VEHICLE_ARRIVED':
         return 'Vehicle has arrived on your destination.';
       case 'RIDE_STARTED':
-        this.startRideForPassenger()
+        this.startRideForPassenger();
         return 'Your ride has started.';
       case 'RIDE_FINISHED':
-        this.finishRideForPassenger()
-        return 'You have arrived on destination.'
+        this.finishRideForPassenger();
+        return 'You have arrived on destination.';
+      case 'RIDE_REJECTED':
+        this.finishRideForPassenger();
+        return 'Your ride has been rejected.';
       default:
         return 'Your ride has been scheduled.';
     }
   }
 
   finishRideForPassenger() {
-    this.store.dispatch(new MapActions.RideFinishedPassenger())
+    this.store.dispatch(new MapActions.RideFinishedPassenger());
   }
 
   startRideForPassenger() {
-    this.store.dispatch(new MapActions.RideStartedPassenger())
+    this.store.dispatch(new MapActions.RideStartedPassenger());
   }
 
   showNotificationToast(message: string) {

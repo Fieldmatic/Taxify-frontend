@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { ToastrService } from 'ngx-toastr';
 import { switchMap, map } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
@@ -94,10 +95,40 @@ export class PassengerEffects {
     )
   );
 
+  makeComplaint = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PassengerActions.MAKE_COMPLAINT),
+        switchMap((makeComplaint: PassengerActions.MakeComplaint) => {
+          return this.http
+            .post(this.config.apiEndpoint + 'passenger/complaint', {
+              complaintReason: makeComplaint.payload.complaint,
+            })
+            .pipe(
+              map(() => {
+                this.toastr.info(
+                  'Your complaint has been saved.',
+                  'Notification',
+                  {
+                    timeOut: 5000,
+                    closeButton: true,
+                    tapToDismiss: true,
+                    newestOnTop: true,
+                    positionClass: 'toast-top-center',
+                  }
+                );
+              })
+            );
+        })
+      ),
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
     private http: HttpClient,
     private router: Router,
-    @Inject(APP_SERVICE_CONFIG) private config: AppConfig
+    @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
+    private toastr: ToastrService
   ) {}
 }

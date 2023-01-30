@@ -11,7 +11,7 @@ import { AuthService } from '../../auth/services/auth/auth.service';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import * as MapsActions from './maps.actions';
-import { catchError, map, mergeMap, switchMap, tap } from 'rxjs';
+import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs';
 import { Location } from '../model/location';
 import { GeoJSON, GeoJsonObject } from 'geojson';
 import {
@@ -28,6 +28,7 @@ import { Route } from '../model/route';
 import * as DriverActions from '../../drivers/store/drivers.actions';
 import { DriverState } from 'src/app/drivers/model/driverState';
 import { PassengerState } from '../model/passengerState';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable()
 export class MapsEffects {
@@ -169,10 +170,10 @@ export class MapsEffects {
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,
-              passengers:  {
+              passengers: {
                 senderEmail: searchForRideData.payload.sender,
                 recipientsEmails: searchForRideData.payload.linkedUsers,
-              }
+              },
             }
           )
           .pipe(
@@ -190,17 +191,12 @@ export class MapsEffects {
   startRide = createEffect(() =>
     this.actions$.pipe(
       ofType(MapsActions.START_RIDE_DRIVER),
-      switchMap((startRide: MapsActions.StartRideDriver) => {
+      switchMap(() => {
         return this.http
-          .post(
-            this.config.apiEndpoint +
-              'simulation/through-route/' +
-              startRide.payload.assignedRideId,
-            {}
-          )
+          .post(this.config.apiEndpoint + 'simulation/through-route', {})
           .pipe(
             map(() => {
-              return new MapsActions.FinishRide({assignedRideId: startRide.payload.assignedRideId});
+              return new MapsActions.FinishRide();
             })
           );
       })
@@ -210,12 +206,33 @@ export class MapsEffects {
   finishRide = createEffect(() =>
     this.actions$.pipe(
       ofType(MapsActions.FINISH_RIDE_DRIVER),
-      switchMap((finishRide: MapsActions.FinishRide) => {
+      switchMap(() => {
         return this.http
-          .put(this.config.apiEndpoint + 'driver/finishRide/' + finishRide.payload.assignedRideId, {})
+          .put(this.config.apiEndpoint + 'driver/finishRide', {})
           .pipe(
             map(() => {
-              return new DriverActions.SetDriverState({state: DriverState.RIDE_FINISHED});
+              return new DriverActions.SetDriverState({
+                state: DriverState.RIDE_FINISHED,
+              });
+            })
+          );
+      })
+    )
+  );
+
+  rejectRide = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.REJECT_RIDE_DRIVER),
+      switchMap((rejectRide: MapsActions.RejectRideDriver) => {
+        return this.http
+          .put(this.config.apiEndpoint + 'driver/rejectRide', {
+            rejectionReason: rejectRide.payload.rejectReason,
+          })
+          .pipe(
+            map(() => {
+              return new DriverActions.SetDriverState({
+                state: DriverState.RIDE_REJECTED,
+              });
             })
           );
       })
@@ -285,21 +302,47 @@ export class MapsEffects {
       ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT),
       switchMap(() => {
         return this.http
-          .post<Driver>(this.config.apiEndpoint + 'simulation/to-client', {})
+          .post<number>(this.config.apiEndpoint + 'simulation/to-client', {})
           .pipe(
-            map(() => {
-              return new DriverActions.GetDriverAssignedRide();
+            map((result) => {
+              return new MapsActions.SimulateDriverRideToClientEnd({
+                simulationResult: result,
+              });
             })
-          );;
-        })
-      );
-    },
-  );
+          );
+      })
+    );
+  });
+
+  simulateDriverRideToClientEnd = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT_END),
+      map((simulationEnd: MapsActions.SimulateDriverRideToClientEnd) => {
+        if (simulationEnd.payload.simulationResult === 0) {
+          return new DriverActions.NotifyPassengerOfVehicleArrived();
+        } else {
+          this.toastr.info(
+            'The ride was successfully cancelled.',
+            'Notification',
+            {
+              timeOut: 5000,
+              closeButton: true,
+              tapToDismiss: true,
+              newestOnTop: true,
+              positionClass: 'toast-top-center',
+            }
+          );
+          return { type: 'Dummy' };
+        }
+      })
+    );
+  });
 
   constructor(
     private actions$: Actions,
     private http: HttpClient,
     private router: Router,
-    @Inject(APP_SERVICE_CONFIG) private config: AppConfig
+    @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
+    private toastr: ToastrService
   ) {}
 }

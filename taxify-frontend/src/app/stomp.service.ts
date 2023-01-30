@@ -15,6 +15,7 @@ export class StompService {
   connect() {
     let socket = new SockJS('https://localhost:8080/api/ws');
     let stompClient = Stomp.over(socket);
+    stompClient.debug = () => {}
     return stompClient;
   }
 }

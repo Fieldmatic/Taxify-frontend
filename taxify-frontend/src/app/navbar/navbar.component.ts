@@ -89,7 +89,7 @@ export class NavbarComponent implements OnInit {
         this.startRideForPassenger()
         return 'Your ride has started.';
       case 'RIDE_FINISHED':
-        this.finishRideForPassenger
+        this.finishRideForPassenger()
         return 'You have arrived on destination.'
       default:
         return 'Your ride has been scheduled.';

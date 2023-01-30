@@ -164,7 +164,7 @@ export class MapsService {
   }
 
   private redrawRouteDuringRide(updatedCurrentPosition: Coordinate) {
-    this.selectedRoute$.pipe(take(1)).subscribe((selectedRoutesMap) => {
+    this.selectedRoute$?.pipe(take(1)).subscribe((selectedRoutesMap) => {
       let sortedMap = new Map([...selectedRoutesMap].sort());
       if (this.passengerState == PassengerState.RIDING) {
         let routeArray = [];

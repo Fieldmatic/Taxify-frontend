@@ -13,7 +13,7 @@ export class StompService {
   constructor() {}
 
   connect() {
-    let socket = new SockJS('http://localhost:8080/api/ws');
+    let socket = new SockJS('https://localhost:8080/api/ws');
     let stompClient = Stomp.over(socket);
     return stompClient;
   }

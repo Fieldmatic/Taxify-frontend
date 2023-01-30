@@ -27,7 +27,7 @@ export class DriversEffects {
         queryParams = queryParams.append('minLatitude', mapData.minLat);
         queryParams = queryParams.append('maxLatitude', mapData.maxLat);
         return this.http
-          .get<Driver[]>('http://localhost:8080/api/driver/allActiveInArea', {
+          .get<Driver[]>(this.config.apiEndpoint + 'driver/allActiveInArea', {
             params: queryParams,
           })
           .pipe(
@@ -62,7 +62,8 @@ export class DriversEffects {
       switchMap((getDriverInfoAction: DriversActions.GetDriverInfo) => {
         return this.http
           .get<Driver>(
-            'http://localhost:8080/api/driver/get/' +
+            this.config.apiEndpoint +
+              'driver/get/' +
               getDriverInfoAction.payload.email
           )
           .pipe(
@@ -84,7 +85,8 @@ export class DriversEffects {
         (getRemainingTime: DriversActions.GetDriverRemainingWorkTime) => {
           return this.http
             .get<number>(
-              'http://localhost:8080/api/driver/remainingWorkTime/' +
+              this.config.apiEndpoint +
+                'driver/remainingWorkTime/' +
                 getRemainingTime.payload.email
             )
             .pipe(
@@ -112,7 +114,8 @@ export class DriversEffects {
         }
         return this.http
           .put<Driver>(
-            'http://localhost:8080/api/driver/' +
+            this.config.apiEndpoint +
+              'driver/' +
               action +
               '/' +
               changeDriverStatus.payload.email,
@@ -144,19 +147,18 @@ export class DriversEffects {
       ofType(DriversActions.GET_DRIVER_ASSIGNED_RIDE),
       switchMap(() => {
         return this.http
-          .get<Ride>(
-            this.config.apiEndpoint + 'driver/assignedRide',
-            {}
-          )
+          .get<Ride>(this.config.apiEndpoint + 'driver/assignedRide', {})
           .pipe(
             map((ride: Ride) => {
-              return new DriversActions.AssignRideToDriver({ride: new Ride(ride.id), state: DriverState.ARRIVED_TO_CLIENT});
-            }),
+              return new DriversActions.AssignRideToDriver({
+                ride: new Ride(ride.id),
+                state: DriverState.ARRIVED_TO_CLIENT,
+              });
+            })
           );
       })
     );
   });
-  
 
   constructor(
     private actions$: Actions,

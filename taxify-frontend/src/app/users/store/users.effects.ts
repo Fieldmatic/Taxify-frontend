@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { HttpClient } from '@angular/common/http';
 import { Store } from '@ngrx/store';
@@ -7,6 +7,8 @@ import * as fromApp from '../../store/app.reducer';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { User } from '../../shared/user.model';
 import { Router } from '@angular/router';
+import { AppConfig } from 'src/app/appConfig/appconfig.interface';
+import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 
 @Injectable()
 export class UsersEffects {
@@ -14,7 +16,7 @@ export class UsersEffects {
     return this.actions$.pipe(
       ofType(UsersActions.GET_LOGGED_USER),
       switchMap(() => {
-        return this.http.get<User>('http://localhost:8080/api/auth/self').pipe(
+        return this.http.get<User>(this.config.apiEndpoint + 'auth/self').pipe(
           map((user) => {
             return new UsersActions.SetLoggedUser(user);
           }),
@@ -35,7 +37,7 @@ export class UsersEffects {
         (saveLoggedUserChangesAction: UsersActions.SaveLoggedUserChanges) => {
           return this.http
             .put<User>(
-              'http://localhost:8080/api/auth/self',
+              this.config.apiEndpoint + 'auth/self',
               saveLoggedUserChangesAction.payload
             )
             .pipe(
@@ -61,6 +63,7 @@ export class UsersEffects {
     private actions$: Actions,
     private http: HttpClient,
     private store: Store<fromApp.AppState>,
-    private router: Router
+    private router: Router,
+    @Inject(APP_SERVICE_CONFIG) private config: AppConfig
   ) {}
 }

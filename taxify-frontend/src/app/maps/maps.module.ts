@@ -18,6 +18,7 @@ import { LinkUsersDialogComponent } from './passenger-map-form/filter-drivers/li
 import { ToastrModule } from 'ngx-toastr';
 import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
 import { DriveRejectionReasonDialogComponent } from './driver-map/drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
+import { RideDriverInfoComponent } from './ride-driver-info/ride-driver-info.component';
 
 @NgModule({
   imports: [
@@ -41,6 +42,7 @@ import { DriveRejectionReasonDialogComponent } from './driver-map/drive-rejectio
     LinkUsersDialogComponent,
     DriverMapInfoComponent,
     DriveRejectionReasonDialogComponent,
+    RideDriverInfoComponent,
   ],
   providers: [MapsService],
 })

@@ -1,16 +1,22 @@
 import { Driver } from '../../shared/model/driver.model';
+import { DriverState } from 'src/app/drivers/model/driverState';
+import { Ride } from 'src/app/shared/model/ride.model';
 import * as DriversActions from './drivers.actions';
 
 export interface State {
   drivers: Driver[];
   error: number;
   driver: Driver;
+  driverState: DriverState;
+  assignedRide: Ride;
 }
 
 const initialState: State = {
   drivers: [],
   error: null,
   driver: null,
+  driverState: DriverState.PENDING,
+  assignedRide: null,
 };
 
 export function driversReducer(
@@ -43,6 +49,17 @@ export function driversReducer(
           ...state.driver,
           remainingWorkTime: action.payload.remainingTime,
         },
+      };
+    case DriversActions.SET_DRIVER_STATE:
+      return {
+        ...state,
+        driverState: action.payload.state,
+      };
+    case DriversActions.SET_ASSIGNED_RIDE_TO_DRIVER:
+      return {
+        ...state,
+        assignedRide: action.payload.ride,
+        driverState: action.payload.state,
       };
     default:
       return state;

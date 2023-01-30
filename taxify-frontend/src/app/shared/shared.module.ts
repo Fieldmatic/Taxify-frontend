@@ -11,6 +11,9 @@ import { ConfirmationDialogComponent } from './components/confirmation-dialog/co
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [LoadingSpinnerComponent, ConfirmationDialogComponent],
@@ -25,6 +28,9 @@ import { MatInputModule } from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatRadioModule,
   ],
   exports: [
     CommonModule,
@@ -37,7 +43,9 @@ import { MatInputModule } from '@angular/material/input';
     MatCardModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatInputModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatRadioModule,
   ],
 })
 export class SharedModule {}

@@ -1,11 +1,16 @@
+import { DriveRejectionReasonDialogComponent } from '../drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
 import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducer';
-import { map } from 'rxjs';
+import { map, Observable, take } from 'rxjs';
 import * as DriversActions from 'src/app/drivers/store/drivers.actions';
 import { Driver } from 'src/app/shared/model/driver.model';
 import { StompService } from 'src/app/stomp.service';
+import { MatDialog } from '@angular/material/dialog';
+import { DriverState } from '../../../drivers/model/driverState';
+import * as MapsActions from '../../store/maps.actions';
+import { Ride } from 'src/app/shared/model/ride.model';
 
 @Component({
   selector: 'app-driver-map-info',
@@ -15,10 +20,14 @@ import { StompService } from 'src/app/stomp.service';
 export class DriverMapInfoComponent implements OnInit {
   driver: Driver;
   driverRemainingWorkTime = { hours: 8, minutes: 0 };
+  driverState$: Observable<DriverState>;
+  driverStateEnum: typeof DriverState = DriverState;
+  ride$: Observable<Ride>;
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private stompService: StompService
+    private stompService: StompService,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +46,11 @@ export class DriverMapInfoComponent implements OnInit {
           this.getRemainingTime();
           this.checkIfTimeIsUp(user?.email, this.driver?.active);
         });
+
+        this.driverState$ = this.store.select(
+          (store) => store.drivers.driverState
+        );
+        this.ride$ = this.store.select((store) => store.drivers.assignedRide);
 
         //socket
         this.subscribeToWebSocket(user?.email);
@@ -63,12 +77,15 @@ export class DriverMapInfoComponent implements OnInit {
   }
 
   subscribeToWebSocket(email: string) {
-    this.stompService.subscribe('/topic/driver', (): any => {
-      if (email) {
-        this.store.dispatch(
-          new DriversActions.GetDriverRemainingWorkTime({ email: email })
-        );
-      }
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/driver', (): any => {
+        if (email) {
+          this.store.dispatch(
+            new DriversActions.GetDriverRemainingWorkTime({ email: email })
+          );
+        }
+      });
     });
   }
 
@@ -82,5 +99,26 @@ export class DriverMapInfoComponent implements OnInit {
         new DriversActions.ChangeDriverStatus({ email: email, active: active })
       );
     }
+  }
+
+  leaveDriveRejectionReason() {
+    const dialogRef = this.dialog.open(DriveRejectionReasonDialogComponent, {
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((rejectionReason) => {
+      console.log(rejectionReason);
+    });
+  }
+
+  startRide() {
+    this.ride$.pipe(take(1)).subscribe((ride) => {
+      this.store.dispatch(
+        new DriversActions.SetDriverState({ state: DriverState.RIDE_START })
+      );
+      this.store.dispatch(
+        new MapsActions.StartRideDriver({ assignedRideId: ride.id })
+      );
+    });
   }
 }

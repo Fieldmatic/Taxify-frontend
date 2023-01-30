@@ -1,9 +1,16 @@
+import { LoggedInUser } from '../auth/model/logged-in-user';
+import * as AuthActions from '../auth/store/auth.actions';
+import * as PassengerActions from './../passengers/store/passengers.actions';
 import { Store } from '@ngrx/store';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import * as fromApp from '../store/app.reducer';
-import * as AuthActions from '../auth/store/auth.actions';
-import { LoggedInUser } from '../auth/model/logged-in-user';
+import { StompService } from '../stomp.service';
+import { ToastrService } from 'ngx-toastr';
+import { Notification } from '../passengers/model/notification';
+import * as MapActions from '../maps/store/maps.actions';
+import * as DriversActions from '../drivers/store/drivers.actions';
+import { DriverState } from '../drivers/model/driverState';
 
 @Component({
   selector: 'app-navbar',
@@ -17,13 +24,92 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isLoginMode: boolean;
   loggedInUser: LoggedInUser = null;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  constructor(
+    private store: Store<fromApp.AppState>,
+    private stompService: StompService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.userSub = this.store.select('auth').subscribe((authState) => {
       this.isAuthenticated = Boolean(authState.user);
       this.loggedInUser = authState.user;
       this.isLoginMode = authState.isLoginMode;
+      this.role = authState.user.role;
+
+      if (this.loggedInUser && this.role === 'PASSENGER') {
+        this.subscribeOnWebSocketAsPassenger(this.loggedInUser.email);
+        this.loadPassengerNotifications();
+      } else if (this.loggedInUser && this.role === 'DRIVER') {
+        this.subscribeOnWebSocketAsDriver(this.loggedInUser.email);
+      }
+    });
+  }
+
+  subscribeOnWebSocketAsPassenger(email: string) {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe(
+        '/topic/passenger-notification/' + email,
+        (response): any => {
+          let message = this.getNotificationMessageFromWebSocket(response.body);
+          this.showNotificationToast(message);
+          this.loadPassengerNotifications();
+        }
+      );
+    });
+  }
+
+  subscribeOnWebSocketAsDriver(email: string) {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/driver/' + email, (response): any => {
+        let message = this.getNotificationMessageFromWebSocket(response.body);
+        this.showNotificationToast(message);
+        this.store.dispatch(
+          new DriversActions.SetDriverState({
+            state: DriverState.RIDING_TO_CLIENT,
+          })
+        );
+        this.store.dispatch(new MapActions.SimulateDriverRideToClient());
+      });
+    });
+  }
+
+  getNotificationMessageFromWebSocket(socketMessage): string {
+    switch (socketMessage) {
+      case 'ADDED_TO_THE_RIDE':
+        return 'You have been added to the ride.';
+      case 'RIDE_ACCEPTED':
+        return 'Your ride has been accepted.';
+      case 'VEHICLE_ARRIVED':
+        return 'Vehicle has arrived on your destination.';
+      case 'RIDE_STARTED':
+        this.startRideForPassenger();
+        return 'Your ride has started.';
+      case 'RIDE_FINISHED':
+        this.finishRideForPassenger();
+        return 'You have arrived on destination.';
+      default:
+        return 'Your ride has been scheduled.';
+    }
+  }
+
+  finishRideForPassenger() {
+    this.store.dispatch(new MapActions.RideFinishedPassenger());
+  }
+
+  startRideForPassenger() {
+    this.store.dispatch(new MapActions.RideStartedPassenger());
+  }
+
+  showNotificationToast(message: string) {
+    this.toastr.info(message, 'Notification', {
+      timeOut: 5000,
+      closeButton: true,
+      tapToDismiss: true,
+      newestOnTop: true,
+      positionClass: 'toast-top-center',
     });
   }
 
@@ -33,5 +119,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.store.dispatch(new AuthActions.LogoutStart());
+  }
+
+  loadPassengerNotifications() {
+    this.store.dispatch(
+      new PassengerActions.GetPassengerNotifications({
+        markNotificationsAsRead: false,
+      })
+    );
   }
 }

@@ -1,0 +1,7 @@
+export enum PassengerState {
+  FORM_FILL,
+  SEARCHING_FOR_DRIVER,
+  WAITING_FOR_DRIVER_TO_ARRIVE,
+  RIDING,
+  RIDE_FINISH,
+}

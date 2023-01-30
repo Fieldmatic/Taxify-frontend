@@ -1,3 +1,5 @@
+import { DirectivesModule } from './directives/directives.module';
+import { PassengerEffects } from './passengers/store/passengers.effects';
 import { AuthEffects } from './auth/store/auth.effects';
 import { APP_CONFIG, APP_SERVICE_CONFIG } from './appConfig/appconfig.service';
 import { NgModule } from '@angular/core';
@@ -23,16 +25,21 @@ import { AuthModule } from 'src/app/auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UsersEffects } from './users/store/users.effects';
 import { NavbarProfileMenuComponent } from './navbar/navbar-profile-menu/navbar-profile-menu.component';
-import { MatMenuModule } from '@angular/material/menu';
 import { HotToastModule } from '@ngneat/hot-toast';
 import { MapsEffects } from './maps/store/maps.effects';
 import { MapsService } from './maps/maps.service';
 import { CustomerSupportModule } from './customer-support/customer-support.module';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { CustomerSupportEffects } from './customer-support/store/customer-support.effects';
+import { ToastrModule } from 'ngx-toastr';
+import { NotificationsComponent } from './navbar/notifications/notifications/notifications.component';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, NavbarProfileMenuComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    NavbarProfileMenuComponent,
+    NotificationsComponent,
+  ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -46,17 +53,18 @@ import { CustomerSupportEffects } from './customer-support/store/customer-suppor
       UsersEffects,
       MapsEffects,
       CustomerSupportEffects,
+      PassengerEffects,
     ]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
     HotToastModule.forRoot({ position: 'top-center', dismissible: true }),
+    ToastrModule.forRoot(),
     CustomerSupportModule,
     UsersModule,
     MapsModule,
     AuthModule,
     AppRoutingModule,
-    MatMenuModule,
-    MatTooltipModule,
+    DirectivesModule,
   ],
   providers: [
     StompService,

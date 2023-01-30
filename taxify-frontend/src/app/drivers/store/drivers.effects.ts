@@ -1,5 +1,5 @@
 import { GetDriverInfo } from './drivers.actions';
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap, withLatestFrom } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -8,6 +8,10 @@ import { Driver } from '../../shared/model/driver.model';
 import * as fromApp from '../../store/app.reducer';
 import * as DriversActions from '../store/drivers.actions';
 import * as MapsActions from '../../maps/store/maps.actions';
+import { Ride } from 'src/app/shared/ride.model';
+import { AppConfig } from 'src/app/appConfig/appconfig.interface';
+import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
+import { DriverState } from '../model/driverState';
 
 @Injectable()
 export class DriversEffects {
@@ -23,7 +27,7 @@ export class DriversEffects {
         queryParams = queryParams.append('minLatitude', mapData.minLat);
         queryParams = queryParams.append('maxLatitude', mapData.maxLat);
         return this.http
-          .get<Driver[]>('http://localhost:8080/api/driver/allActiveInArea', {
+          .get<Driver[]>(this.config.apiEndpoint + 'driver/allActiveInArea', {
             params: queryParams,
           })
           .pipe(
@@ -58,7 +62,8 @@ export class DriversEffects {
       switchMap((getDriverInfoAction: DriversActions.GetDriverInfo) => {
         return this.http
           .get<Driver>(
-            'http://localhost:8080/api/driver/get/' +
+            this.config.apiEndpoint +
+              'driver/get/' +
               getDriverInfoAction.payload.email
           )
           .pipe(
@@ -80,7 +85,8 @@ export class DriversEffects {
         (getRemainingTime: DriversActions.GetDriverRemainingWorkTime) => {
           return this.http
             .get<number>(
-              'http://localhost:8080/api/driver/remainingWorkTime/' +
+              this.config.apiEndpoint +
+                'driver/remainingWorkTime/' +
                 getRemainingTime.payload.email
             )
             .pipe(
@@ -108,7 +114,8 @@ export class DriversEffects {
         }
         return this.http
           .put<Driver>(
-            'http://localhost:8080/api/driver/' +
+            this.config.apiEndpoint +
+              'driver/' +
               action +
               '/' +
               changeDriverStatus.payload.email,
@@ -135,9 +142,45 @@ export class DriversEffects {
     );
   });
 
+  getDriverAssignedRide = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(DriversActions.GET_DRIVER_ASSIGNED_RIDE),
+      switchMap(() => {
+        return this.http
+          .get<Ride>(this.config.apiEndpoint + 'driver/assignedRide', {})
+          .pipe(
+            map((ride: Ride) => {
+              return new DriversActions.SetAssignedRideToDriver({
+                ride: ride,
+                state: DriverState.ARRIVED_TO_CLIENT,
+              });
+            })
+          );
+      })
+    );
+  });
+
+  notifyPassengerVehicleHasArrived = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(DriversActions.SET_ASSIGNED_RIDE_TO_DRIVER),
+        switchMap((setAssignedRide: DriversActions.SetAssignedRideToDriver) => {
+          return this.http.put<void>(
+            this.config.apiEndpoint +
+              'notification/vehicleArrivedToClient/' +
+              setAssignedRide.payload.ride.sender,
+            {}
+          );
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    @Inject(APP_SERVICE_CONFIG) private config: AppConfig
   ) {}
 }

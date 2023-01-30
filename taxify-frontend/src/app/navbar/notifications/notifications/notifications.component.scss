@@ -1,0 +1,64 @@
+.notificationsMenu {
+  min-width: 25vw;
+  min-height: 15vh;
+  max-width: 25vw;
+  max-height: 30vh;
+  overflow-y: scroll;
+}
+
+.notification {
+  min-width: 10vw;
+}
+
+.notification>div {
+  max-height: 8vh
+}
+
+.notification>div:hover {
+  box-shadow: 5px 5px 5px 5px lightgrey;
+}
+
+.accept-reject>img {
+  cursor: pointer;
+}
+
+.otherNotifications {
+  color: lightgray;
+}
+
+.requestAnswer {
+  color: rgb(7, 148, 7);
+}
+
+.notificationsNumberCircle {
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  padding: 10px;
+  background: #fff;
+  border: 3px solid #000;
+  color: #000;
+  text-align: center;
+}
+
+#circle {
+  position: absolute;
+  z-index: 999999;
+  right: -10px;
+  top: -10px;
+  text-align: center;
+  width: 30px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: green;
+  display: table;
+}
+
+#circle>div {
+
+  width: 100%;
+  height: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  font-size: small;
+}

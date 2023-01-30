@@ -25,6 +25,9 @@
         id="signupBtn">
         Sign up
       </a>
+
+      <app-notifications *appHasRole="['PASSENGER']"></app-notifications>
+
       <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
       <app-navbar-profile-menu
         *ngIf="isAuthenticated"

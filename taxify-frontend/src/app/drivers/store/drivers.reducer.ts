@@ -55,8 +55,7 @@ export function driversReducer(
         ...state,
         driverState: action.payload.state
       }
-    case DriversActions.ASSIGN_RIDE_TO_DRIVER:
-      console.log(action.payload)
+    case DriversActions.SET_ASSIGNED_RIDE_TO_DRIVER:
       return {
         ...state,
         assignedRide: action.payload.ride,

@@ -16,7 +16,8 @@ export const SET_DRIVER_REMAINING_WORK_TIME =
 export const CHANGE_DRIVER_STATUS = '[Drivers] Change driver status';
 export const SET_DRIVER_STATE = '[Drivers] Set Driver State'
 export const GET_DRIVER_ASSIGNED_RIDE = '[Drivers] Get driver assigned ride'
-export const ASSIGN_RIDE_TO_DRIVER = '[Drivers] Assign ride to driver'
+export const SET_ASSIGNED_RIDE_TO_DRIVER = '[Drivers] Assign ride to driver'
+export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED = '[Drivers] Notify passenger that vehicle has arrived'
 
 export class FetchActiveDriversInArea implements Action {
   readonly type = FETCH_ACTIVE_DRIVERS_IN_AREA;
@@ -74,9 +75,14 @@ export class GetDriverAssignedRide implements Action {
   readonly type = GET_DRIVER_ASSIGNED_RIDE;
 }
 
-export class AssignRideToDriver implements Action {
-  readonly type = ASSIGN_RIDE_TO_DRIVER;
+export class SetAssignedRideToDriver implements Action {
+  readonly type = SET_ASSIGNED_RIDE_TO_DRIVER;
   constructor(public payload: {ride: Ride, state: DriverState}) {}
+}
+
+export class NotifyPassengerOfVehicleArrived implements Action {
+  readonly type = NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED;
+  constructor() {}
 }
 
 export type DriversActions =
@@ -89,4 +95,5 @@ export type DriversActions =
   | SetDriverRemainingWorkTime
   | ChangeDriverStatus
   | SetDriverState
-  | AssignRideToDriver;
+  | SetAssignedRideToDriver
+  | NotifyPassengerOfVehicleArrived;

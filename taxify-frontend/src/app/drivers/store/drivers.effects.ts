@@ -150,8 +150,8 @@ export class DriversEffects {
           .get<Ride>(this.config.apiEndpoint + 'driver/assignedRide', {})
           .pipe(
             map((ride: Ride) => {
-              return new DriversActions.AssignRideToDriver({
-                ride: new Ride(ride.id),
+              return new DriversActions.SetAssignedRideToDriver({
+                ride: ride,
                 state: DriverState.ARRIVED_TO_CLIENT,
               });
             })
@@ -159,6 +159,23 @@ export class DriversEffects {
       })
     );
   });
+
+  notifyPassengerVehicleHasArrived = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(DriversActions.SET_ASSIGNED_RIDE_TO_DRIVER),
+        switchMap((setAssignedRide: DriversActions.SetAssignedRideToDriver) => {
+          return this.http.put<void>(
+            this.config.apiEndpoint +
+              'notification/vehicleArrivedToClient/' +
+              setAssignedRide.payload.ride.sender,
+            {}
+          );
+        })
+      );
+    },
+    { dispatch: false }
+  );
 
   constructor(
     private actions$: Actions,

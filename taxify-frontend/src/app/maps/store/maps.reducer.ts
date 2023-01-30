@@ -76,7 +76,7 @@ export function mapsReducer(
         ...state,
         passengerState: PassengerState.SEARCHING_FOR_DRIVER,
       };
-    case MapsActions.RIDE_FINISH: {
+    case MapsActions.RIDE_FINISH_PASSENGER: {
       return {
         ...state,
         passengerState: PassengerState.RIDE_FINISH,

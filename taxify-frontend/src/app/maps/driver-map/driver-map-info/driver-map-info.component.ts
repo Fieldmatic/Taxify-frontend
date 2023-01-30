@@ -117,6 +117,9 @@ export class DriverMapInfoComponent implements OnInit {
   startRide() {
     this.ride$.pipe(take(1)).subscribe((ride) => {
       this.store.dispatch(
+        new DriversActions.SetDriverState({ state: DriverState.RIDE_START })
+      );
+      this.store.dispatch(
         new MapsActions.StartRideDriver({ assignedRideId: ride.id })
       );
     })

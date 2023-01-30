@@ -1,29 +1,14 @@
 import { Inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpParams,
-  HttpResponse,
-} from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { AuthService } from '../../auth/services/auth/auth.service';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import * as MapsActions from './maps.actions';
-import { catchError, map, mergeMap, switchMap, tap } from 'rxjs';
+import { map, mergeMap, switchMap } from 'rxjs';
 import { Location } from '../model/location';
-import { GeoJSON, GeoJsonObject } from 'geojson';
-import {
-  GeoJSONFeature,
-  GeoJSONFeatureCollection,
-  GeoJSONObject,
-} from 'ol/format/GeoJSON';
-import { Driver } from '../../shared/driver.model';
-import {
-  LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS,
-  SetAvailableRoutesCoordinates,
-} from './maps.actions';
+import { GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
+import { Driver } from '../../shared/model/driver.model';
 import { Route } from '../model/route';
 import * as DriverActions from '../../drivers/store/drivers.actions';
 import { DriverState } from 'src/app/drivers/model/driverState';
@@ -169,10 +154,10 @@ export class MapsEffects {
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,
-              passengers:  {
+              passengers: {
                 senderEmail: searchForRideData.payload.sender,
                 recipientsEmails: searchForRideData.payload.linkedUsers,
-              }
+              },
             }
           )
           .pipe(
@@ -200,7 +185,9 @@ export class MapsEffects {
           )
           .pipe(
             map(() => {
-              return new MapsActions.FinishRide({assignedRideId: startRide.payload.assignedRideId});
+              return new MapsActions.FinishRide({
+                assignedRideId: startRide.payload.assignedRideId,
+              });
             })
           );
       })
@@ -212,10 +199,17 @@ export class MapsEffects {
       ofType(MapsActions.FINISH_RIDE_DRIVER),
       switchMap((finishRide: MapsActions.FinishRide) => {
         return this.http
-          .put(this.config.apiEndpoint + 'driver/finishRide/' + finishRide.payload.assignedRideId, {})
+          .put(
+            this.config.apiEndpoint +
+              'driver/finishRide/' +
+              finishRide.payload.assignedRideId,
+            {}
+          )
           .pipe(
             map(() => {
-              return new DriverActions.SetDriverState({state: DriverState.RIDE_FINISHED});
+              return new DriverActions.SetDriverState({
+                state: DriverState.RIDE_FINISHED,
+              });
             })
           );
       })
@@ -290,11 +284,10 @@ export class MapsEffects {
             map(() => {
               return new DriverActions.GetDriverAssignedRide();
             })
-          );;
-        })
-      );
-    },
-  );
+          );
+      })
+    );
+  });
 
   constructor(
     private actions$: Actions,

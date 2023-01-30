@@ -1,4 +1,3 @@
-import { DriveRejectionReasonDialogComponent } from './../drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
 import { GetDriverRemainingWorkTime } from './../../../drivers/store/drivers.actions';
 import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
 import { Component, OnInit } from '@angular/core';
@@ -12,8 +11,9 @@ import { StompService } from 'src/app/stomp.service';
 import { state } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { DriverState } from '../../../drivers/model/driverState';
-import * as MapsActions from '../../store/maps.actions'
+import * as MapsActions from '../../store/maps.actions';
 import { Ride } from 'src/app/shared/ride.model';
+import { LeaveReasonDialogComponent } from '../../leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
 
 @Component({
   selector: 'app-driver-map-info',
@@ -105,12 +105,19 @@ export class DriverMapInfoComponent implements OnInit {
   }
 
   leaveDriveRejectionReason() {
-    const dialogRef = this.dialog.open(DriveRejectionReasonDialogComponent, {
+    const dialogRef = this.dialog.open(LeaveReasonDialogComponent, {
       disableClose: true,
+      data: {
+        title: 'Drive rejection',
+        subtitleQuestion: "What's your reason for rejecting a drive?",
+        buttonContent: 'Save reason',
+      },
     });
 
     dialogRef.afterClosed().subscribe((rejectionReason) => {
-      console.log(rejectionReason);
+      this.store.dispatch(
+        new MapsActions.RejectRideDriver({ rejectReason: rejectionReason })
+      );
     });
   }
 
@@ -119,10 +126,7 @@ export class DriverMapInfoComponent implements OnInit {
       this.store.dispatch(
         new DriversActions.SetDriverState({ state: DriverState.RIDE_START })
       );
-      this.store.dispatch(
-        new MapsActions.StartRideDriver({ assignedRideId: ride.id })
-      );
-    })
- 
+      this.store.dispatch(new MapsActions.StartRideDriver());
+    });
   }
 }

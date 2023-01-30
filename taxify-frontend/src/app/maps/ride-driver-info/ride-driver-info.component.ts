@@ -10,7 +10,10 @@ import { StompService } from 'src/app/stomp.service';
 import { state } from '@angular/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-
+import { LeaveReasonDialogComponent } from '../leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
+import * as PassengerActions from '../../passengers/store/passengers.actions';
+import { DriverState } from 'src/app/drivers/model/driverState';
+import { PassengerState } from '../model/passengerState';
 @Component({
   selector: 'app-ride-driver-info',
   templateUrl: './ride-driver-info.component.html',
@@ -19,16 +22,20 @@ import { Observable } from 'rxjs';
 export class RideDriverInfoComponent implements OnInit {
   driver$: Observable<Driver>;
   timeLeft$: Observable<number>;
+  passengerState$: Observable<PassengerState>;
+  passengerStateEnum: typeof PassengerState = PassengerState;
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private stompService: StompService,
     public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
     this.driver$ = this.store.select((store) => store.maps.rideDriver);
     this.timeLeft$ = this.store.select((store) => store.maps.timeLeft);
+    this.passengerState$ = this.store.select(
+      (store) => store.maps.passengerState
+    );
   }
 
   convertTimeLeft(timeLeft: number): string {
@@ -38,5 +45,21 @@ export class RideDriverInfoComponent implements OnInit {
       let roundTimeLeft = Math.round(timeLeft);
       return roundTimeLeft.toString() + ' minutes';
     }
+  }
+
+  makeComplaint() {
+    const dialogRef = this.dialog.open(LeaveReasonDialogComponent, {
+      disableClose: true,
+      data: {
+        title: 'Passenger complaints',
+        subtitleQuestion: "What's your complaint?",
+        buttonContent: 'Save complaint',
+      },
+    });
+    dialogRef.afterClosed().subscribe((complaint) => {
+      this.store.dispatch(
+        new PassengerActions.MakeComplaint({ complaint: complaint })
+      );
+    });
   }
 }

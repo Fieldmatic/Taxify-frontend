@@ -25,7 +25,7 @@ export const LOAD_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Load destination autocomplete results';
 export const SET_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Set destination autocomplete results';
-export const RIDE_FINISH = '[Maps] Ride finish passenger';
+export const RESET_STATE_AFTER_RIDE_FINISH = '[Maps] Reset state after ride finish';
 
 export const START_RIDE_DRIVER = '[Maps] Start ride driver';
 export const SET_RIDE_STATUS = '[Maps] Set ride status';
@@ -55,6 +55,10 @@ export const FINISH_RIDE_DRIVER = '[Maps] Finish ride';
 export const LOAD_ACTIVE_ROUTE = '[Maps] Load active route';
 export const SET_ACTIVE_RIDE_AND_DRIVER = '[Maps] Set active ride and driver'
 
+export const REJECT_RIDE_DRIVER = '[Maps] Reject ride driver';
+
+export const SIMULATE_DRIVER_RIDE_TO_CLIENT_END =
+  '[Maps] End of driver ride to client simulation';
 
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
@@ -154,15 +158,11 @@ export class SearchForDriver implements Action {
 export class StartRideDriver implements Action {
   readonly type = START_RIDE_DRIVER;
 
-  constructor(
-    public payload: {
-      assignedRideId: string;
-    }
-  ) {}
+  constructor() {}
 }
 
-export class RideFinish implements Action {
-  readonly type = RIDE_FINISH;
+export class ResetStateAfterRideFinish implements Action {
+  readonly type = RESET_STATE_AFTER_RIDE_FINISH;
 
   constructor() {}
 }
@@ -185,6 +185,12 @@ export class SimulateDriverRideToClient implements Action {
   constructor() {}
 }
 
+export class SimulateDriverRideToClientEnd implements Action {
+  readonly type = SIMULATE_DRIVER_RIDE_TO_CLIENT_END;
+
+  constructor(public payload: { simulationResult: number }) {}
+}
+
 export class SetRideDriver implements Action {
   readonly type = SET_RIDE_DRIVER;
 
@@ -202,11 +208,8 @@ export class RideStartedPassenger implements Action {
 export class FinishRide implements Action {
   readonly type = FINISH_RIDE_DRIVER;
 
-  constructor(
-    public payload: {
-      assignedRideId: string
-    }
-  ) {}}
+  constructor() {}
+}
 export class LoadTimeFromDriverToClient implements Action {
   readonly type = LOAD_TIME_FROM_DRIVER_TO_CLIENT;
   constructor(
@@ -238,6 +241,11 @@ export class SetActiveRideAndDriver implements Action{
 }
 
 
+export class RejectRideDriver implements Action {
+  readonly type = REJECT_RIDE_DRIVER;
+  constructor(public payload: { rejectReason: string }) {}
+}
+
 export type MapsActions =
   | MapLoadStart
   | MapLoadEnd
@@ -251,7 +259,7 @@ export type MapsActions =
   | SetSelectedRouteCoordinates
   | SearchForDriver
   | StartRideDriver
-  | RideFinish
+  | ResetStateAfterRideFinish
   | SetRideStatus
   | ClearDestinationAutocompleteResults
   | SetAvailableRoutesCoordinates
@@ -263,4 +271,5 @@ export type MapsActions =
   | SetTimeLeft
   | SubtractTimeLeft
   | LoadActiveRoute
-  | SetActiveRideAndDriver;
+  | SetActiveRideAndDriver
+  | RejectRideDriver;

@@ -53,6 +53,8 @@ export class NotificationsComponent implements OnInit {
         return 'Your ride has started.'
       case 'RIDE_FINISHED_PASSENGER':
         return 'You have arrived at your destination.'
+      case 'RIDE_REJECTED':
+        return 'Your ride has been rejected.';
       default:
         return 'Your ride has been scheduled';
     }

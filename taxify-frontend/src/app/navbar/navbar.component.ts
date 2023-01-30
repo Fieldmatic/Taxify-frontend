@@ -18,7 +18,7 @@ import { StompService } from '../stomp.service';
 import { ToastrService } from 'ngx-toastr';
 import { Notification } from '../passengers/model/notification';
 import * as MapActions from '../maps/store/maps.actions';
-import * as DriversActions from '../drivers/store/drivers.actions'
+import * as DriversActions from '../drivers/store/drivers.actions';
 import { DriverState } from '../drivers/model/driverState';
 import { MapsService } from '../maps/maps.service';
 
@@ -94,27 +94,30 @@ export class NavbarComponent implements OnInit {
       case 'VEHICLE_ARRIVED':
         return 'Vehicle has arrived on your destination.';
       case 'RIDE_STARTED':
-        this.startRideForPassenger()
+        this.startRideForPassenger();
         return 'Your ride has started.';
       case 'RIDE_FINISHED_PASSENGER':
-        this.finishRide()
+        this.resetStateAfterRideFinished()
         return 'You have arrived on destination.'
       case 'RIDE_FINISHED_DRIVER':
-        this.finishRide()
+        this.resetStateAfterRideFinished()
         return 'You successfully finished a ride.'
       case 'RIDE_ASSIGNED':
         return 'Ride has been assigned to you.'
+      case 'RIDE_REJECTED':
+        this.resetStateAfterRideFinished();
+        return 'Your ride has been rejected.';
       default:
         return 'Your ride has been scheduled.';
     }
   }
 
-  finishRide() {
-    this.store.dispatch(new MapActions.RideFinish())
+  resetStateAfterRideFinished() {
+    this.store.dispatch(new MapActions.ResetStateAfterRideFinish())
   }
 
   startRideForPassenger() {
-    this.store.dispatch(new MapActions.RideStartedPassenger())
+    this.store.dispatch(new MapActions.RideStartedPassenger());
   }
 
   showNotificationToast(message: string) {

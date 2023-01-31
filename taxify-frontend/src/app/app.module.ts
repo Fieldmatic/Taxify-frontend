@@ -31,7 +31,7 @@ import { MapsService } from './maps/maps.service';
 import { CustomerSupportModule } from './customer-support/customer-support.module';
 import { CustomerSupportEffects } from './customer-support/store/customer-support.effects';
 import { ToastrModule } from 'ngx-toastr';
-import { NotificationsComponent } from './navbar/notifications/notifications/notifications.component';
+import { NotificationsComponent } from './navbar/notifications/notifications.component';
 
 @NgModule({
   declarations: [

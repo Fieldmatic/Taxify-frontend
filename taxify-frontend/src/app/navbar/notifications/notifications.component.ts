@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { Notification } from 'src/app/passengers/model/notification';
-import * as fromApp from '../../../store/app.reducer';
-import * as PassengerActions from './../../../passengers/store/passengers.actions';
+import * as fromApp from '../../store/app.reducer';
+import * as PassengerActions from '../../passengers/store/passengers.actions';
 
 @Component({
   selector: 'app-notifications',
@@ -50,9 +50,9 @@ export class NotificationsComponent implements OnInit {
       case 'VEHICLE_ARRIVED':
         return 'Vehicle has arrived at your destination.';
       case 'RIDE_STARTED':
-        return 'Your ride has started.'
+        return 'Your ride has started.';
       case 'RIDE_FINISHED':
-        return 'You have arrived at your destination.'
+        return 'You have arrived at your destination.';
       default:
         return 'Your ride has been scheduled';
     }

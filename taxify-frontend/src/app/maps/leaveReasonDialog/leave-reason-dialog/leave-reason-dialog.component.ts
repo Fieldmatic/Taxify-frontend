@@ -7,7 +7,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./leave-reason-dialog.component.scss'],
 })
 export class LeaveReasonDialogComponent {
-  complaintReason: string;
+  reason: string;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,

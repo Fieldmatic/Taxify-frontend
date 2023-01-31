@@ -57,9 +57,11 @@ export class RideDriverInfoComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe((complaint) => {
+      if (complaint) {
       this.store.dispatch(
         new PassengerActions.MakeComplaint({ complaint: complaint })
       );
+      }
     });
   }
 }

@@ -115,9 +115,12 @@ export class DriverMapInfoComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((rejectionReason) => {
-      this.store.dispatch(
-        new MapsActions.RejectRideDriver({ rejectReason: rejectionReason })
-      );
+      if (rejectionReason) {
+        this.store.dispatch(
+          new MapsActions.RejectRideDriver({ rejectReason: rejectionReason })
+        );
+        this.store.dispatch(new MapsActions.ResetStateAfterRideFinish());
+      }
     });
   }
 

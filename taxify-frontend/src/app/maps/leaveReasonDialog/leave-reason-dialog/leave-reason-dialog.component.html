@@ -1,11 +1,11 @@
-<h2 mat-dialog-title>Passenger complaints</h2>
+<h2 mat-dialog-title>{{data.title}}</h2>
 <div mat-dialog-content>
-  <p>What's your complaint?</p>
+  <p>{{data.subtitleQuestion}}</p>
   <mat-form-field class="w-100">
     <textarea
       matInput
       placeholder="Type here..."
-      [(ngModel)]="complaintReason"
+      [(ngModel)]="reason"
       style="height: 10vh"
     ></textarea>
   </mat-form-field>
@@ -20,10 +20,10 @@
   </button>
   <button
     mat-button
-    [mat-dialog-close]="complaintReason"
+    [mat-dialog-close]="reason"
     cdkFocusInitial
     class="bg-black text-white"
   >
-    Save complaint
+    {{data.buttonContent}}
   </button>
 </div>

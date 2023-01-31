@@ -218,7 +218,6 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
               .pipe(filter((val) => val !== null))
               .pipe(first())
               .subscribe((userExists) => {
-                console.log(userExists);
                 if (userExists)
                   try {
                     this.store.dispatch(
@@ -270,7 +269,6 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(filter((val) => val !== null))
       .pipe(first())
       .subscribe((userExists) => {
-        console.log(userExists);
         if (userExists)
           try {
             this.store.dispatch(

@@ -2,6 +2,7 @@
   *appHasRole="['PASSENGER']"
   [clientLocation]="this.clientLocation"
   [route]="this.routeArray"
+  [locationNames] = "this.locationNames"
   [hidden]="!filterDriversMode"
 ></app-filter-drivers>
 <mat-card [hidden]="filterDriversMode" *appHasRole="['PASSENGER']">
@@ -58,7 +59,7 @@
             let destination of additionalDestinations().controls;
             let i = index
           "
-          formGroupName="i"
+          formGroupName="additionalDestinations"
           appearance="fill"
           class="addressInput"
         >

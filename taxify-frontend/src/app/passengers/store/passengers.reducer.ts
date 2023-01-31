@@ -1,14 +1,17 @@
-import { Notification } from './../model/notification';
+import { Notification } from '../model/notification';
+import { RideHistoryResponse } from '../model/rideHistoryResponse';
 import * as PassengerActions from '../store/passengers.actions';
 
 export interface State {
   notifications: Notification[];
   error: string;
+  rideHistory: RideHistoryResponse[]
 }
 
 const initialState: State = {
   notifications: [],
   error: null,
+  rideHistory:[]
 };
 
 export function passengersReducer(
@@ -37,6 +40,11 @@ export function passengersReducer(
         notifications: notificationsCopy,
         error: null,
       };
+    case PassengerActions.SET_PASSENGER_RIDE_HISTORY:
+      return {
+        ...state,
+        rideHistory: action.payload.rides
+      }
     default:
       return state;
   }

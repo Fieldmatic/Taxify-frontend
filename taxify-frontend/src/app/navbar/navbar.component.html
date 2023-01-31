@@ -13,7 +13,9 @@
       >
 
       <app-notifications *appHasRole="['PASSENGER']"></app-notifications>
-
+      <a mat-button *ngIf="isAuthenticated" routerLink="/passenger/ride-history"
+      >Ride History</a
+    >
       <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile"
         >Profile</a
       >

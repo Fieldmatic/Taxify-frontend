@@ -7,6 +7,7 @@ import { switchMap, map } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { Notification } from '../model/notification';
+import { RideHistoryResponse } from '../model/rideHistoryResponse';
 import * as PassengerActions from './passengers.actions';
 
 @Injectable()
@@ -122,6 +123,24 @@ export class PassengerEffects {
         })
       ),
     { dispatch: false }
+  );
+
+  loadPassengerRideHistory = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PassengerActions.LOAD_PASSENGER_RIDE_HISTORY),
+        switchMap((loadPassengerRideHistory: PassengerActions.LoadPassengerRideHistory) => {
+          return this.http
+            .get<RideHistoryResponse[]>(this.config.apiEndpoint + 'ride/rideHistory', {
+            })
+            .pipe(
+              map((rideHistoryResponse: RideHistoryResponse[]) => {
+               return new PassengerActions.SetPassengerRideHistory({rides: rideHistoryResponse})
+              })
+            );
+        })
+      ),
+
   );
 
   constructor(

@@ -169,7 +169,7 @@ export class MapsEffects {
             this.config.apiEndpoint + 'driver/suitableDriverForRide',
             {
               clientLocation: searchForRideData.payload.clientLocation,
-              routeRequest: { waypoints: route },
+              routeRequest: { waypoints: route, locationNames: searchForRideData.payload.locationNames },
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,

@@ -163,14 +163,14 @@ export function mapsReducer(
         }
         route.set(key,new Route(routeArray))
       }  
-      let rideStatus = state.rideStatus;
-      if (action.payload.rideRouteInfo.rideStatus == 'STARTED') rideStatus = RideStatus.RIDING;
-      if (action.payload.rideRouteInfo.rideStatus == 'ACCEPTED' || action.payload.rideRouteInfo.rideStatus == 'ARRIVED') rideStatus = RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE;
+      let rideStatus: RideStatus = Object.assign({}, state.rideStatus)
+      if (action.payload.rideRouteInfo.rideStatus === 'STARTED') {rideStatus = RideStatus.RIDING;}
+      if ((action.payload.rideRouteInfo.rideStatus === 'ACCEPTED') || (action.payload.rideRouteInfo.rideStatus === 'ARRIVED')) {rideStatus = RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE;}
       return {
         ...state,
         rideDriver: action.payload.rideRouteInfo.driver,
+        rideStatus: rideStatus,
         selectedRoute: route,
-        rideStatus: rideStatus
       };
     }
     default:

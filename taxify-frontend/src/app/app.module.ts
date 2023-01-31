@@ -28,9 +28,12 @@ import { MapsEffects } from './maps/store/maps.effects';
 import { MapsService } from './maps/maps.service';
 import { ToastrModule } from 'ngx-toastr';
 import { NotificationsComponent } from './navbar/notifications/notifications/notifications.component';
+import { PassengersModule } from './passengers/passengers.module';
+import { DriversComponent } from './drivers/drivers.component';
+import { PathLocationStrategy } from '@angular/common';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, NotificationsComponent],
+  declarations: [AppComponent, NavbarComponent, NotificationsComponent, DriversComponent],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -52,6 +55,7 @@ import { NotificationsComponent } from './navbar/notifications/notifications/not
     UsersModule,
     MapsModule,
     AuthModule,
+    PassengersModule,
     AppRoutingModule,
     DirectivesModule,
   ],
@@ -69,5 +73,6 @@ import { NotificationsComponent } from './navbar/notifications/notifications/not
     },
   ],
   bootstrap: [AppComponent],
+  
 })
 export class AppModule {}

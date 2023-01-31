@@ -5,7 +5,7 @@ import * as MapActions from './store/maps.actions';
 import * as MapUtils from './mapUtils';
 import { Driver } from '../shared/driver.model';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, Subscription, take } from 'rxjs';
+import { BehaviorSubject, delay, map, Observable, Subscription, take } from 'rxjs';
 import { Vehicle } from '../shared/vehicle.model';
 import VectorSource from 'ol/source/Vector';
 import { LineString, Point } from 'ol/geom';
@@ -67,13 +67,13 @@ export class MapsService {
       .select((store) => store.maps.rideDriver)
       .subscribe((driver) => {
         this.rideDriver = driver;
-        this.addMarkers()
       });
     this.store
       .select((store) => store.maps.rideStatus)
       .subscribe((rideStatus) => {
         this.rideStatus = rideStatus;
         this.handlePassengerStatusChange();
+        this.drawFullRoute()
       });
     this.store.select((store) => store.drivers.driverState).subscribe((driverState) => {
       this.driverState = driverState;
@@ -103,8 +103,8 @@ export class MapsService {
     features.sort((a, b) =>
       a.getId() > b.getId() ? 1 : b.getId() > a.getId() ? -1 : 0
     );
-    this.routesVectorSource.clear();
-    if (features.length > 1 && this.rideStatus !== RideStatus.RIDING) {
+    if (features.length > 1 && this.rideStatus === RideStatus.FORM_FILL) {
+      this.routesVectorSource.clear();
       for (let i = 1; i < features.length; i++) {
         let locations: [longitude: number, latitude: number][] = [];
         let start: Location = features[i - 1].get('location');
@@ -235,12 +235,13 @@ export class MapsService {
     this.driversSubscription.unsubscribe();
   }
 
-  addMarkers() {
+  drawFullRoute() {
     this.selectedRoute$?.pipe(take(1)).subscribe((selectedRoutesMap) => {
-      let sortedMap = new Map([...selectedRoutesMap].sort());
+      if (this.routesVectorSource.getFeatures().length === 0){
+        let sortedMap = new Map([...selectedRoutesMap].sort());
         this.routesVectorSource.clear();
         for (let key of sortedMap.keys()) {
-          if (key === 'location1') this.drawLocation(new Location(sortedMap.get(key).route[0][1], sortedMap.get(key).route[0][0]), 'location0',  '../assets/pickup.png');
+          if (key === 'location1') {this.drawLocation(new Location(sortedMap.get(key).route[0][1], sortedMap.get(key).route[0][0]), 'location0',  '../assets/pickup.png');}
           this.drawLocation(new Location(sortedMap.get(key).route[sortedMap.get(key).route.length-1][1], sortedMap.get(key).route[sortedMap.get(key).route.length-1][0]), key,'../assets/pin.png');
           const routeFeature = this.getRouteFeature(
             sortedMap.get(key),
@@ -258,8 +259,11 @@ export class MapsService {
             100
           );
           this.routesVectorSource.addFeature(routeFeatureBackground);
+
+          }
         }
-    });
+      });
+      
   }
   drawLocation(location: Location, id: string, icon: string) {
     this.removeLocationIfExists(id);
@@ -431,6 +435,11 @@ export class MapsService {
           MapUtils.createVehicleFeatures([riderVehicle])
         );
         this.redrawRouteDuringRide(riderVehicle.location);
+      }
+      else {
+        this.vehiclesVectorSource.addFeatures(
+          MapUtils.createVehicleFeatures(this.vehicles)
+        );
       }
     }
     else if (this.rideStatus === RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE && this.vehicles.length > 0) {

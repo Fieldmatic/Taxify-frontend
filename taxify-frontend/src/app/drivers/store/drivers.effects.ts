@@ -12,6 +12,7 @@ import { Ride } from 'src/app/shared/ride.model';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { DriverState } from '../model/driverState';
+import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
 
 @Injectable()
 export class DriversEffects {
@@ -161,6 +162,24 @@ export class DriversEffects {
       })
     );
   });
+
+  loadDriverRideHistory = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(DriversActions.LOAD_DRIVER_RIDE_HISTORY),
+        switchMap((loadDriverRideHistory: DriversActions.LoadDriverRideHistory) => {
+          return this.http
+            .get<RideHistoryResponse[]>(this.config.apiEndpoint + 'ride/rideHistory', {
+            })
+            .pipe(
+              map((rideHistoryResponse: RideHistoryResponse[]) => {
+               return new DriversActions.SetDriverRideHistory({rides: rideHistoryResponse})
+              })
+            );
+        })
+      ),
+
+  );
 
   constructor(
     private actions$: Actions,

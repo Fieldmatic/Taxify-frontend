@@ -26,6 +26,7 @@ export interface Task {
 export class FilterDriversComponent implements OnInit {
   @Input() clientLocation: Location;
   @Input() route: [longitude: number, latitude: number, stop:boolean][];
+  @Input() locationNames: string[]
 
   checkboxPairs: number[] = [];
   petFriendly: boolean = false;
@@ -147,6 +148,7 @@ export class FilterDriversComponent implements OnInit {
       new MapActions.SearchForDriver({
         clientLocation: this.clientLocation,
         route: this.route,
+        locationNames: this.locationNames,
         vehicleTypes: this.chosenVehicleTypes,
         petFriendly: this.petFriendly,
         babyFriendly: this.babyFriendly,

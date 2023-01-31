@@ -36,6 +36,7 @@ export class PassengerMapFormComponent implements OnInit {
   clientLocation: Location;
   distance: number;
   duration: number;
+  locationNames: string[];
 
   filterDriversMode = false;
 
@@ -63,9 +64,20 @@ export class PassengerMapFormComponent implements OnInit {
           this.distance += value.distance;
           this.duration += value.duration;
         });
+        this.locationNames = this.getLocationNameList();
         this.distance = Number((this.distance / 1000).toFixed(2));
         this.duration = Number((this.duration / 60).toFixed(2));
       });
+  }
+
+  public getLocationNameList(): string[] {
+    let locationNames: string[] = []
+    locationNames.push(this.ridingForm.getRawValue()['pickupLocation'])
+    locationNames.push(this.ridingForm.getRawValue()['destination'])
+    for (let i = 0; i< this.additionalDestinations().value.length; i++) {
+      locationNames.push(this.additionalDestinations().value[i])
+    }
+   return locationNames;
   }
 
   public additionalDestinations(): FormArray {

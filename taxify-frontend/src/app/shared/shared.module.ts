@@ -12,6 +12,9 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
+import {MatTableModule} from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [LoadingSpinnerComponent, ConfirmationDialogComponent],
@@ -27,6 +30,9 @@ import { MatRadioModule } from '@angular/material/radio';
     MatFormFieldModule,
     MatInputModule,
     MatRadioModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTableModule,
   ],
   exports: [
     CommonModule,
@@ -41,6 +47,9 @@ import { MatRadioModule } from '@angular/material/radio';
     MatFormFieldModule,
     MatInputModule,
     MatRadioModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTableModule,
   ],
 })
 export class SharedModule {}

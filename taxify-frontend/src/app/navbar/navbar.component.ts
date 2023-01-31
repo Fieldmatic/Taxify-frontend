@@ -11,6 +11,8 @@ import { Notification } from '../passengers/model/notification';
 import * as MapActions from '../maps/store/maps.actions';
 import * as DriversActions from '../drivers/store/drivers.actions';
 import { DriverState } from '../drivers/model/driverState';
+import { NotifierService } from '../shared/services/notifier.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -27,7 +29,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private store: Store<fromApp.AppState>,
     private stompService: StompService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router,
+    private notifierService: NotifierService
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +46,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.loadPassengerNotifications();
       } else if (this.loggedInUser && this.role === 'DRIVER') {
         this.subscribeOnWebSocketAsDriver(this.loggedInUser.email);
+      }
+      if (this.loggedInUser) {
+        this.subscribeOnWebSocketForMessages(this.loggedInUser.email);
       }
     });
   }
@@ -72,6 +79,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
           })
         );
         this.store.dispatch(new MapActions.SimulateDriverRideToClient());
+      });
+    });
+  }
+
+  subscribeOnWebSocketForMessages(email: string) {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/message/' + email, (response): any => {
+        this.notifierService.notifyInfo(
+          `You have a new message from ${response.body}. Go check your messages!`
+        );
       });
     });
   }

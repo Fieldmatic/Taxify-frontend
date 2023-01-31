@@ -7,6 +7,14 @@ import { HotToastService } from '@ngneat/hot-toast';
 export class NotifierService {
   constructor(private toast: HotToastService) {}
 
+  public notifyInfo(message: string) {
+    this.toast.info(message, {
+      style: {
+        'min-width': '20%',
+      },
+    });
+  }
+
   public notifyError(errorRes: any) {
     let errorMessage = 'An unknown error occurred';
     if (errorRes.hasOwnProperty('error')) {

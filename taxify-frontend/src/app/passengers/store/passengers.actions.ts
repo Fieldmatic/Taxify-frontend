@@ -14,6 +14,8 @@ export const ANSWER_ON_ADDING_TO_THE_RIDE =
 export const SET_PASSENGER_NOTIFICATION =
   '[Passenger] Set Passenger Notification';
 
+export const MAKE_COMPLAINT = '[Passenger] Make complaint';
+
 export class AddLinkedPassengers implements Action {
   readonly type = ADD_LINKED_PASSENGERS;
 
@@ -42,6 +44,12 @@ export class SetPassengerNotification implements Action {
   readonly type = SET_PASSENGER_NOTIFICATION;
 
   constructor(public payload: Notification) {}
+}
+
+export class MakeComplaint implements Action {
+  readonly type = MAKE_COMPLAINT;
+
+  constructor(public payload: { complaint: string }) {}
 }
 
 export type PassengerActions =

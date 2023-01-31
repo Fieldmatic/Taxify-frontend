@@ -16,7 +16,7 @@ const initialState: State = {
   error: null,
   driver: null,
   driverState: DriverState.PENDING,
-  assignedRide: null
+  assignedRide: null,
 };
 
 export function driversReducer(
@@ -53,14 +53,13 @@ export function driversReducer(
     case DriversActions.SET_DRIVER_STATE:
       return {
         ...state,
-        driverState: action.payload.state
-      }
+        driverState: action.payload.state,
+      };
     case DriversActions.SET_ASSIGNED_RIDE_TO_DRIVER:
       return {
         ...state,
         assignedRide: action.payload.ride,
-        driverState: action.payload.state
-      }
+      };
     default:
       return state;
   }

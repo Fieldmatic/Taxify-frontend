@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 import { LeaveReasonDialogComponent } from '../leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
 import * as PassengerActions from '../../passengers/store/passengers.actions';
 import { DriverState } from 'src/app/drivers/model/driverState';
-import { PassengerState } from '../model/passengerState';
+import { RideStatus } from '../model/rideStatus';
 @Component({
   selector: 'app-ride-driver-info',
   templateUrl: './ride-driver-info.component.html',
@@ -22,8 +22,8 @@ import { PassengerState } from '../model/passengerState';
 export class RideDriverInfoComponent implements OnInit {
   driver$: Observable<Driver>;
   timeLeft$: Observable<number>;
-  passengerState$: Observable<PassengerState>;
-  passengerStateEnum: typeof PassengerState = PassengerState;
+  rideStatus$: Observable<RideStatus>;
+  rideStatusEnum: typeof RideStatus = RideStatus;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -33,8 +33,8 @@ export class RideDriverInfoComponent implements OnInit {
   ngOnInit(): void {
     this.driver$ = this.store.select((store) => store.maps.rideDriver);
     this.timeLeft$ = this.store.select((store) => store.maps.timeLeft);
-    this.passengerState$ = this.store.select(
-      (store) => store.maps.passengerState
+    this.rideStatus$ = this.store.select(
+      (store) => store.maps.rideStatus
     );
   }
 

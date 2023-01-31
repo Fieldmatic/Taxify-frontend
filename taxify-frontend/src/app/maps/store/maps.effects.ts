@@ -68,7 +68,6 @@ export class MapsEffects {
                     feature.properties['summary']['duration'],
                   );
                 }); 
-                console.log(availableRoutes)
                 return new MapsActions.SetAvailableRoutesCoordinates({
                   id: loadAvailableRoutesForTwoPoints.payload.destinationId,
                   routes: availableRoutes,
@@ -202,8 +201,6 @@ export class MapsEffects {
           )
           .pipe(
             map((rideRouteResponse : RideRouteResponse) => {
-              console.log("uradjeno")
-              console.log(rideRouteResponse)
               if (!rideRouteResponse) return { type: 'DUMMY' };
               else return new MapsActions.SetActiveRideAndDriver({rideRouteInfo: rideRouteResponse
               });
@@ -221,7 +218,7 @@ export class MapsEffects {
           .post(this.config.apiEndpoint + 'simulation/through-route', {})
           .pipe(
             map(() => {
-              return new MapsActions.ResetStateAfterRideFinish();
+              return new MapsActions.FinishRide();
             })
           );
       })

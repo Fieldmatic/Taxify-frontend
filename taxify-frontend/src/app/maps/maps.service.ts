@@ -237,7 +237,6 @@ export class MapsService {
 
   addMarkers() {
     this.selectedRoute$?.pipe(take(1)).subscribe((selectedRoutesMap) => {
-      console.log(selectedRoutesMap)
       let sortedMap = new Map([...selectedRoutesMap].sort());
         this.routesVectorSource.clear();
         for (let key of sortedMap.keys()) {
@@ -422,23 +421,19 @@ export class MapsService {
 
   updateMapVehicleLayer() {
     this.vehiclesVectorSource.clear();
-    if (this.rideStatus === RideStatus.RIDING || this.driverState === DriverState.RIDE_START && this.vehicles.length > 0) {
-      console.log("voznja")
-      console.log(this.rideDriver)
+    if (this.rideStatus === RideStatus.RIDING || this.driverState == DriverState.RIDE_START && this.vehicles.length > 0) {
       this.routesVectorSource.clear();
-      console.log(this.vehicles)
-      let riderVehicle = this.vehicles.find(
-        (vehicle) => vehicle.id === this.rideDriver.vehicle.id
-      );
-      this.vehiclesVectorSource.addFeatures(
-        MapUtils.createVehicleFeatures([riderVehicle])
-      );
-      this.redrawRouteDuringRide(riderVehicle.location);
+      if (this.rideDriver) {
+        let riderVehicle = this.vehicles.find(
+          (vehicle) => vehicle.id === this.rideDriver.vehicle.id
+        );
+        this.vehiclesVectorSource.addFeatures(
+          MapUtils.createVehicleFeatures([riderVehicle])
+        );
+        this.redrawRouteDuringRide(riderVehicle.location);
+      }
     }
     else if (this.rideStatus === RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE && this.vehicles.length > 0) {
-      console.log("cekanje")
-      console.log(this.rideDriver)
-      console.log(this.vehicles)
       let riderVehicle: Vehicle = this.vehicles.find(
         (vehicle) => vehicle.id === this.rideDriver.vehicle.id
       );

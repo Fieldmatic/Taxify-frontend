@@ -77,9 +77,6 @@ export class NavbarComponent implements OnInit {
       stompClient.subscribe('/topic/driver/' + email, (response): any => {
         let message = this.getNotificationMessageFromWebSocket(response.body);
         this.showNotificationToast(message);
-        this.store.dispatch(new DriversActions.SetDriverState({state: DriverState.RIDING_TO_CLIENT}))
-        this.store.dispatch(new MapActions.LoadActiveRoute());
-        this.store.dispatch(new MapActions.SimulateDriverRideToClient());
       });
     });
   }
@@ -103,6 +100,9 @@ export class NavbarComponent implements OnInit {
         this.resetStateAfterRideFinished()
         return 'You successfully finished a ride.'
       case 'RIDE_ASSIGNED':
+        this.store.dispatch(new DriversActions.SetDriverState({state: DriverState.RIDING_TO_CLIENT}))
+        this.store.dispatch(new MapActions.LoadActiveRoute());
+        this.store.dispatch(new MapActions.SimulateDriverRideToClient());
         return 'Ride has been assigned to you.'
       case 'RIDE_REJECTED':
         this.resetStateAfterRideFinished();

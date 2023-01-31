@@ -77,7 +77,7 @@ export function mapsReducer(
         ...state,
         rideStatus: RideStatus.SEARCHING_FOR_DRIVER,
       };
-    case MapsActions.RIDE_FINISH: {
+    case MapsActions.RESET_STATE_AFTER_RIDE_FINISH: {
       return {
         ...state,
         rideStatus: RideStatus.RIDE_FINISH,

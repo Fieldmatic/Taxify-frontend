@@ -18,7 +18,7 @@
         mat-button
         class="complainButton"
         (click)="makeComplaint()"
-        [disabled]="(passengerState$ | async) !== passengerStateEnum.RIDING"
+        [disabled]="(rideStatus$ | async) !== rideStatusEnum.RIDING"
       >
         Make a complaint
       </button>

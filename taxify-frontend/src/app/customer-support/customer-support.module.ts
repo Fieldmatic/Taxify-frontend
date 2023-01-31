@@ -8,7 +8,6 @@ import { CustomerSupportRoutingModule } from './customer-support-routing.module'
 import { NoChatsComponent } from './components/customer-support/all-chats/no-chats/no-chats.component';
 import { ChatPreviewComponent } from './components/customer-support/all-chats/chat-preview/chat-preview.component';
 import { MessageInputComponent } from './components/customer-support/chat/message-input/message-input.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MaterialFileInputModule } from 'ngx-material-file-input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MessageComponent } from './components/customer-support/chat/message/message.component';
@@ -28,7 +27,6 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     SharedModule,
     RouterModule,
     CustomerSupportRoutingModule,
-    MatTooltipModule,
     MaterialFileInputModule,
     ReactiveFormsModule,
     ScrollingModule,

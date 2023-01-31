@@ -18,7 +18,7 @@ export class ChatPreviewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.authSubscription = this.store.select('auth').subscribe((authState) => {
-      this.loggedUsersEmail = authState.user.email;
+      this.loggedUsersEmail = authState.user?.email;
     });
   }
 
@@ -39,6 +39,10 @@ export class ChatPreviewComponent implements OnInit, OnDestroy {
       }
     }
     return null;
+  }
+
+  get lastMessageSendersEmail() {
+    return this.chat.messages[0].sender.email;
   }
 
   get lastMessageContent() {

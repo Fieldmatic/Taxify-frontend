@@ -46,6 +46,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatMenuModule,
     MatTooltipModule,
     MatRadioModule,
+    MatInputModule,
   ],
 })
 export class SharedModule {}

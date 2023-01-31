@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.isAuthenticated = Boolean(authState.user);
       this.loggedInUser = authState.user;
       this.isLoginMode = authState.isLoginMode;
-      this.role = authState.user.role;
+      this.role = authState.user?.role;
 
       if (this.loggedInUser && this.role === 'PASSENGER') {
         this.subscribeOnWebSocketAsPassenger(this.loggedInUser.email);

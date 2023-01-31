@@ -1,35 +1,12 @@
 <hr style="width: 100%">
-<div *ngIf="imageSnippet" class="position-relative">
-  <div class="image-preview pt-1" [ngStyle]="{'background-image': getBackgroundImageUrl(this.imageSnippet)}"></div>
-  <a
-    role="button"
-    class="position-absolute top-0 image-canceler"
-    (click)="removeImage()"
-    matTooltip="Cancel Image"
-    matTooltipPosition="below"></a>
-</div>
 <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="row ps-4 pe-4">
   <div class="col-10 pt-1 ps-0 pe-4">
     <mat-form-field appearance="outline">
       <mat-label>Your Message</mat-label>
-      <input placeholder="Type here..." id="messageInput" formControlName="message" (keyup)="disableImage($event)"  matInput/>
+      <input placeholder="Type here..." id="messageInput" formControlName="message" matInput/>
     </mat-form-field>
   </div>
-  <div class="col-1 ps-0 pe-2 text-center">
-    <label class="text-center image-btn"
-           [ngStyle]="{'background-image': getButtonBackground()}">
-            <span>
-              <ngx-mat-file-input
-                id="imageBtn"
-                formControlName="image"
-                matTooltip="Send Image"
-                matTooltipPosition="below"
-                accept="image/*"
-                (change)="processFile()"></ngx-mat-file-input>
-            </span>
-    </label>
-  </div>
-  <div class="col-1 ps-0 pe-2 text-center">
+  <div class="col-2 ps-0 pe-2 text-center">
     <button
       type="submit"
       class="image-btn"

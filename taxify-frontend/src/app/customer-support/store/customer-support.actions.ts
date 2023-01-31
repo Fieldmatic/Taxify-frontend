@@ -14,6 +14,10 @@ export const SEND_MESSAGE_SUCCESS =
 export const NOTIFY_ERROR = '[Customer Support] Notify error';
 export const SEEN_MESSAGES = '[Customer Support] Seen messages';
 export const UPDATE_MESSAGES = '[Customer Support] Update messages';
+export const GET_CHAT_WITH_INTERLOCUTOR =
+  '[Customer Support] Get chat with interlocutor';
+export const SET_CHAT_WITH_INTERLOCUTOR =
+  '[Customer Support] Set chat with interlocutor';
 
 export class GetAllChats implements Action {
   readonly type = GET_ALL_CHATS;
@@ -71,6 +75,18 @@ export class UpdateMessages implements Action {
   constructor(public payload: Message[]) {}
 }
 
+export class GetChatWithInterlocutor implements Action {
+  readonly type = GET_CHAT_WITH_INTERLOCUTOR;
+
+  constructor(public payload: { interlocutorEmail: string; id: number }) {}
+}
+
+export class SetChatWithInterlocutor implements Action {
+  readonly type = SET_CHAT_WITH_INTERLOCUTOR;
+
+  constructor(public payload: { chat: Chat; id: number }) {}
+}
+
 export type CustomerSupportActions =
   | GetAllChats
   | RefreshAllChats
@@ -81,4 +97,6 @@ export type CustomerSupportActions =
   | SendMessageSuccess
   | NotifyError
   | SeenMessages
-  | UpdateMessages;
+  | UpdateMessages
+  | GetChatWithInterlocutor
+  | SetChatWithInterlocutor;

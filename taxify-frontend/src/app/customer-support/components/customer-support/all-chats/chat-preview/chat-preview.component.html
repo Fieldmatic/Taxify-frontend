@@ -1,4 +1,4 @@
-<mat-card class="mb-3">
+<mat-card class="mb-3" [ngStyle]="{'font-weight': (lastMessageStatus === 'DELIVERED' || lastMessageStatus === 'SENT') && lastMessageSendersEmail !== loggedUsersEmail ? 'bold' : 'inherit'}">
   <mat-card-header>
     <img *ngIf="interlocutor" mat-card-avatar src="" alt="IMAGE">
     <mat-card-title class="mt-3">{{interlocutor ? interlocutor.name + " " + interlocutor.surname : "ADMIN"}}</mat-card-title>

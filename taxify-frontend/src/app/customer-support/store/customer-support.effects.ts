@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import { NotifierService } from '../../shared/services/notifier.service';
 import * as CustomerSupportActions from './customer-support.actions';
-import { catchError, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { Chat } from '../model/chat.model';
 import { Message } from '../model/message.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -66,13 +66,8 @@ export class CustomerSupportEffects {
   refreshChats = createEffect(() => {
     return this.actions$.pipe(
       ofType(CustomerSupportActions.SEND_MESSAGE_SUCCESS),
-      withLatestFrom(this.store.select('customerSupport')),
-      switchMap(([actionData, customerSupportState]) => {
-        if (customerSupportState.chats.length === 0) {
-          return of(new CustomerSupportActions.RefreshAllChats());
-        } else {
-          return of();
-        }
+      map(() => {
+        return new CustomerSupportActions.RefreshAllChats();
       })
     );
   });
@@ -85,17 +80,6 @@ export class CustomerSupportEffects {
       })
     );
   });
-
-  refreshAllChatsSuccessRedirect = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(CustomerSupportActions.REFRESH_ALL_CHATS_SUCCESS),
-        tap(() => {
-          this.router.navigate(['/customerSupport', 'chats']);
-        })
-      ),
-    { dispatch: false }
-  );
 
   notifyError = createEffect(
     () => {
@@ -121,6 +105,35 @@ export class CustomerSupportEffects {
           .pipe(
             map((messages) => {
               return new CustomerSupportActions.UpdateMessages(messages);
+            }),
+            catchError((errorRes) => {
+              return of(new CustomerSupportActions.NotifyError(errorRes));
+            })
+          );
+      })
+    );
+  });
+
+  getChatWithInterlocutor = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(CustomerSupportActions.GET_CHAT_WITH_INTERLOCUTOR),
+      switchMap((action: CustomerSupportActions.GetChatWithInterlocutor) => {
+        return this.http
+          .get<Chat>(
+            this.config.apiEndpoint + 'message/chat-with-interlocutor',
+            {
+              params: new HttpParams().append(
+                'interlocutorEmail',
+                action.payload.interlocutorEmail
+              ),
+            }
+          )
+          .pipe(
+            map((chat) => {
+              return new CustomerSupportActions.SetChatWithInterlocutor({
+                chat: chat,
+                id: action.payload.id,
+              });
             }),
             catchError((errorRes) => {
               return of(new CustomerSupportActions.NotifyError(errorRes));

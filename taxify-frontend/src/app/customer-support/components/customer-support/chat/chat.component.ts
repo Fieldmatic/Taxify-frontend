@@ -13,6 +13,7 @@ import {
   trigger,
 } from '@angular/animations';
 import * as CustomerSupportActions from '../../../store/customer-support.actions';
+import { StompService } from '../../../../stomp.service';
 
 @Component({
   selector: 'app-chat',
@@ -75,10 +76,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   chat: Chat;
   messages: Message[] = [];
   loggedInUserEmail: string;
+  loggedInUserRole: string;
   chatSubscription: Subscription;
   authSubscription: Subscription;
 
   constructor(
+    private stompService: StompService,
     private router: Router,
     private route: ActivatedRoute,
     private store: Store<fromApp.AppState>
@@ -116,7 +119,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.authSubscription = this.store.select('auth').subscribe((authState) => {
-      this.loggedInUserEmail = authState.user.email;
+      this.loggedInUserEmail = authState.user?.email;
+      this.loggedInUserRole = authState.user?.role;
     });
     this.chatSubscription = this.store
       .select('customerSupport')
@@ -139,6 +143,11 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
           }
         }
+        if (this.unseenMessagesIds.length > 0) {
+          this.store.dispatch(
+            new CustomerSupportActions.SeenMessages(this.unseenMessagesIds)
+          );
+        }
       });
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -154,15 +163,28 @@ export class ChatComponent implements OnInit, OnDestroy {
         );
       }
     });
-    if (this.unseenMessagesIds.length > 0) {
-      this.store.dispatch(
-        new CustomerSupportActions.SeenMessages(this.unseenMessagesIds)
-      );
-    }
+    this.subscribeOnWebSocket();
   }
 
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
     this.chatSubscription.unsubscribe();
+  }
+
+  subscribeOnWebSocket() {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, () => {
+      stompClient.subscribe(
+        '/topic/message/' + this.loggedInUserEmail,
+        (response): any => {
+          this.store.dispatch(
+            new CustomerSupportActions.GetChatWithInterlocutor({
+              interlocutorEmail: response.body,
+              id: +this.route.snapshot.paramMap.get('id'),
+            })
+          );
+        }
+      );
+    });
   }
 }

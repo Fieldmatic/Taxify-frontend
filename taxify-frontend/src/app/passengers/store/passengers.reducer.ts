@@ -1,4 +1,4 @@
-import { Notification } from './../model/notification';
+import { Notification } from '../../shared/model/notification';
 import * as PassengerActions from '../store/passengers.actions';
 
 export interface State {

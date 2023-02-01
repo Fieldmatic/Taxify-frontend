@@ -14,6 +14,7 @@ import {
 } from '@angular/animations';
 import * as CustomerSupportActions from '../../../store/customer-support.actions';
 import { StompService } from '../../../../stomp.service';
+import { CompatClient } from '@stomp/stompjs';
 
 @Component({
   selector: 'app-chat',
@@ -79,6 +80,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   loggedInUserRole: string;
   chatSubscription: Subscription;
   authSubscription: Subscription;
+  stompClient: CompatClient;
 
   constructor(
     private stompService: StompService,
@@ -109,7 +111,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     for (let message of this.messages) {
       if (
         message.status === 'DELIVERED' ||
-        (message.status === 'SENT' && this.interlocutor)
+        (message.status === 'SENT' &&
+          this.interlocutor &&
+          message.sender.email === this.interlocutor.email)
       ) {
         imageIds.push(message.id);
       }
@@ -129,6 +133,11 @@ export class ChatComponent implements OnInit, OnDestroy {
         if (id !== 'new') {
           this.chat = customerSupportState.chats[+id];
           this.messages = Array.from(this.chat.messages).reverse();
+          if (this.unseenMessagesIds.length > 0) {
+            this.store.dispatch(
+              new CustomerSupportActions.SeenMessages(this.unseenMessagesIds)
+            );
+          }
         } else if (customerSupportState.chats.length > 0) {
           for (let chat of customerSupportState.chats) {
             for (let message of chat.messages) {
@@ -169,20 +178,25 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
     this.chatSubscription.unsubscribe();
+    this.stompClient.disconnect();
   }
 
   subscribeOnWebSocket() {
-    const stompClient = this.stompService.connect();
-    stompClient.connect({}, () => {
-      stompClient.subscribe(
+    this.stompClient = this.stompService.connect();
+    this.stompClient.connect({}, () => {
+      this.stompClient.subscribe(
         '/topic/message/' + this.loggedInUserEmail,
         (response): any => {
-          this.store.dispatch(
-            new CustomerSupportActions.GetChatWithInterlocutor({
-              interlocutorEmail: response.body,
-              id: +this.route.snapshot.paramMap.get('id'),
-            })
-          );
+          if (response.body === 'Message changed status') {
+            this.store.dispatch(new CustomerSupportActions.RefreshAllChats());
+          } else {
+            this.store.dispatch(
+              new CustomerSupportActions.GetChatWithInterlocutor({
+                interlocutorEmail: response.body,
+                id: +this.route.snapshot.paramMap.get('id'),
+              })
+            );
+          }
         }
       );
     });

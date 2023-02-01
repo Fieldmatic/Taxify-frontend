@@ -45,6 +45,10 @@ export class ChatPreviewComponent implements OnInit, OnDestroy {
     return this.chat.messages[0].sender.email;
   }
 
+  get lastMessageReceiver() {
+    return this.chat.messages[0].receiver;
+  }
+
   get lastMessageContent() {
     return this.chat.messages[0].content;
   }

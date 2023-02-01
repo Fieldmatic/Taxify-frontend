@@ -7,12 +7,13 @@ import { Subscription } from 'rxjs';
 import * as fromApp from '../store/app.reducer';
 import { StompService } from '../stomp.service';
 import { ToastrService } from 'ngx-toastr';
-import { Notification } from '../passengers/model/notification';
+import { Notification } from '../shared/model/notification';
 import * as MapActions from '../maps/store/maps.actions';
 import * as DriversActions from '../drivers/store/drivers.actions';
 import { DriverState } from '../drivers/model/driverState';
 import { NotifierService } from '../shared/services/notifier.service';
 import { Router } from '@angular/router';
+import * as CustomerSupportActions from '../customer-support/store/customer-support.actions';
 
 @Component({
   selector: 'app-navbar',
@@ -46,6 +47,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.loadPassengerNotifications();
       } else if (this.loggedInUser && this.role === 'DRIVER') {
         this.subscribeOnWebSocketAsDriver(this.loggedInUser.email);
+      } else if (this.loggedInUser && this.role === 'ADMIN') {
+        this.subscribeOnWebSocketAsAdmin();
       }
       if (this.loggedInUser) {
         this.subscribeOnWebSocketForMessages(this.loggedInUser.email);
@@ -83,13 +86,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
   }
 
-  subscribeOnWebSocketForMessages(email: string) {
+  subscribeOnWebSocketAsAdmin() {
     const stompClient = this.stompService.connect();
     stompClient.connect({}, () => {
+      stompClient.subscribe('/topic/admin-required', () => {
+        this.store.dispatch(new CustomerSupportActions.GetAdminNotifications());
+      });
+    });
+  }
+
+  subscribeOnWebSocketForMessages(email: string) {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, (response) => {
       stompClient.subscribe('/topic/message/' + email, (response): any => {
-        this.notifierService.notifyInfo(
-          `You have a new message from ${response.body}. Go check your messages!`
-        );
+        if (response.body !== 'Message changed status') {
+          this.notifierService.notifyInfo(
+            `You have a new message from ${response.body}. Go check your messages!`
+          );
+        }
       });
     });
   }

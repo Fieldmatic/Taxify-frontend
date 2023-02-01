@@ -1,6 +1,7 @@
 import { Action } from '@ngrx/store';
 import { Chat } from '../model/chat.model';
 import { Message } from '../model/message.model';
+import { Notification } from '../../shared/model/notification';
 
 export const GET_ALL_CHATS = '[Customer Support] Get all chats';
 export const REFRESH_ALL_CHATS = '[Customer Support] Refresh all chats';
@@ -18,6 +19,10 @@ export const GET_CHAT_WITH_INTERLOCUTOR =
   '[Customer Support] Get chat with interlocutor';
 export const SET_CHAT_WITH_INTERLOCUTOR =
   '[Customer Support] Set chat with interlocutor';
+export const GET_ADMIN_NOTIFICATIONS =
+  '[Customer Support] Get admin notifications';
+export const SET_ADMIN_NOTIFICATIONS =
+  '[Customer Support] Set admin notifications';
 
 export class GetAllChats implements Action {
   readonly type = GET_ALL_CHATS;
@@ -87,6 +92,16 @@ export class SetChatWithInterlocutor implements Action {
   constructor(public payload: { chat: Chat; id: number }) {}
 }
 
+export class GetAdminNotifications implements Action {
+  readonly type = GET_ADMIN_NOTIFICATIONS;
+}
+
+export class SetAdminNotifications implements Action {
+  readonly type = SET_ADMIN_NOTIFICATIONS;
+
+  constructor(public payload: Notification[]) {}
+}
+
 export type CustomerSupportActions =
   | GetAllChats
   | RefreshAllChats
@@ -99,4 +114,6 @@ export type CustomerSupportActions =
   | SeenMessages
   | UpdateMessages
   | GetChatWithInterlocutor
-  | SetChatWithInterlocutor;
+  | SetChatWithInterlocutor
+  | GetAdminNotifications
+  | SetAdminNotifications;

@@ -1,5 +1,5 @@
 <div class="dropdown">
-  <div id="circle">
+  <div *ngIf="unreadNotifications > 0" id="circle">
     <div [innerHTML]="unreadNotifications"></div>
   </div>
   <button
@@ -21,7 +21,7 @@
       <div class="ps-3 pb-2">
         <span
           class="fw-normal"
-          *ngIf="notification.type === 'ADDED_TO_THE_RIDE'"
+          *ngIf="notification.type === 'ADDED_TO_THE_RIDE' || notification.type === 'CUSTOMER_SUPPORT_REQUIRED'"
         >
           {{ notification["senderName"] }}
           {{ notification["senderSurname"] }} </span

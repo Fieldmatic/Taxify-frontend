@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { Notification } from '../model/notification';
+import { Notification } from '../../shared/model/notification';
 
 export const ADD_LINKED_PASSENGERS = '[Passenger] Add Linked Passengers';
 export const GET_PASSENGER_NOTIFICATIONS =

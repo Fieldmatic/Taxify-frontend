@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { switchMap, map } from 'rxjs';
+import { map, switchMap } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
-import { Notification } from '../model/notification';
+import { Notification } from '../../shared/model/notification';
 import * as PassengerActions from './passengers.actions';
 
 @Injectable()

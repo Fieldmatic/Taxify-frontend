@@ -5,6 +5,7 @@ import * as fromApp from '../../../../store/app.reducer';
 import { Subscription } from 'rxjs';
 import { StompService } from '../../../../stomp.service';
 import * as CustomerSupportActions from '../../../store/customer-support.actions';
+import { CompatClient } from '@stomp/stompjs';
 
 @Component({
   selector: 'app-all-chats',
@@ -16,6 +17,7 @@ export class AllChatsComponent implements OnInit, OnDestroy {
   role: string;
   chatSubscription: Subscription;
   authSubscription: Subscription;
+  stompClient: CompatClient;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -32,9 +34,18 @@ export class AllChatsComponent implements OnInit, OnDestroy {
       if (authState.user) {
         this.role = authState.user.role;
         this.subscribeOnWebSocket(authState.user.email);
-        // if (this.role === 'ADMIN') {
-        //   this.subscribeAdmin();
-        // }
+        if (this.role === 'ADMIN') {
+          this.stompClient.connect({}, () => {
+            this.stompClient.subscribe(
+              '/topic/message/admin',
+              (response): any => {
+                this.store.dispatch(
+                  new CustomerSupportActions.RefreshAllChats()
+                );
+              }
+            );
+          });
+        }
       }
     });
   }
@@ -42,21 +53,13 @@ export class AllChatsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.authSubscription.unsubscribe();
     this.chatSubscription.unsubscribe();
+    this.stompClient.disconnect();
   }
 
   subscribeOnWebSocket(email: string) {
-    const stompClient = this.stompService.connect();
-    stompClient.connect({}, () => {
-      stompClient.subscribe('/topic/message/' + email, (response): any => {
-        this.store.dispatch(new CustomerSupportActions.RefreshAllChats());
-      });
-    });
-  }
-
-  subscribeAdmin() {
-    const stompClient = this.stompService.connect();
-    stompClient.connect({}, () => {
-      stompClient.subscribe('/topic/message/admin', (response): any => {
+    this.stompClient = this.stompService.connect();
+    this.stompClient.connect({}, () => {
+      this.stompClient.subscribe('/topic/message/' + email, (response): any => {
         this.store.dispatch(new CustomerSupportActions.RefreshAllChats());
       });
     });

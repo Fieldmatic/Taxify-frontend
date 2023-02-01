@@ -11,6 +11,7 @@ import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { Chat } from '../model/chat.model';
 import { Message } from '../model/message.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Notification } from '../../shared/model/notification';
 
 @Injectable()
 export class CustomerSupportEffects {
@@ -134,6 +135,26 @@ export class CustomerSupportEffects {
                 chat: chat,
                 id: action.payload.id,
               });
+            }),
+            catchError((errorRes) => {
+              return of(new CustomerSupportActions.NotifyError(errorRes));
+            })
+          );
+      })
+    );
+  });
+
+  getAdminNotifications = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(CustomerSupportActions.GET_ADMIN_NOTIFICATIONS),
+      switchMap(() => {
+        return this.http
+          .get<Notification[]>(this.config.apiEndpoint + 'notification/all')
+          .pipe(
+            map((notifications) => {
+              return new CustomerSupportActions.SetAdminNotifications(
+                notifications
+              );
             }),
             catchError((errorRes) => {
               return of(new CustomerSupportActions.NotifyError(errorRes));

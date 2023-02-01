@@ -1,13 +1,16 @@
 import { Chat } from '../model/chat.model';
 import * as CustomerSupportActions from './customer-support.actions';
+import { Notification } from '../../shared/model/notification';
 
 export interface State {
   chats: Chat[];
+  notifications: Notification[];
   loading: boolean;
 }
 
 const initialState: State = {
   chats: [],
+  notifications: [],
   loading: true,
 };
 
@@ -27,26 +30,6 @@ export function customerSupportReducer(
         chats: action.payload,
         loading: false,
       };
-    // case CustomerSupportActions.SEND_MESSAGE_SUCCESS:
-    //   if (state.chats.length !== 0) {
-    //     let chats = [...state.chats];
-    //     let id = null;
-    //     let chatToUpdate = {
-    //       ...chats.filter((chat, index) => {
-    //         if (chat.messages[0].sender.id === action.payload.sender.id) {
-    //           id = index;
-    //         }
-    //         return chat.messages[0].sender.id === action.payload.sender.id;
-    //       })[0],
-    //       messages: [action.payload, ...chats[id].messages],
-    //     };
-    //     chats[id] = chatToUpdate;
-    //     return {
-    //       ...state,
-    //       chats: chats,
-    //     };
-    //   }
-    //   return state;
     case CustomerSupportActions.UPDATE_MESSAGES:
       let chats = [...state.chats];
       for (let message of action.payload) {
@@ -84,6 +67,11 @@ export function customerSupportReducer(
       return {
         ...state,
         chats: allChats,
+      };
+    case CustomerSupportActions.SET_ADMIN_NOTIFICATIONS:
+      return {
+        ...state,
+        notifications: action.payload,
       };
     default:
       return state;

@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { Notification } from 'src/app/passengers/model/notification';
+import { Notification } from 'src/app/shared/model/notification';
 import * as fromApp from '../../store/app.reducer';
 import * as PassengerActions from '../../passengers/store/passengers.actions';
+import * as CustomerSupportActions from '../../customer-support/store/customer-support.actions';
 
 @Component({
   selector: 'app-notifications',
@@ -11,6 +12,7 @@ import * as PassengerActions from '../../passengers/store/passengers.actions';
   styleUrls: ['./notifications.component.scss'],
 })
 export class NotificationsComponent implements OnInit {
+  @Input() role: string;
   notifications: Notification[] = [];
   unreadNotifications: number = 0;
 
@@ -19,6 +21,13 @@ export class NotificationsComponent implements OnInit {
     this.store
       .select('passengers')
       .pipe(map((passengerState) => passengerState.notifications))
+      .subscribe((notifications) => {
+        this.notifications = notifications;
+        this.getNumberOfUnreadNotifications();
+      });
+    this.store
+      .select('customerSupport')
+      .pipe(map((customerSupportState) => customerSupportState.notifications))
       .subscribe((notifications) => {
         this.notifications = notifications;
         this.getNumberOfUnreadNotifications();
@@ -53,17 +62,26 @@ export class NotificationsComponent implements OnInit {
         return 'Your ride has started.';
       case 'RIDE_FINISHED':
         return 'You have arrived at your destination.';
+      case 'CUSTOMER_SUPPORT_REQUIRED':
+        return 'I need help!';
       default:
         return 'Your ride has been scheduled';
     }
   }
 
   showNotifications() {
-    this.store.dispatch(
-      new PassengerActions.GetPassengerNotifications({
-        markNotificationsAsRead: true,
-      })
-    );
+    switch (this.role) {
+      case 'ADMIN':
+        this.store.dispatch(new CustomerSupportActions.GetAdminNotifications());
+        break;
+      default:
+        this.store.dispatch(
+          new PassengerActions.GetPassengerNotifications({
+            markNotificationsAsRead: true,
+          })
+        );
+        break;
+    }
   }
 
   getNumberOfUnreadNotifications() {

@@ -40,6 +40,7 @@ export const createVehicleFeatures = function (vehicles: Vehicle[]): Feature[] {
       geometry: new Point(olProj.fromLonLat(vehicle.location)),
       id: vehicles.indexOf(vehicle),
     });
+    marker.setId(vehicles.indexOf(vehicle));
     marker.setStyle(
       new Style({
         image: new Icon({
@@ -48,7 +49,9 @@ export const createVehicleFeatures = function (vehicles: Vehicle[]): Feature[] {
           anchorYUnits: 'pixels',
           opacity: 1,
           src: '../assets/car_icon.png',
+          scale: 0.8,
         }),
+        zIndex: 999,
       })
     );
     markers.push(marker);
@@ -124,10 +127,11 @@ export const createMapWithVehiclesLayer = function (
       createMapVehicleLayer(mapCenter, vehicles),
       createLocationsLayer(),
       createRoutesLayer(),
+      createRoutesLayer(),
     ],
     view: new View({
       center: olProj.fromLonLat(mapCenter),
-      zoom: 16,
+      zoom: 15,
     }),
   });
 };

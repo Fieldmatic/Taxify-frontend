@@ -1,0 +1,74 @@
+<div class="dropdown">
+  <div *ngIf="unreadNotifications > 0" id="circle">
+    <div [innerHTML]="unreadNotifications"></div>
+  </div>
+  <button
+    class="btn btn-light me-2"
+    type="button"
+    id="dropdownMenuButton1"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+    (click)="showNotifications()"
+  >
+    <img src="./assets/bell.png" width="20px" height="20px" />
+  </button>
+  <ul
+    class="dropdown-menu notificationsMenu"
+    aria-labelledby="dropdownMenuButton1"
+    (click)="$event.stopPropagation()"
+  >
+    <li *ngFor="let notification of notifications" class="notification">
+      <div class="ps-3 pb-2">
+        <span
+          class="fw-normal"
+          *ngIf="notification.type === 'ADDED_TO_THE_RIDE' || notification.type === 'CUSTOMER_SUPPORT_REQUIRED'"
+        >
+          {{ notification["senderName"] }}
+          {{ notification["senderSurname"] }} </span
+        ><span class="text-secondary fw-normal">{{
+          getNotificationMessage(notification)
+        }}</span>
+        <span
+          *ngIf="
+            notification.status === 'PENDING' &&
+            notification.type === 'ADDED_TO_THE_RIDE'
+          "
+          class="accept-reject"
+        >
+          <img
+            src="./assets/accept.png"
+            width="20px"
+            height="20px"
+            class="ms-2"
+            (click)="answerOnAddingToTheRide(notification, 'accept')"
+          />
+          <img
+            src="./assets/reject.png"
+            width="20px"
+            height="20px"
+            class="ms-2"
+            (click)="answerOnAddingToTheRide(notification, 'reject')"
+          />
+        </span>
+        <div
+          class="fw-lighter fw-bold"
+          style="font-weight: 600; font-size: smaller"
+          [ngClass]="{
+            requestAnswer:
+              notification.status === 'PENDING' &&
+              notification.type === 'ADDED_TO_THE_RIDE',
+            otherNotifications:
+              notification.status === 'ACCEPTED' ||
+              notification.status === 'REJECTED' ||
+              notification.type !== 'ADDED_TO_THE_RIDE'
+          }"
+        >
+          <small
+            ><span>{{ getNotificationTime(notification) }}</span>
+            <span class="ms-1">ago</span></small
+          >
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,39 @@
+<div>
+  <p class="text-secondary">Enter email of your friends</p>
+  <div style="width: 30vw; height: 30vh" class="d-flex">
+    <div class="d-inline-flex align-self-center">
+      <mat-form-field style="appearance: none">
+        <mat-label>Enter email</mat-label>
+        <input id="linkedUserInput" matInput [(ngModel)]="linkedUser" />
+      </mat-form-field>
+      <div class="p-2" (click)="linkUser()" style="cursor: pointer">
+        <i class="arrow right ms-1"></i>
+      </div>
+    </div>
+    <div class="ms-5 w-100">
+      <ul class="vehicleTypes w-100">
+        <li *ngFor="let user of this.allLinkedUsers" class="w-100">
+          <span>{{ user }}</span>
+          <img
+            src="../assets/close.png"
+            width="15px"
+            height="15px"
+            class="mt-1"
+            style="float: right; cursor: pointer"
+            (click)="removeLinkedUser(user)"
+          />
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <button
+      style="left: 25%"
+      mat-button
+      class="me-4 bg-black text-white w-50"
+      (click)="saveLinkedUsers()"
+    >
+      Continue
+    </button>
+  </div>
+</div>

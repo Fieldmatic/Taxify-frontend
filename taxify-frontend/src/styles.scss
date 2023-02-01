@@ -50,9 +50,22 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .black-btn:disabled {
   background-color: rgba(128, 128, 128, 0.3);
 }
+.image-btn {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
 .container {
   border-radius: 6px;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+a:hover {
+  color: darkgray !important;
+  transform: translateY(-0.25em);
+}
+.navbar-active {
+  background-color: rgb(84, 84, 84);
 }
 
 mat-form-field {

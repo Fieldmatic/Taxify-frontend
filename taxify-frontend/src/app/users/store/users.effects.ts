@@ -10,6 +10,7 @@ import * as UsersActions from './users.actions';
 import * as fromApp from '../../store/app.reducer';
 import { NotifierService } from '../../shared/services/notifier.service';
 import { PaymentMethod } from '../../shared/model/payment-method.model';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class UsersEffects {
@@ -374,6 +375,7 @@ export class UsersEffects {
     private http: HttpClient,
     private store: Store<fromApp.AppState>,
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
-    private notifierService: NotifierService
+    private notifierService: NotifierService,
+    private router: Router
   ) {}
 }

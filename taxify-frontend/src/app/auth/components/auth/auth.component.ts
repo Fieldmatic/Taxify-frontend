@@ -1,7 +1,7 @@
 import { CustomValidators } from '../../validators/custom-validators';
 import * as AuthActions from '../../store/auth.actions';
-import { filter, first, Observable, Subscription, tap } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
+import { filter, first, Observable, Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 import {
   AfterViewInit,
   Component,
@@ -37,8 +37,8 @@ import { getUserExistsSelector } from 'src/app/auth/store/auth.selectors';
 })
 export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   private storeSub: Subscription;
-  authForm!: FormGroup;
   isLoginMode: boolean;
+  authForm!: FormGroup;
   error: string = null;
   userExists$: Observable<boolean>;
 
@@ -54,8 +54,8 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnDestroy(): void {
+    this.store.dispatch(new AuthActions.ChangeAuthMode(false));
     this.storeSub.unsubscribe();
-
   }
 
   ngOnInit(): void {
@@ -114,11 +114,11 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activatedRoute.params.subscribe((params) => {
       let authMode = params['authMode'];
       if (authMode === 'login') {
-        this.isLoginMode = true;
+        this.store.dispatch(new AuthActions.ChangeAuthMode(true));
         this.authForm.get('email').clearValidators();
         this.authForm.get('password').clearValidators();
       } else if (authMode === 'signup') {
-        this.isLoginMode = false;
+        this.store.dispatch(new AuthActions.ChangeAuthMode(false));
         this.authForm
           .get('email')
           .addValidators([
@@ -138,6 +138,7 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.storeSub = this.store.select('auth').subscribe((authState) => {
       this.error = authState.authError;
+      this.isLoginMode = authState.isLoginMode;
     });
 
     this.userExists$ = this.store.pipe(select(getUserExistsSelector));
@@ -172,11 +173,6 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     window.onFacebookSignIn = () => {
       this.continueWithFacebook();
     };
-    if (this.isLoginMode)
-      this.render.addClass(
-        document.getElementById('loginBtn'),
-        'markedLoginBtn'
-      );
   }
 
   private initGoogleSignIn(): void {

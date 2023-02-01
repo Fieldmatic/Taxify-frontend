@@ -1,27 +1,16 @@
-.toolbar{
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-}
-.toolbar-logo{
-    display: flex;
-    width: 5%;
-    align-items: center;
-    justify-content: space-between;
-}
-.toolbar-content{
-    display: flex;
-    width: 80%;
-    margin: auto;
-    justify-content: space-between;
-}
-.authentication{
-    width: 15%;
-    display:flex;
-    justify-content: space-around;
+h1 {
+  color: #F9C900;
+  font-size: xx-large;
+  filter: brightness(1.1);
 }
 
-.markedLoginBtn {
-  background-color: rgb(84, 84, 84);
+.links {
+  min-width: 10%;
+}
+
+.help-btn {
+  aspect-ratio: 1/1;
+  height: 50%;
+  background-image: url("/assets/help.png");
 }
 

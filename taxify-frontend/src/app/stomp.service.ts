@@ -6,28 +6,12 @@ import { Stomp } from '@stomp/stompjs';
   providedIn: 'root',
 })
 export class StompService {
-  socket = new SockJS('http://localhost:8080/api/ws');
-  stompClient = Stomp.over(this.socket);
+  constructor() {}
 
-  constructor() {
-    this.stompClient.debug = function() {};
-  }
-
-  subscribe(topic: string, callback: any) {
-    const connected: boolean = this.stompClient.connected;
-    if (connected) {
-      this.subscribeToTopic(topic, callback);
-      return;
-    }
-
-    this.stompClient.connect({}, () => {
-      this.subscribeToTopic(topic, callback);
-    });
-  }
-
-  private subscribeToTopic(topic: string, callback: any) {
-    this.stompClient.subscribe(topic, (): any => {
-      callback();
-    });
+  connect() {
+    let socket = new SockJS('https://localhost:8080/api/ws');
+    let stompClient = Stomp.over(socket);
+    stompClient.debug = () => {};
+    return stompClient;
   }
 }

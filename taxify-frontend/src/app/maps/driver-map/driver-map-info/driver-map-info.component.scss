@@ -6,7 +6,7 @@
   color: white;
 }
 
-.changeStatusBtn:disabled {
+.changeStatusBtn:disabled, .startRideButton:disabled, .rejectRideButton:disabled {
   background-color: rgba(128, 128, 128, 0.3);
 }
 
@@ -26,4 +26,18 @@ font-weight: 550
 .sandWatchIcon {
   width: 30px;
   height: 30px;
+}
+
+.startRideButton {
+  background-color: black;
+  color: white;
+  width: 40%;
+  left: 5%;
+}
+
+.rejectRideButton {
+  background-color: black;
+  color: white;
+  width: 40%;
+  right: 5%;
 }

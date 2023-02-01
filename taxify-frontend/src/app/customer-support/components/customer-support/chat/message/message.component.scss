@@ -1,0 +1,22 @@
+.container {
+  border-radius: 15px;
+  box-shadow: none;
+  max-width: 70%;
+  overflow-wrap: break-word;
+  width: fit-content;
+}
+
+.my-message {
+  background-color: #070606;
+  color: white;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.other-message {
+  background-color: #F9C900;
+  filter: brightness(1.1);
+  color: black;
+  margin-right: auto;
+  margin-left: 0;
+}

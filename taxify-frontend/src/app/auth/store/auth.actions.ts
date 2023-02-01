@@ -3,6 +3,8 @@ import { GoogleSignUpRequest } from '../model/google-signup-request';
 import { LoggedInUser } from '../model/logged-in-user';
 import { FacebookSignupRequest } from '../model/facebook-signup-request';
 
+export const CHANGE_AUTH_MODE = '[Auth] Change isLoginMode';
+
 export const LOGIN_START = '[Auth] Login Start';
 export const LOGIN_SUCCESS = '[Auth] Login Success';
 export const AUTHENTICATE_FAIL = '[Auth] Authenticate Fail';
@@ -26,6 +28,12 @@ export const REAUTHENTICATE = '[Users] Reauthenticate';
 export const REAUTHENTICATE_SUCCESS =
   '[Users] Authentication confirmed successful';
 export const REAUTHENTICATE_FAIL = '[Users] Authentication not confirmed';
+
+export class ChangeAuthMode implements Action {
+  readonly type = CHANGE_AUTH_MODE;
+
+  constructor(public payload: boolean) {}
+}
 
 export class LoginSuccess implements Action {
   readonly type = LOGIN_SUCCESS;
@@ -129,8 +137,7 @@ export class ReauthenticateSuccess implements Action {
 export class ReauthenticateFail implements Action {
   readonly type = REAUTHENTICATE_FAIL;
 
-  constructor(public payload: string) {
-  }
+  constructor(public payload: string) {}
 }
 
 export class LogoutStartDriver implements Action {
@@ -139,6 +146,7 @@ export class LogoutStartDriver implements Action {
 }
 
 export type AuthActions =
+  | ChangeAuthMode
   | LoginSuccess
   | LogoutEnd
   | LoginStart
@@ -157,4 +165,3 @@ export type AuthActions =
   | ReauthenticateSuccess
   | ReauthenticateFail
   | LogoutStartDriver;
-

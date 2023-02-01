@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Drive rejection</h2>
+<div mat-dialog-content>
+  <p>What's your reason for rejecting a drive?</p>
+  <mat-form-field class="w-100">
+    <textarea
+      matInput
+      placeholder="Type here..."
+      [(ngModel)]="rejectionReason"
+      style="height: 10vh"
+    ></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions class="d-flex justify-content-between">
+  <button
+    mat-button
+    class="border border-1 border-dark"
+    (click)="closeDialogOnNo()"
+  >
+    No Thanks
+  </button>
+  <button
+    mat-button
+    [mat-dialog-close]="rejectionReason"
+    cdkFocusInitial
+    class="bg-black text-white"
+  >
+    Save reason
+  </button>
+</div>

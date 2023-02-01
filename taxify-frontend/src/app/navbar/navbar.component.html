@@ -1,9 +1,15 @@
-<mat-toolbar class="toolbar" color="primary">
-  <div class="toolbar-content">
-    <div class="toolbar-logo">
-      <a mat-button routerLink="/"><h1>Taxify</h1></a>
+<mat-toolbar class="container-fluid d-flex justify-content-between pe-0" color="primary">
+  <div class="container-fluid d-flex justify-content-between pe-0">
+    <div class="d-flex align-items-center">
+      <a
+        mat-button
+        routerLink="/"
+        matTooltip="Home"
+        matTooltipPosition="below">
+        <h1>Taxify</h1>
+      </a>
     </div>
-    <div class="authentication">
+    <div class="links d-flex align-items-center justify-content-around">
       <a
         mat-button
         routerLink="/auth/login"
@@ -11,12 +17,33 @@
         id="loginBtn"
         >Log in</a
       >
+      <a
+        mat-raised-button
+        *ngIf="!isAuthenticated"
+        routerLink="/auth/signup"
+        id="signupBtn">
+        Sign up
+      </a>
       <a mat-button *ngIf="isAuthenticated && role === 'ADMIN'" routerLink="/users/all">Users</a>
       <app-navbar-profile-menu *ngIf="isAuthenticated" [role]="role"></app-navbar-profile-menu>
+
+      <app-notifications *ngIf="isAuthenticated" [role]="role"></app-notifications>
+
       <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
-      <a mat-raised-button *ngIf="!isAuthenticated" routerLink="/auth/signup"
-        >Sign up</a
-      >
+      <app-navbar-profile-menu
+        *ngIf="isAuthenticated"
+        matTooltip="Visit Profile"
+        matTooltipPosition="below"
+        id="profileBtn"></app-navbar-profile-menu>
+      <a
+        mat-icon-button
+        *ngIf="isAuthenticated"
+        routerLink="/customerSupport/chats"
+        class="help-btn image-btn"
+        matTooltip="Customer Support"
+        matTooltipPosition="below"
+        id="helpBtn">
+      </a>
     </div>
   </div>
 </mat-toolbar>

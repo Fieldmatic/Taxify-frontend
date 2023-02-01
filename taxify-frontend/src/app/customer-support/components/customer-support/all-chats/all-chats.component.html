@@ -1,0 +1,10 @@
+<div class="row">
+  <div class="d-none d-sm-block col-md-3 col-lg-4"></div>
+  <div class="col-sm-12 col-md-6 col-lg-4 mt-4">
+    <app-no-chats *ngIf="chats.length===0"></app-no-chats>
+    <a *ngFor="let chat of chats; let id = index" style="text-decoration: none" [routerLink]="['/customerSupport', 'chat', id]">
+      <app-chat-preview  [chat]="chat"></app-chat-preview>
+    </a>
+    <a *ngIf="role != 'ADMIN'" mat-button class="black-btn" routerLink="/customerSupport/chat/new">Start New Conversation</a>
+  </div>
+</div>

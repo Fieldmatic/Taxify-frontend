@@ -2,13 +2,17 @@ import { Action } from '@ngrx/store';
 import { MapData } from '../model/mapData.model';
 import { Driver } from '../../shared/model/driver.model';
 import { Location } from '../model/location';
+import { Route } from '../model/route';
+import { PassengerState } from '../model/passengerState';
 
 export const MAP_LOAD_START = '[Maps] Map load started';
 export const MAP_LOAD_END = '[Maps] Map load ended';
 export const DRIVER_SELECTED = '[Maps] Driver is selected';
 export const POPUP_CLOSE = '[Maps] Close driver popup';
 
-export const LOAD_DIRECTION_COORDINATES = '[Maps] Load direction coordinates';
+export const LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS =
+  '[Maps] Load available routes for two points';
+export const SEARCH_FOR_DRIVER = '[Maps] Search for driver';
 
 export const LOAD_PICKUP_LOCATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Load pickup location autocomplete results';
@@ -20,8 +24,33 @@ export const LOAD_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Load destination autocomplete results';
 export const SET_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Set destination autocomplete results';
-export const ADD_MARKER = '[Maps]';
-export const SET_DIRECTION_COORDINATES = '[Maps] Set direction coordinates';
+export const RIDE_FINISH_PASSENGER = '[Maps] Ride finish passenger';
+
+export const START_RIDE_DRIVER = '[Maps] Start ride driver';
+export const SET_PASSENGER_STATE = '[Maps] Set passenger state';
+export const SET_SELECTED_ROUTE_COORDINATES =
+  '[Maps] Set selected route coordinates';
+export const SET_AVAILABLE_ROUTES_COORDINATES =
+  '[Maps] Set available routes coordinates';
+
+export const CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS =
+  '[Maps] Clear destination autocomplete results';
+
+export const REMOVE_COORDINATES_FOR_DESTINATION =
+  '[Maps] Remove coordinates for destination ';
+
+export const SIMULATE_DRIVER_RIDE_TO_CLIENT =
+  '[Maps] Simulate driver ride to client';
+
+export const SET_RIDE_DRIVER = '[Maps] Set ride driver';
+
+export const RIDE_STARTED_PASSENGER = '[Maps] Ride started';
+export const LOAD_TIME_FROM_DRIVER_TO_CLIENT =
+  '[Maps] Load time from driver to client';
+export const SET_TIME_LEFT = '[Maps] Set time left';
+export const SUBTRACT_TIME_LEFT = '[Maps] Subtract time left';
+
+export const FINISH_RIDE_DRIVER = '[Maps] Finish ride';
 
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
@@ -63,18 +92,135 @@ export class PopupClose implements Action {
   readonly type = POPUP_CLOSE;
 }
 
-export class LoadDirectionCoordinates implements Action {
-  readonly type = LOAD_DIRECTION_COORDINATES;
+export class LoadAvailableRoutesForTwoPoints implements Action {
+  readonly type = LOAD_AVAILABLE_ROUTES_FOR_TWO_POINTS;
   constructor(
-    public payload: { coordinates: [longitude: number, latitude: number][] }
+    public payload: {
+      coordinates: [longitude: number, latitude: number][];
+      destinationId: string;
+    }
   ) {}
 }
 
-export class SetDirectionCoordinates implements Action {
-  readonly type = SET_DIRECTION_COORDINATES;
+export class SetSelectedRouteCoordinates implements Action {
+  readonly type = SET_SELECTED_ROUTE_COORDINATES;
   constructor(
-    public payload: { coordinates: [longitude: number, latitude: number][] }
+    public payload: {
+      key: string;
+      route: Route;
+    }
   ) {}
+}
+
+export class RemoveCoordinatesForDestination implements Action {
+  readonly type = REMOVE_COORDINATES_FOR_DESTINATION;
+  constructor(
+    public payload: {
+      key: string;
+    }
+  ) {}
+}
+
+export class SetAvailableRoutesCoordinates implements Action {
+  readonly type = SET_AVAILABLE_ROUTES_COORDINATES;
+  constructor(
+    public payload: {
+      id: string;
+      routes: Route[];
+    }
+  ) {}
+}
+
+export class SearchForDriver implements Action {
+  readonly type = SEARCH_FOR_DRIVER;
+
+  constructor(
+    public payload: {
+      clientLocation: Location;
+      route: [longitude: number, latitude: number][];
+      vehicleTypes: string[];
+      petFriendly: boolean;
+      babyFriendly: boolean;
+      sender: string;
+      linkedUsers: string[];
+    }
+  ) {}
+}
+
+export class StartRideDriver implements Action {
+  readonly type = START_RIDE_DRIVER;
+
+  constructor(
+    public payload: {
+      assignedRideId: string;
+    }
+  ) {}
+}
+
+export class RideFinishedPassenger implements Action {
+  readonly type = RIDE_FINISH_PASSENGER;
+
+  constructor() {}
+}
+
+export class SetPassengerState implements Action {
+  readonly type = SET_PASSENGER_STATE;
+
+  constructor(public payload: PassengerState) {}
+}
+
+export class ClearDestinationAutocompleteResults implements Action {
+  readonly type = CLEAR_DESTINATION_AUTOCOMPLETE_RESULTS;
+
+  constructor() {}
+}
+
+export class SimulateDriverRideToClient implements Action {
+  readonly type = SIMULATE_DRIVER_RIDE_TO_CLIENT;
+
+  constructor() {}
+}
+
+export class SetRideDriver implements Action {
+  readonly type = SET_RIDE_DRIVER;
+
+  constructor(
+    public payload: { driver: Driver; passengerState: PassengerState }
+  ) {}
+}
+
+export class RideStartedPassenger implements Action {
+  readonly type = RIDE_STARTED_PASSENGER;
+
+  constructor() {}
+}
+
+export class FinishRide implements Action {
+  readonly type = FINISH_RIDE_DRIVER;
+
+  constructor(
+    public payload: {
+      assignedRideId: string;
+    }
+  ) {}
+}
+export class LoadTimeFromDriverToClient implements Action {
+  readonly type = LOAD_TIME_FROM_DRIVER_TO_CLIENT;
+  constructor(
+    public payload: {
+      coordinates: [longitude: number, latitude: number][];
+    }
+  ) {}
+}
+
+export class SetTimeLeft implements Action {
+  readonly type = SET_TIME_LEFT;
+  constructor(public payload: { timeLeft: number }) {}
+}
+
+export class SubtractTimeLeft implements Action {
+  readonly type = SUBTRACT_TIME_LEFT;
+  constructor(public payload: { value: number }) {}
 }
 
 export type MapsActions =
@@ -86,5 +232,18 @@ export type MapsActions =
   | SetPickupLocationAutocompleteResults
   | LoadDestinationAutocompleteResults
   | SetDestinationAutocompleteResults
-  | LoadDirectionCoordinates
-  | SetDirectionCoordinates;
+  | LoadAvailableRoutesForTwoPoints
+  | SetSelectedRouteCoordinates
+  | SearchForDriver
+  | StartRideDriver
+  | RideFinishedPassenger
+  | SetPassengerState
+  | ClearDestinationAutocompleteResults
+  | SetAvailableRoutesCoordinates
+  | RemoveCoordinatesForDestination
+  | SimulateDriverRideToClient
+  | SetRideDriver
+  | FinishRide
+  | LoadTimeFromDriverToClient
+  | SetTimeLeft
+  | SubtractTimeLeft;

@@ -1,5 +1,7 @@
 import { Action } from '@ngrx/store';
 import { Driver } from '../../shared/model/driver.model';
+import { DriverState } from 'src/app/drivers/model/driverState';
+import { Ride } from 'src/app/shared/model/ride.model';
 
 export const FETCH_ACTIVE_DRIVERS_IN_AREA =
   '[Drivers] Fetch active drivers in area';
@@ -12,6 +14,11 @@ export const GET_DRIVER_REMAINING_WORK_TIME =
 export const SET_DRIVER_REMAINING_WORK_TIME =
   '[Drivers] Set driver remaining work time';
 export const CHANGE_DRIVER_STATUS = '[Drivers] Change driver status';
+export const SET_DRIVER_STATE = '[Drivers] Set Driver State';
+export const GET_DRIVER_ASSIGNED_RIDE = '[Drivers] Get driver assigned ride';
+export const SET_ASSIGNED_RIDE_TO_DRIVER = '[Drivers] Assign ride to driver';
+export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED =
+  '[Drivers] Notify passenger that vehicle has arrived';
 
 export class FetchActiveDriversInArea implements Action {
   readonly type = FETCH_ACTIVE_DRIVERS_IN_AREA;
@@ -59,6 +66,26 @@ export class ChangeDriverStatus implements Action {
   constructor(public payload: { email: string; active: boolean }) {}
 }
 
+export class SetDriverState implements Action {
+  readonly type = SET_DRIVER_STATE;
+
+  constructor(public payload: { state: DriverState }) {}
+}
+
+export class GetDriverAssignedRide implements Action {
+  readonly type = GET_DRIVER_ASSIGNED_RIDE;
+}
+
+export class SetAssignedRideToDriver implements Action {
+  readonly type = SET_ASSIGNED_RIDE_TO_DRIVER;
+  constructor(public payload: { ride: Ride; state: DriverState }) {}
+}
+
+export class NotifyPassengerOfVehicleArrived implements Action {
+  readonly type = NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED;
+  constructor() {}
+}
+
 export type DriversActions =
   | FetchActiveDriversInArea
   | SetDrivers
@@ -67,4 +94,7 @@ export type DriversActions =
   | SetDriver
   | GetDriverRemainingWorkTime
   | SetDriverRemainingWorkTime
-  | ChangeDriverStatus;
+  | ChangeDriverStatus
+  | SetDriverState
+  | SetAssignedRideToDriver
+  | NotifyPassengerOfVehicleArrived;

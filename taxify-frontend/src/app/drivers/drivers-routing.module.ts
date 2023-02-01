@@ -4,7 +4,7 @@ import { DriverRideHistoryComponent } from './driver-ride-history/driver-ride-hi
 import { DriversComponent } from './drivers.component';
 
 const routes: Routes = [ {
-  path:'passenger',
+  path:'driver',
   component: DriversComponent,
   children: [
     {

@@ -1,0 +1,18 @@
+<div class="wrapper">
+  <div mat-dialog-content>
+    <app-view-passenger-details [passengers] = "this.passengers"></app-view-passenger-details>
+    <div id="ride-details-map" class="ride-details-map col-12"></div>
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+  </div>
+  <div mat-dialog-actions>
+    <button
+      mat-button
+      cdkFocusInitial
+      class="bg-black text-white"
+      (click) = "closeDialogOnNo()"
+    >
+      Close
+    </button>
+  </div>
+</div>
+

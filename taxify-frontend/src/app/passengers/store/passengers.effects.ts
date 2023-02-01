@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { switchMap, map } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
+import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
 import { Notification } from '../model/notification';
 import { RideHistoryResponse } from '../model/rideHistoryResponse';
 import * as PassengerActions from './passengers.actions';
@@ -142,6 +143,24 @@ export class PassengerEffects {
       ),
 
   );
+  
+
+  loadSelectedRouteDetails =createEffect(() =>
+  this.actions$.pipe(
+    ofType(PassengerActions.LOAD_SELECTED_ROUTE_DETAILS),
+    switchMap((loadSelectedRouteDetails: PassengerActions.LoadSelectedRouteDetails) => {
+      return this.http
+        .get<RideRouteResponse>(
+          this.config.apiEndpoint + 'ride/getRouteDetails/' + loadSelectedRouteDetails.payload.id,
+        )
+        .pipe(
+          map((rideRouteResponse : RideRouteResponse) => {
+            return new PassengerActions.SetSelectedRouteDetails({rideRouteInfo: rideRouteResponse});
+          })
+        );
+    })
+  )
+);
 
   constructor(
     private actions$: Actions,

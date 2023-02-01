@@ -20,6 +20,7 @@ import { Location } from '../model/location';
 import OLMap from 'ol/Map';
 
 import { MapsService } from '../maps.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-passenger-map-form',
@@ -30,10 +31,7 @@ export class PassengerMapFormComponent implements OnInit {
   ridingForm!: FormGroup;
   pickupLocationAddresses$: Observable<Array<Location>>;
   destinationAddresses$: Observable<Array<Location>>;
-  map: OLMap;
   routeStops: Map<string, Location> = new Map<string, Location>();
-  routeArray: [longitude: number, latitude: number, stop: boolean][] = [];
-  clientLocation: Location;
   distance: number;
   duration: number;
   locationNames: string[];
@@ -43,10 +41,17 @@ export class PassengerMapFormComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private store: Store<fromApp.AppState>,
-    private mapsService: MapsService
+    private mapsService: MapsService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.route.queryParams
+    .subscribe(params => {
+      this.filterDriversMode = params['filterDriversMode'];
+    }
+  );
     this.selectStoreStates();
     this.initForm();
     this.initPickupLocationsAutocompleteOnChange();
@@ -55,12 +60,9 @@ export class PassengerMapFormComponent implements OnInit {
       .select((store) => store.maps.selectedRoute)
       .subscribe((selectedRouteMap) => {
         let sortedMap = new Map([...selectedRouteMap].sort());
-        this.routeArray = [];
         this.distance = 0;
         this.duration = 0;
         sortedMap.forEach((value) => {
-          value.route.forEach((coordinates) => {this.routeArray.push([coordinates[0], coordinates[1], false]);})
-          this.routeArray[this.routeArray.length-1][2] = true;
           this.distance += value.distance;
           this.duration += value.duration;
         });
@@ -153,17 +155,11 @@ export class PassengerMapFormComponent implements OnInit {
   }
 
   onSubmit(formDirective: FormGroupDirective) {
-    this.clientLocation = this.routeStops.get('location0');
-    this.filterDriversMode = true;
-    // formDirective.resetForm();
-    // this.initForm();
-    // this.store.dispatch(
-    //   new MapActions.SearchForDriver({
-    //     clientLocation: this.routeStops.get('location0'),
-    //     route: this.routeArray,
-    //   })
-    // );
-    // this.routeStops.clear();
+    this.store.dispatch(new MapActions.SetLocationNames({locationNames: this.locationNames}))
+    this.router.navigate(['/maps'],  {
+      queryParams: { filterDriversMode: true },
+      queryParamsHandling: 'merge' }
+    );
   }
 
   markPickupLocation(location: Location) {
@@ -171,13 +167,13 @@ export class PassengerMapFormComponent implements OnInit {
     this.mapsService.drawLocation(
       location,
       'location0',
-      '../assets/pickup.png'
+      '../assets/pickup.png', true
     );
   }
   markDestination(location: Location, index: number) {
     let id = 'location'.concat(index.toString());
     this.routeStops.set(id, location);
-    this.mapsService.drawLocation(location, id, '../assets/pin.png');
+    this.mapsService.drawLocation(location, id, '../assets/pin.png', true);
     this.store.dispatch(new MapActions.ClearDestinationAutocompleteResults());
   }
 }

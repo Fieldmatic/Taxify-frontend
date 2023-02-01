@@ -18,6 +18,7 @@ export interface State {
   availableRoutes: Map<string, Route[]>;
   rideStatus: RideStatus;
   timeLeft: number;
+  locationNames: string[];
 }
 
 const createInitialState = function (): State {
@@ -33,6 +34,7 @@ const createInitialState = function (): State {
     availableRoutes: new Map<string, Route[]>(),
     rideStatus: RideStatus.FORM_FILL,
     timeLeft: null,
+    locationNames: []
   };
 };
 
@@ -88,6 +90,8 @@ export function mapsReducer(
         destinations: null,
         availableRoutes: new Map<string, Route[]>(),
         selectedRoute: new Map<string, Route>(),
+        timeLeft: null,
+        locationNames: []
       };
     }
     case MapsActions.SET_RIDE_STATUS: {
@@ -172,6 +176,12 @@ export function mapsReducer(
         rideStatus: rideStatus,
         selectedRoute: route,
       };
+    }
+    case MapsActions.SET_LOCATION_NAMES: {
+      return {
+        ...state,
+        locationNames: action.payload.locationNames
+      }
     }
     default:
       return state;

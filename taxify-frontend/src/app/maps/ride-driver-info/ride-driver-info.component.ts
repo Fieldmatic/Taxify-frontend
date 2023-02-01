@@ -39,7 +39,8 @@ export class RideDriverInfoComponent implements OnInit {
   }
 
   convertTimeLeft(timeLeft: number): string {
-    if (timeLeft < 60) return timeLeft.toString() + ' seconds';
+    if (timeLeft < 60) return (timeLeft-1).toString() + ' seconds';
+    else if (timeLeft <= 0) return '0';
     else {
       timeLeft = timeLeft / 60;
       let roundTimeLeft = Math.round(timeLeft);

@@ -31,6 +31,7 @@ import { NotificationsComponent } from './navbar/notifications/notifications/not
 import { PassengersModule } from './passengers/passengers.module';
 import { DriversComponent } from './drivers/drivers.component';
 import { PathLocationStrategy } from '@angular/common';
+import { DriversModule } from "./drivers/drivers.module";
 
 @NgModule({
   declarations: [AppComponent, NavbarComponent, NotificationsComponent, DriversComponent],
@@ -56,6 +57,7 @@ import { PathLocationStrategy } from '@angular/common';
     MapsModule,
     AuthModule,
     PassengersModule,
+    DriversModule,
     AppRoutingModule,
     DirectivesModule,
   ],
@@ -73,6 +75,6 @@ import { PathLocationStrategy } from '@angular/common';
     },
   ],
   bootstrap: [AppComponent],
-  
+
 })
 export class AppModule {}

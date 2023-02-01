@@ -25,7 +25,6 @@
         Sign up
       </a>
       <a mat-button *ngIf="isAuthenticated && role === 'ADMIN'" routerLink="/users/all">Users</a>
-      <app-navbar-profile-menu *ngIf="isAuthenticated" [role]="role"></app-navbar-profile-menu>
 
       <app-notifications *ngIf="isAuthenticated" [role]="role"></app-notifications>
 
@@ -34,6 +33,7 @@
         *ngIf="isAuthenticated"
         matTooltip="Visit Profile"
         matTooltipPosition="below"
+        [role]="role"
         id="profileBtn"></app-navbar-profile-menu>
       <a
         mat-icon-button

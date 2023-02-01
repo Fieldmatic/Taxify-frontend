@@ -52,6 +52,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
       }
       if (this.loggedInUser) {
         this.subscribeOnWebSocketForMessages(this.loggedInUser.email);
+        this.subscribeOnWebSocketForBlockedStatusChange(
+          this.loggedInUser.email
+        );
       }
     });
   }
@@ -104,6 +107,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
             `You have a new message from ${response.body}. Go check your messages!`
           );
         }
+      });
+    });
+  }
+
+  subscribeOnWebSocketForBlockedStatusChange(email: string) {
+    const stompClient = this.stompService.connect();
+    stompClient.connect({}, (response) => {
+      stompClient.subscribe('/topic/blocked/' + email, (response): any => {
+        this.notifierService.notifyInfo(response.body);
+        this.loadPassengerNotifications();
       });
     });
   }

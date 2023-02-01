@@ -52,6 +52,12 @@ export class NotificationsComponent implements OnInit {
 
   getNotificationMessage(notification: Notification) {
     switch (notification.type) {
+      case 'USER_STATUS_CHANGE':
+        return (
+          "Your status has been changed by our admin with explanation: '" +
+          notification.userStatusChangeReason +
+          "'"
+        );
       case 'ADDED_TO_THE_RIDE':
         return 'has invited you to the ride';
       case 'RIDE_ACCEPTED':

@@ -19,6 +19,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
 import { RideDriverInfoComponent } from './ride-driver-info/ride-driver-info.component';
 import { LeaveReasonDialogComponent } from './leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
+import { RideAssessmentDialogComponent } from './rideAssessmentDialog/ride-assessment-dialog/ride-assessment-dialog.component';
 
 @NgModule({
   imports: [
@@ -43,6 +44,7 @@ import { LeaveReasonDialogComponent } from './leaveReasonDialog/leave-reason-dia
     DriverMapInfoComponent,
     RideDriverInfoComponent,
     LeaveReasonDialogComponent,
+    RideAssessmentDialogComponent,
   ],
   providers: [MapsService],
 })

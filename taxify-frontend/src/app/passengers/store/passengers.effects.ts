@@ -6,8 +6,10 @@ import { ToastrService } from 'ngx-toastr';
 import { switchMap, map } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
+import { Ride } from 'src/app/shared/ride.model';
 import { Notification } from '../model/notification';
 import * as PassengerActions from './passengers.actions';
+import * as MapsActions from '../../maps/store/maps.actions';
 
 @Injectable()
 export class PassengerEffects {
@@ -106,23 +108,64 @@ export class PassengerEffects {
             })
             .pipe(
               map(() => {
-                this.toastr.info(
-                  'Your complaint has been saved.',
-                  'Notification',
-                  {
-                    timeOut: 5000,
-                    closeButton: true,
-                    tapToDismiss: true,
-                    newestOnTop: true,
-                    positionClass: 'toast-top-center',
-                  }
-                );
+                this.showToast('Your complaint has been saved.');
               })
             );
         })
       ),
     { dispatch: false }
   );
+
+  leaveReviewStart = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LEAVE_REVIEW_START),
+      switchMap((leaveReview: PassengerActions.LeaveReviewStart) => {
+        return this.http
+          .get<Ride>(this.config.apiEndpoint + 'ride/lastFinishedRide')
+          .pipe(
+            map((ride) => {
+              return new PassengerActions.LeaveReview({
+                rideId: ride.id,
+                comment: leaveReview.payload.comment,
+                driverRating: leaveReview.payload.driverRating,
+                vehicleRating: leaveReview.payload.vehicleRating,
+              });
+            })
+          );
+      })
+    )
+  );
+
+  leaveReview = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LEAVE_REVIEW),
+      switchMap((leaveReview: PassengerActions.LeaveReview) => {
+        return this.http
+          .post(this.config.apiEndpoint + 'passenger/review', {
+            rideId: leaveReview.payload.rideId,
+            driverRating: leaveReview.payload.driverRating,
+            vehicleRating: leaveReview.payload.vehicleRating,
+            comment: leaveReview.payload.comment,
+          })
+          .pipe(
+            map(() => {
+              this.showToast('You have successfully rated the driver.');
+              return new MapsActions.ResetStateAfterRideFinish();
+            })
+          );
+      })
+    )
+  );
+
+  showToast(message: string) {
+    this.toastr.info(message, 'Notification', {
+      timeOut: 5000,
+      closeButton: true,
+      tapToDismiss: true,
+      newestOnTop: true,
+      positionClass: 'toast-top-center',
+    });
+  }
 
   constructor(
     private actions$: Actions,

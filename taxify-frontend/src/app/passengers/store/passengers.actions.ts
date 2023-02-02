@@ -16,6 +16,9 @@ export const SET_PASSENGER_NOTIFICATION =
 
 export const MAKE_COMPLAINT = '[Passenger] Make complaint';
 
+export const LEAVE_REVIEW_START = '[Passenger] Leave review start';
+export const LEAVE_REVIEW = '[Passenger] Leave review';
+
 export class AddLinkedPassengers implements Action {
   readonly type = ADD_LINKED_PASSENGERS;
 
@@ -50,6 +53,31 @@ export class MakeComplaint implements Action {
   readonly type = MAKE_COMPLAINT;
 
   constructor(public payload: { complaint: string }) {}
+}
+
+export class LeaveReviewStart implements Action {
+  readonly type = LEAVE_REVIEW_START;
+
+  constructor(
+    public payload: {
+      comment: string;
+      driverRating: number;
+      vehicleRating: number;
+    }
+  ) {}
+}
+
+export class LeaveReview implements Action {
+  readonly type = LEAVE_REVIEW;
+
+  constructor(
+    public payload: {
+      rideId: string;
+      comment: string;
+      driverRating: number;
+      vehicleRating: number;
+    }
+  ) {}
 }
 
 export type PassengerActions =

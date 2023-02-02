@@ -17,8 +17,10 @@ export const CHANGE_DRIVER_STATUS = '[Drivers] Change driver status';
 export const SET_DRIVER_STATE = '[Drivers] Set Driver State';
 export const GET_DRIVER_ASSIGNED_RIDE = '[Drivers] Get driver assigned ride';
 export const SET_ASSIGNED_RIDE_TO_DRIVER = '[Drivers] Assign ride to driver';
-export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED =
-  '[Drivers] Notify passenger that vehicle has arrived';
+export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_CLIENT =
+  '[Drivers] Notify passenger that vehicle has arrived to client';
+export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_DESTINATION =
+  '[Drivers] Notify passenger that vehicle has arrived to destination';
 
 export class FetchActiveDriversInArea implements Action {
   readonly type = FETCH_ACTIVE_DRIVERS_IN_AREA;
@@ -81,8 +83,8 @@ export class SetAssignedRideToDriver implements Action {
   constructor(public payload: { ride: Ride }) {}
 }
 
-export class NotifyPassengerOfVehicleArrived implements Action {
-  readonly type = NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED;
+export class NotifyPassengerOfVehicleArrivedToClient implements Action {
+  readonly type = NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_CLIENT;
   constructor() {}
 }
 
@@ -97,4 +99,4 @@ export type DriversActions =
   | ChangeDriverStatus
   | SetDriverState
   | SetAssignedRideToDriver
-  | NotifyPassengerOfVehicleArrived;
+  | NotifyPassengerOfVehicleArrivedToClient;

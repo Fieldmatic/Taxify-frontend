@@ -63,11 +63,13 @@ export class MapsEffects {
               map((data: GeoJSONFeatureCollection) => {
                 let availableRoutes: Route[] = data.features.map((feature) => {
                   return new Route(
-                    feature.geometry['coordinates'].map((coordinates) => {return [coordinates[0], coordinates[1], false]}),
+                    feature.geometry['coordinates'].map((coordinates) => {
+                      return [coordinates[0], coordinates[1], false];
+                    }),
                     feature.properties['summary']['distance'],
-                    feature.properties['summary']['duration'],
+                    feature.properties['summary']['duration']
                   );
-                }); 
+                });
                 return new MapsActions.SetAvailableRoutesCoordinates({
                   id: loadAvailableRoutesForTwoPoints.payload.destinationId,
                   routes: availableRoutes,
@@ -197,32 +199,33 @@ export class MapsEffects {
       switchMap((loadActiveRoute: MapsActions.LoadActiveRoute) => {
         return this.http
           .get<RideRouteResponse>(
-            this.config.apiEndpoint + 'ride/assignedRideRoute',
+            this.config.apiEndpoint + 'ride/assignedRideRoute'
           )
           .pipe(
-            map((rideRouteResponse : RideRouteResponse) => {
+            map((rideRouteResponse: RideRouteResponse) => {
               if (!rideRouteResponse) return { type: 'DUMMY' };
-              else return new MapsActions.SetActiveRideAndDriver({rideRouteInfo: rideRouteResponse
-              });
+              else
+                return new MapsActions.SetActiveRideAndDriver({
+                  rideRouteInfo: rideRouteResponse,
+                });
             })
           );
       })
     )
   );
 
-  startRide = createEffect(() =>
-    this.actions$.pipe(
-      ofType(MapsActions.START_RIDE_DRIVER),
-      switchMap(() => {
-        return this.http
-          .post(this.config.apiEndpoint + 'simulation/through-route', {})
-          .pipe(
-            map(() => {
-              return new MapsActions.FinishRide();
-            })
+  startRide = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(MapsActions.START_RIDE_DRIVER),
+        switchMap(() => {
+          return this.http.post(
+            this.config.apiEndpoint + 'simulation/through-route',
+            {}
           );
-      })
-    )
+        })
+      ),
+    { dispatch: false }
   );
 
   finishRide = createEffect(() =>
@@ -341,7 +344,7 @@ export class MapsEffects {
       ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT_END),
       map((simulationEnd: MapsActions.SimulateDriverRideToClientEnd) => {
         if (simulationEnd.payload.simulationResult === 0) {
-          return new DriverActions.NotifyPassengerOfVehicleArrived();
+          return new DriverActions.NotifyPassengerOfVehicleArrivedToClient();
         } else {
           this.toastr.info(
             'The ride was successfully cancelled.',

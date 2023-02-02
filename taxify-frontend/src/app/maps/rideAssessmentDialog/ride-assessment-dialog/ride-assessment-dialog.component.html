@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Ride rating</h2>
+<div mat-dialog-content>
+  <p>How would you rate your driver?</p>
+  <button
+    class="mb-3"
+    mat-icon-button
+    *ngFor="let driverRatingId of [1, 2, 3, 4, 5]; index as i"
+    [id]="'star_' + i"
+    (click)="rateDriver(i + 1)"
+  >
+    <mat-icon>
+      {{ showDriverStars(i) }}
+    </mat-icon>
+  </button>
+  <p>How would you rate the vehicle?</p>
+  <button
+    class="mb-3"
+    mat-icon-button
+    *ngFor="let vehicleRatingId of [1, 2, 3, 4, 5]; index as j"
+    [id]="'star_' + j"
+    (click)="rateVehicle(j + 1)"
+  >
+    <mat-icon>
+      {{ showVehicleStars(j) }}
+    </mat-icon>
+  </button>
+  <mat-form-field class="w-100">
+    <textarea
+      matInput
+      placeholder="Leave a comment..."
+      [(ngModel)]="rates.comment"
+      style="height: 10vh"
+    ></textarea>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions class="d-flex justify-content-between">
+  <button
+    mat-button
+    class="border border-1 border-dark"
+    (click)="closeDialogOnNo()"
+  >
+    No Thanks
+  </button>
+  <button
+    mat-button
+    [mat-dialog-close]="rates"
+    cdkFocusInitial
+    class="bg-black text-white"
+  >
+    Save rating
+  </button>
+</div>

@@ -12,12 +12,16 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthComponent } from './components/auth/auth.component';
 import { CompleteSocialSignupDialog } from './components/complete-social-signup-dialog/complete-social-signup-dialog.component';
 import { EmailActivationComponent } from './components/email-activation/email-activation.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/change-password/reset-password.component';
 
 @NgModule({
   declarations: [
     AuthComponent,
     CompleteSocialSignupDialog,
     EmailActivationComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent,
   ],
   imports: [
     CommonModule,

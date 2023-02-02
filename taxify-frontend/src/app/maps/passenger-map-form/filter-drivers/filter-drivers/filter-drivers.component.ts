@@ -11,7 +11,7 @@ import * as PassengerActions from '../../../../passengers/store/passengers.actio
 import { StompService } from 'src/app/stomp.service';
 import { ToastrService } from 'ngx-toastr';
 import * as MapActions from '../../../store/maps.actions';
-import { Router } from "@angular/router";
+import { Router } from '@angular/router';
 
 export interface Task {
   name: string;
@@ -34,7 +34,7 @@ export class FilterDriversComponent implements OnInit {
   loggedInUser: LoggedInUser;
   chosenVehicleTypes: string[] = [];
   locationNames: string[];
-  route: [longitude: number, latitude: number, stop:boolean][]
+  route: [longitude: number, latitude: number, stop: boolean][];
 
   constructor(
     private filterDriversService: FilterDriversService,
@@ -47,16 +47,18 @@ export class FilterDriversComponent implements OnInit {
 
   ngOnInit(): void {
     this.store
-    .select((store) => store.maps)
-    .subscribe((mapsState) => {
-      let sortedMap = new Map([...mapsState.selectedRoute].sort());
-      this.locationNames = mapsState.locationNames;
-      this.route = [];
-      sortedMap.forEach((value) => {
-        value.route.forEach((coordinates) => {this.route.push([coordinates[0], coordinates[1], false]);})
-        this.route[this.route.length-1][2] = true;
+      .select((store) => store.maps)
+      .subscribe((mapsState) => {
+        let sortedMap = new Map([...mapsState.selectedRoute].sort());
+        this.locationNames = mapsState.locationNames;
+        this.route = [];
+        sortedMap.forEach((value) => {
+          value.route.forEach((coordinates) => {
+            this.route.push([coordinates[0], coordinates[1], false]);
+          });
+          this.route[this.route.length - 1][2] = true;
+        });
       });
-    });
     this.filterDriversService.getVehicleTypes().subscribe((types) => {
       for (let i = 0; i < types.length; i++) {
         let type = types.at(i);
@@ -118,7 +120,7 @@ export class FilterDriversComponent implements OnInit {
       this.sentNotificationToLinkedPassengers();
       this.subscribeOnWebSocket();
     } else {
-      this.router.navigate(['/maps'])
+      this.router.navigate(['/maps']);
       this.searchForDriver();
     }
   }

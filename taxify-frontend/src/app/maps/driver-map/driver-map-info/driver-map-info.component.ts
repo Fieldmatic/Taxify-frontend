@@ -122,12 +122,16 @@ export class DriverMapInfoComponent implements OnInit {
     });
   }
 
-  startRide() {
-    this.ride$.pipe(take(1)).subscribe((ride) => {
-      this.store.dispatch(
-        new DriversActions.SetDriverState({ state: DriverState.RIDE_START })
-      );
-      this.store.dispatch(new MapsActions.StartRideDriver());
+  handleRide() {
+    this.driverState$.pipe(take(1)).subscribe((driverState) => {
+      if (driverState === DriverState.ARRIVED_TO_CLIENT) {
+        this.store.dispatch(
+          new DriversActions.SetDriverState({ state: DriverState.RIDE_START })
+        );
+        this.store.dispatch(new MapsActions.StartRideDriver());
+      } else if (driverState === DriverState.ARRIVED_TO_DESTINATION) {
+        this.store.dispatch(new MapsActions.FinishRide());
+      }
     });
   }
 }

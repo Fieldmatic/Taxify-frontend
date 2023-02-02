@@ -142,13 +142,13 @@ export class DriversEffects {
     );
   });
 
-  notifyOfArrivedVehicle = createEffect(() => {
+  notifyOfArrivedVehicleToClient = createEffect(() => {
     return this.actions$.pipe(
-      ofType(DriversActions.NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED),
+      ofType(DriversActions.NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_CLIENT),
       switchMap(() => {
         return this.http
           .put<void>(
-            this.config.apiEndpoint + 'notification/vehicleArrived',
+            this.config.apiEndpoint + 'notification/vehicleArrivedToClient',
             {}
           )
           .pipe(

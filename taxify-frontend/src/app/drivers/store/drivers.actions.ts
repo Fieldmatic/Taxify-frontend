@@ -19,8 +19,10 @@ export const CHANGE_DRIVER_STATUS = '[Drivers] Change driver status';
 export const SET_DRIVER_STATE = '[Drivers] Set Driver State';
 export const GET_DRIVER_ASSIGNED_RIDE = '[Drivers] Get driver assigned ride';
 export const SET_ASSIGNED_RIDE_TO_DRIVER = '[Drivers] Assign ride to driver';
-export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED =
-  '[Drivers] Notify passenger that vehicle has arrived';
+export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_CLIENT =
+  '[Drivers] Notify passenger that vehicle has arrived to client';
+export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_DESTINATION =
+  '[Drivers] Notify passenger that vehicle has arrived to destination';
 export const LOAD_DRIVER_RIDE_HISTORY = '[Passenger] Load driver ride history';
 export const SET_DRIVER_RIDE_HISTORY = '[Passenger] Set driver ride history';
 
@@ -85,22 +87,20 @@ export class SetAssignedRideToDriver implements Action {
   constructor(public payload: { ride: Ride }) {}
 }
 
-export class NotifyPassengerOfVehicleArrived implements Action {
-  readonly type = NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED;
+export class NotifyPassengerOfVehicleArrivedToClient implements Action {
+  readonly type = NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_CLIENT;
   constructor() {}
 }
 
-
-export class LoadDriverRideHistory implements Action{
+export class LoadDriverRideHistory implements Action {
   readonly type = LOAD_DRIVER_RIDE_HISTORY;
   constructor() {}
 }
 
-export class SetDriverRideHistory implements Action{
+export class SetDriverRideHistory implements Action {
   readonly type = SET_DRIVER_RIDE_HISTORY;
-  constructor(public payload: {rides: RideHistoryResponse[]}) {}
+  constructor(public payload: { rides: RideHistoryResponse[] }) {}
 }
-
 
 export type DriversActions =
   | FetchActiveDriversInArea
@@ -113,6 +113,6 @@ export type DriversActions =
   | ChangeDriverStatus
   | SetDriverState
   | SetAssignedRideToDriver
-  | NotifyPassengerOfVehicleArrived
+  | NotifyPassengerOfVehicleArrivedToClient
   | LoadDriverRideHistory
   | SetDriverRideHistory;

@@ -45,7 +45,7 @@ export class MapsEffects {
           const headers = new HttpHeaders({
             'Content-Type': 'application/json',
             Authorization:
-              '5b3ce3597851110001cf6248b39bab9bc5c8470d9a7d66dd54e43ee5',
+              '5b3ce3597851110001cf6248430cba1a2c514c5294e49123b5656144',
             skip: 'true',
           });
           const requestOptions = { headers: headers };
@@ -91,7 +91,7 @@ export class MapsEffects {
           const headers = new HttpHeaders({
             'Content-Type': 'application/json',
             Authorization:
-              '5b3ce3597851110001cf6248b39bab9bc5c8470d9a7d66dd54e43ee5',
+              '5b3ce3597851110001cf6248430cba1a2c514c5294e49123b5656144',
             skip: 'true',
           });
           const requestOptions = { headers: headers };
@@ -170,8 +170,8 @@ export class MapsEffects {
           .post<Driver>(
             this.config.apiEndpoint + 'driver/suitableDriverForRide',
             {
-              clientLocation: searchForRideData.payload.clientLocation,
-              routeRequest: { waypoints: route },
+              clientLocation: {longitude: route[0]['longitude'], latitude: route[0]['latitude']},
+              routeRequest: { waypoints: route, locationNames: searchForRideData.payload.locationNames },
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,

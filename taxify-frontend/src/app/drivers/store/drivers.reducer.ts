@@ -1,4 +1,5 @@
 import { DriverState } from 'src/app/drivers/model/driverState';
+import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
 import { Ride } from 'src/app/shared/ride.model';
 import { Driver } from '../../shared/driver.model';
 import * as DriversActions from './drivers.actions';
@@ -9,6 +10,7 @@ export interface State {
   driver: Driver;
   driverState: DriverState;
   assignedRide: Ride;
+  rideHistory: RideHistoryResponse[]
 }
 
 const initialState: State = {
@@ -17,6 +19,7 @@ const initialState: State = {
   driver: null,
   driverState: DriverState.PENDING,
   assignedRide: null,
+  rideHistory: []
 };
 
 export function driversReducer(
@@ -60,6 +63,11 @@ export function driversReducer(
         ...state,
         assignedRide: action.payload.ride,
       };
+    case DriversActions.SET_DRIVER_RIDE_HISTORY:
+      return {
+        ...state,
+        rideHistory: action.payload.rides
+      }
     default:
       return state;
   }

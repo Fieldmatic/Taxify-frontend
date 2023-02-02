@@ -7,7 +7,9 @@ import { switchMap, map } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { Ride } from 'src/app/shared/ride.model';
+import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
 import { Notification } from '../model/notification';
+import { RideHistoryResponse } from '../model/rideHistoryResponse';
 import * as PassengerActions from './passengers.actions';
 import * as MapsActions from '../../maps/store/maps.actions';
 
@@ -166,6 +168,54 @@ export class PassengerEffects {
       positionClass: 'toast-top-center',
     });
   }
+  loadPassengerRideHistory = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LOAD_PASSENGER_RIDE_HISTORY),
+      switchMap(
+        (
+          loadPassengerRideHistory: PassengerActions.LoadPassengerRideHistory
+        ) => {
+          return this.http
+            .get<RideHistoryResponse[]>(
+              this.config.apiEndpoint + 'ride/rideHistory',
+              {}
+            )
+            .pipe(
+              map((rideHistoryResponse: RideHistoryResponse[]) => {
+                return new PassengerActions.SetPassengerRideHistory({
+                  rides: rideHistoryResponse,
+                });
+              })
+            );
+        }
+      )
+    )
+  );
+
+  loadSelectedRouteDetails = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LOAD_SELECTED_ROUTE_DETAILS),
+      switchMap(
+        (
+          loadSelectedRouteDetails: PassengerActions.LoadSelectedRouteDetails
+        ) => {
+          return this.http
+            .get<RideRouteResponse>(
+              this.config.apiEndpoint +
+                'ride/getRouteDetails/' +
+                loadSelectedRouteDetails.payload.id
+            )
+            .pipe(
+              map((rideRouteResponse: RideRouteResponse) => {
+                return new PassengerActions.SetSelectedRouteDetails({
+                  rideRouteInfo: rideRouteResponse,
+                });
+              })
+            );
+        }
+      )
+    )
+  );
 
   constructor(
     private actions$: Actions,

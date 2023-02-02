@@ -60,6 +60,8 @@ export const REJECT_RIDE_DRIVER = '[Maps] Reject ride driver';
 export const SIMULATE_DRIVER_RIDE_TO_CLIENT_END =
   '[Maps] End of driver ride to client simulation';
 
+export const SET_LOCATION_NAMES = '[Maps] Set location names';
+
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
 }
@@ -144,8 +146,8 @@ export class SearchForDriver implements Action {
 
   constructor(
     public payload: {
-      clientLocation: Location;
       route: [longitude: number, latitude: number, stop:boolean][];
+      locationNames: string[];
       vehicleTypes: string[];
       petFriendly: boolean;
       babyFriendly: boolean;
@@ -246,6 +248,11 @@ export class RejectRideDriver implements Action {
   constructor(public payload: { rejectReason: string }) {}
 }
 
+export class SetLocationNames implements Action {
+  readonly type = SET_LOCATION_NAMES;
+  constructor(public payload: {locationNames: string[]}){}
+}
+
 export type MapsActions =
   | MapLoadStart
   | MapLoadEnd
@@ -272,4 +279,5 @@ export type MapsActions =
   | SubtractTimeLeft
   | LoadActiveRoute
   | SetActiveRideAndDriver
-  | RejectRideDriver;
+  | RejectRideDriver
+  | SetLocationNames;

@@ -28,7 +28,7 @@ import { RideStatus } from '../model/rideStatus';
   templateUrl: './active-drivers-map.component.html',
   styleUrls: ['./active-drivers-map.component.scss'],
 })
-export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
+export class ActiveDriversMapComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('popup') popup: ElementRef;
   loading: boolean;
   driver: Driver;
@@ -41,14 +41,18 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
     private mapsService: MapsService,
     private toastr: ToastrService
   ) {}
+  
+  ngOnDestroy(): void {
+    this.mapsService.setTarget(null);
+  }
 
   ngOnInit(): void {
+    this.mapsService.setTarget('map');
     this.store.select('maps').subscribe((mapsState) => {
       this.loading = mapsState.loading;
       this.driver = mapsState.chosenDriverInfo;
       this.mapsService.updateMapVehicleLayer();
     });
-    this.mapsService.setTarget('map');
     this.rideStatus$ = this.store.select(
       (store) => store.maps.rideStatus
     );

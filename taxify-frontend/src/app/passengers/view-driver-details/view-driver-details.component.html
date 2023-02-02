@@ -1,4 +1,4 @@
-<mat-card class="driverCard mx-auto" *ngIf="driver$ | async as driver">
+<mat-card class="driverCard mx-auto" *ngIf="driver">
   <mat-card-header>
     <img
       mat-card-avatar
@@ -8,21 +8,10 @@
       {{ driver.name + " " + driver.surname }}
     </mat-card-title>
     <mat-card-subtitle>
-      <div>Your driver</div>
+      <div>Driver</div>
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <div class="d-flex justify-content-center mt-1 mb-3">
-      <button
-        type="button"
-        mat-button
-        class="complainButton"
-        (click)="makeComplaint()"
-        [disabled]="(rideStatus$ | async) !== rideStatusEnum.RIDING"
-      >
-        Make a complaint
-      </button>
-    </div>
     <p class="fw-550">
       <img mat-card-avatar src="../assets/black_taxi.png" class="taxiIcon" />
       {{
@@ -32,14 +21,6 @@
           " " +
           driver.vehicle.type | titlecase
       }}
-    </p>
-    <p class="fw-550" *ngIf="timeLeft$ | async as timeLeft" [hidden]="(rideStatus$ | async) === rideStatusEnum.RIDING">
-      <img
-        mat-card-avatar
-        src="../assets/sand-watch.png"
-        class="sandWatchIcon"
-      />
-      {{ convertTimeLeft(timeLeft) }}
     </p>
   </mat-card-content>
 </mat-card>

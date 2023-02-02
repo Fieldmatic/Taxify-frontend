@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { DriverState } from 'src/app/drivers/model/driverState';
+import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
 import { Ride } from 'src/app/shared/ride.model';
 import { Driver } from '../../shared/driver.model';
 
@@ -21,6 +22,8 @@ export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_CLIENT =
   '[Drivers] Notify passenger that vehicle has arrived to client';
 export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_DESTINATION =
   '[Drivers] Notify passenger that vehicle has arrived to destination';
+export const LOAD_DRIVER_RIDE_HISTORY = '[Passenger] Load driver ride history';
+export const SET_DRIVER_RIDE_HISTORY = '[Passenger] Set driver ride history';
 
 export class FetchActiveDriversInArea implements Action {
   readonly type = FETCH_ACTIVE_DRIVERS_IN_AREA;
@@ -88,6 +91,16 @@ export class NotifyPassengerOfVehicleArrivedToClient implements Action {
   constructor() {}
 }
 
+export class LoadDriverRideHistory implements Action {
+  readonly type = LOAD_DRIVER_RIDE_HISTORY;
+  constructor() {}
+}
+
+export class SetDriverRideHistory implements Action {
+  readonly type = SET_DRIVER_RIDE_HISTORY;
+  constructor(public payload: { rides: RideHistoryResponse[] }) {}
+}
+
 export type DriversActions =
   | FetchActiveDriversInArea
   | SetDrivers
@@ -99,4 +112,6 @@ export type DriversActions =
   | ChangeDriverStatus
   | SetDriverState
   | SetAssignedRideToDriver
-  | NotifyPassengerOfVehicleArrivedToClient;
+  | NotifyPassengerOfVehicleArrivedToClient
+  | LoadDriverRideHistory
+  | SetDriverRideHistory;

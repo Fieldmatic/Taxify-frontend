@@ -1,9 +1,9 @@
 import { LoggedInUser } from './../../../../auth/model/logged-in-user';
 import { MatDialog } from '@angular/material/dialog';
 import { LinkUsersDialogComponent } from './../link-users-dialog/link-users-dialog.component';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 import { FilterDriversService } from './services/filter-drivers.service';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Location } from 'src/app/maps/model/location';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../../store/app.reducer';
@@ -11,6 +11,8 @@ import * as PassengerActions from '../../../../passengers/store/passengers.actio
 import { StompService } from 'src/app/stomp.service';
 import { ToastrService } from 'ngx-toastr';
 import * as MapActions from '../../../store/maps.actions';
+import { PaymentMethodSelectionDialogComponent } from '../payment-method-selection-dialog/payment-method-selection-dialog.component';
+import { PaymentMethod } from '../../../../shared/model/payment-method.model';
 
 export interface Task {
   name: string;
@@ -23,7 +25,7 @@ export interface Task {
   templateUrl: './filter-drivers.component.html',
   styleUrls: ['./filter-drivers.component.scss'],
 })
-export class FilterDriversComponent implements OnInit {
+export class FilterDriversComponent implements OnInit, OnDestroy {
   @Input() clientLocation: Location;
   @Input() route: [longitude: number, latitude: number][];
 
@@ -35,6 +37,10 @@ export class FilterDriversComponent implements OnInit {
   vehicleTypes: Task[] = [];
   loggedInUser: LoggedInUser;
   chosenVehicleTypes: string[] = [];
+  paymentMethods: PaymentMethod[];
+  paymentMethodId: string;
+
+  usersSubscription: Subscription;
 
   constructor(
     private filterDriversService: FilterDriversService,
@@ -63,6 +69,16 @@ export class FilterDriversComponent implements OnInit {
       .subscribe((user) => {
         this.loggedInUser = user;
       });
+
+    this.usersSubscription = this.store
+      .select('users')
+      .subscribe((usersState) => {
+        this.paymentMethods = usersState.loggedUserPaymentMethods;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.usersSubscription.unsubscribe();
   }
 
   updateAllVehicleTypesSelected() {
@@ -152,6 +168,7 @@ export class FilterDriversComponent implements OnInit {
         babyFriendly: this.babyFriendly,
         sender: this.loggedInUser.email,
         linkedUsers: this.linkedUsers,
+        paymentMethodId: this.paymentMethodId,
       })
     );
   }
@@ -160,5 +177,34 @@ export class FilterDriversComponent implements OnInit {
     this.vehicleTypes.forEach((type) => {
       if (type.completed) this.chosenVehicleTypes.push(type.name);
     });
+  }
+
+  openPaymentMethodDialog() {
+    if (this.paymentMethods.length > 0) {
+      const dialogRef = this.dialog.open(
+        PaymentMethodSelectionDialogComponent,
+        {
+          disableClose: true,
+          data: this.paymentMethodId,
+        }
+      );
+
+      dialogRef.beforeClosed().subscribe((result) => {
+        this.paymentMethodId = result;
+      });
+    } else {
+      this.toastr.warning(
+        'You have no payment methods added, go and add one first!'
+      );
+    }
+  }
+
+  getPaymentMethodById(id: string): PaymentMethod | null {
+    for (let paymentMethod of this.paymentMethods) {
+      if (paymentMethod.id === id) {
+        return paymentMethod;
+      }
+    }
+    return null;
   }
 }

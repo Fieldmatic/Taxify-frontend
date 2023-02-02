@@ -62,15 +62,17 @@
           <div><i class="arrow right"></i></div>
         </div>
         <div
+          (click)="openPaymentMethodDialog()"
           style="cursor: pointer"
           class="d-flex justify-content-between pt-2 pb-2"
         >
           <div>
-            <img src="../assets/paypal.png" />
-            <span class="fw-bold ms-2">Pay with PayPal</span>
+            <img src="../assets/credit-card.png" style="width: 24px; height: 24px"/>
+            <span class="fw-bold ms-2">{{paymentMethodId?"Change":"Select"}} Payment Method</span>
           </div>
           <div><i class="arrow right"></i></div>
         </div>
+        <app-payment-method-card *ngIf="paymentMethodId" (click)="openPaymentMethodDialog()" [isSelected]="false" [card]="getPaymentMethodById(paymentMethodId).card" [isPaymentSelectionMode]="true"></app-payment-method-card>
         <button
           class="mt-4 ms-25 bg-black text-white w-50"
           style="left: 25%"

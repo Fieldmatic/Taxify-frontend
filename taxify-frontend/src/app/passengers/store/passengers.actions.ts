@@ -35,7 +35,13 @@ export class SetPassengerNotifications implements Action {
 export class AnswerOnAddingToTheRide implements Action {
   readonly type = ANSWER_ON_ADDING_TO_THE_RIDE;
 
-  constructor(public payload: { notificationId: number; answer: string }) {}
+  constructor(
+    public payload: {
+      notificationId: number;
+      answer: string;
+      paymentMethodId: string;
+    }
+  ) {}
 }
 
 export class SetPassengerNotification implements Action {

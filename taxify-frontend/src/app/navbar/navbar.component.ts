@@ -14,6 +14,7 @@ import { DriverState } from '../drivers/model/driverState';
 import { NotifierService } from '../shared/services/notifier.service';
 import { Router } from '@angular/router';
 import * as CustomerSupportActions from '../customer-support/store/customer-support.actions';
+import * as UsersActions from '../users/store/users.actions';
 
 @Component({
   selector: 'app-navbar',
@@ -44,6 +45,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
       if (this.loggedInUser && this.role === 'PASSENGER') {
         this.subscribeOnWebSocketAsPassenger(this.loggedInUser.email);
+        this.store.dispatch(
+          new UsersActions.GetLoggedPassengerPaymentMethods()
+        );
         this.loadPassengerNotifications();
       } else if (this.loggedInUser && this.role === 'DRIVER') {
         this.subscribeOnWebSocketAsDriver(this.loggedInUser.email);

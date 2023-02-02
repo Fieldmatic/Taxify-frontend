@@ -11,7 +11,7 @@ import { Ride } from 'src/app/shared/model/ride.model';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { DriverState } from '../model/driverState';
-import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
+import { RideHistoryResponse } from 'src/app/shared/model/rideHistoryResponse';
 
 @Injectable()
 export class DriversEffects {

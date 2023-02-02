@@ -1,8 +1,9 @@
 import { Driver } from '../../shared/model/driver.model';
 import { DriverState } from 'src/app/drivers/model/driverState';
-import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
-import { Ride } from 'src/app/shared/ride.model';
+
 import * as DriversActions from './drivers.actions';
+import { Ride } from 'src/app/shared/model/ride.model';
+import { RideHistoryResponse } from 'src/app/shared/model/rideHistoryResponse';
 
 export interface State {
   drivers: Driver[];

@@ -8,15 +8,16 @@ import { fromLonLat } from 'ol/proj';
 import { Stroke, Style } from 'ol/style';
 import { BehaviorSubject, take } from 'rxjs';
 import * as MapUtils from '../../maps/mapUtils';
-import { Location } from 'src/app/maps/model/location';
-import { MapsService } from 'src/app/maps/maps.service';
 import VectorSource from 'ol/source/Vector';
 import {Observable} from 'rxjs'
-import { Driver } from 'src/app/shared/driver.model';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
 import * as MapActions from '../../maps/store/maps.actions';
 import { Router } from '@angular/router';
+import { Driver } from '../../shared/model/driver.model';
+import { MapsService } from "../../maps/maps.service";
+import {Location} from "../../maps/model/location";
+
 @Component({
   selector: 'app-view-ride-details',
   templateUrl: './view-ride-details.component.html',

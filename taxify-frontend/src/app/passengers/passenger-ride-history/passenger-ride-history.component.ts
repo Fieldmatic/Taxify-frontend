@@ -7,8 +7,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as fromApp from '../../store/app.reducer';
-import { RideHistoryResponse } from '../model/rideHistoryResponse';
 import * as PassengerActions from '../store/passengers.actions'
+import { RideHistoryResponse } from '../../shared/model/rideHistoryResponse';
 import { ViewRideDetailsComponent } from '../view-ride-details/view-ride-details.component';
 
 @Component({

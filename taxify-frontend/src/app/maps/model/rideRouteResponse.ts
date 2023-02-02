@@ -1,4 +1,4 @@
-import { Driver } from "src/app/shared/driver.model";
+import { Driver } from "src/app/shared/model/driver.model";
 import { Route } from "./route";
 
 export class RideRouteResponse{

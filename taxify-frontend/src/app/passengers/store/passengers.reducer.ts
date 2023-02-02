@@ -1,7 +1,7 @@
 import { Route } from '../../maps/model/route'
-import { Driver } from 'src/app/shared/driver.model';
-import { Notification } from '../model/notification';
-import { RideHistoryResponse } from '../model/rideHistoryResponse';
+import { Driver } from 'src/app/shared/model/driver.model';
+import { Notification } from 'src/app/shared/model/notification';
+import { RideHistoryResponse} from '../../shared/model/rideHistoryResponse'
 import * as PassengerActions from '../store/passengers.actions';
 
 export interface State {

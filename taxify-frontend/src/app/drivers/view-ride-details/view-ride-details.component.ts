@@ -12,12 +12,12 @@ import { Location } from 'src/app/maps/model/location';
 import { MapsService } from 'src/app/maps/maps.service';
 import VectorSource from 'ol/source/Vector';
 import {Observable} from 'rxjs'
-import { Driver } from 'src/app/shared/driver.model';
+import { Driver } from 'src/app/shared/model/driver.model';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
 import * as MapActions from '../../maps/store/maps.actions';
 import { Router } from '@angular/router';
-import { User } from "../../shared/user.model";
+import { User } from 'src/app/shared/model/user.model';
 @Component({
   selector: 'app-view-ride-details',
   templateUrl: './view-ride-details.component.html',

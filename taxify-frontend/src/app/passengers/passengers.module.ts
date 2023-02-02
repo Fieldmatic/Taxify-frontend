@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PassengersRoutingModule } from './passengers-routing.module';
-import { PassengersComponent } from './passengers.component';
-import { PassengerRideHistoryComponent } from './passenger-ride-history/passenger-ride-history.component';
 import { SharedModule } from '../shared/shared.module';
+import { PassengerRideHistoryComponent } from './passenger-ride-history/passenger-ride-history.component';
 import { ViewRideDetailsComponent } from './view-ride-details/view-ride-details.component';
-import { ViewDriverDetailsComponent } from './view-driver-details/view-driver-details.component';
+import { ViewDriverDetailsComponent} from './view-driver-details/view-driver-details.component'
+import {PassengersComponent} from './passengers.component'
+import {PassengersRoutingModule} from './passengers-routing.module'
+
 
 
 @NgModule({
@@ -21,4 +22,4 @@ import { ViewDriverDetailsComponent } from './view-driver-details/view-driver-de
     PassengersRoutingModule,
   ]
 })
-export class PassengersModule { }
+export class PassengersModule {}

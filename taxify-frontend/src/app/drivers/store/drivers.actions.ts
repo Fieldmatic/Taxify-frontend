@@ -2,7 +2,8 @@ import { Action } from '@ngrx/store';
 import { Driver } from '../../shared/model/driver.model';
 import { DriverState } from 'src/app/drivers/model/driverState';
 import { Ride } from 'src/app/shared/model/ride.model';
-import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
+import { RideHistoryResponse } from 'src/app/shared/model/rideHistoryResponse';
+
 
 export const FETCH_ACTIVE_DRIVERS_IN_AREA =
   '[Drivers] Fetch active drivers in area';

@@ -7,8 +7,8 @@ import { switchMap, map } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
-import { Notification } from '../shared/model/notification';
-import { RideHistoryResponse } from '../shared/model/rideHistoryResponse';
+import { Notification } from '../../shared/model/notification';
+import { RideHistoryResponse} from '../../shared/model/rideHistoryResponse'
 import * as PassengerActions from './passengers.actions';
 
 @Injectable()

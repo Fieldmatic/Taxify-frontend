@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';

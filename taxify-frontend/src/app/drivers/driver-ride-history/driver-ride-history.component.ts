@@ -3,7 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Store } from '@ngrx/store';
-import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
+import { RideHistoryResponse } from 'src/app/shared/model/rideHistoryResponse';
 import * as fromApp from '../../store/app.reducer';
 import * as DriverActions from '../store/drivers.actions';
 import { ViewRideDetailsComponent } from "../view-ride-details/view-ride-details.component";

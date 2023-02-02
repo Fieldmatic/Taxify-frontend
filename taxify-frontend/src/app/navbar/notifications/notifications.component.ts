@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { Notification } from 'src/app/shared/model/notification';
+import { Notification } from '../../shared/model/notification';
 import * as fromApp from '../../store/app.reducer';
 import * as PassengerActions from '../../passengers/store/passengers.actions';
 import * as CustomerSupportActions from '../../customer-support/store/customer-support.actions';

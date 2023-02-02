@@ -1,7 +1,8 @@
 import { Action } from '@ngrx/store';
 import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
-import { Notification } from '../shared/model/notification';
-import { RideHistoryResponse } from '../model/rideHistoryResponse';
+import { RideHistoryResponse} from '../../shared/model/rideHistoryResponse'
+import { Notification } from 'src/app/shared/model/notification';
+
 
 export const ADD_LINKED_PASSENGERS = '[Passenger] Add Linked Passengers';
 export const GET_PASSENGER_NOTIFICATIONS =

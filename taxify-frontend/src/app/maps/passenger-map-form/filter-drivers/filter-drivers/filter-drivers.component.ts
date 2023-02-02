@@ -3,8 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { LinkUsersDialogComponent } from './../link-users-dialog/link-users-dialog.component';
 import { map, Subscription } from 'rxjs';
 import { FilterDriversService } from './services/filter-drivers.service';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Location } from 'src/app/maps/model/location';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../../store/app.reducer';
 import * as PassengerActions from '../../../../passengers/store/passengers.actions';
@@ -27,9 +26,6 @@ export interface Task {
   styleUrls: ['./filter-drivers.component.scss'],
 })
 export class FilterDriversComponent implements OnInit, OnDestroy {
-  @Input() clientLocation: Location;
-  @Input() route: [longitude: number, latitude: number][];
-
   checkboxPairs: number[] = [];
   petFriendly: boolean = false;
   babyFriendly: boolean = false;

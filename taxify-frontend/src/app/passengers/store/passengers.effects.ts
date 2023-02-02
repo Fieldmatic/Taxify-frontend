@@ -3,13 +3,13 @@ import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ToastrService } from 'ngx-toastr';
-import { switchMap, map } from 'rxjs';
+import { map, switchMap } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
-import { Ride } from 'src/app/shared/ride.model';
+import { Ride } from 'src/app/shared/model/ride.model';
 import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
 import { Notification } from '../../shared/model/notification';
-import { RideHistoryResponse} from '../../shared/model/rideHistoryResponse'
+import { RideHistoryResponse } from '../../shared/model/rideHistoryResponse';
 import * as PassengerActions from './passengers.actions';
 import * as MapsActions from '../../maps/store/maps.actions';
 

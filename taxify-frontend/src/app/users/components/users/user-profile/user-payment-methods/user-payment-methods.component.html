@@ -1,6 +1,6 @@
 <app-no-payment-methods *ngIf="paymentMethods.length === 0"></app-no-payment-methods>
 <div *ngIf="paymentMethods.length > 0" class="p-0">
-  <app-payment-method-card *ngFor="let paymentMethod of paymentMethods;" [card]="paymentMethod.card" [index]="paymentMethod.id"></app-payment-method-card>
+  <app-payment-method-card *ngFor="let paymentMethod of paymentMethods;" [isSelected]="selectedPaymentMethodId===paymentMethod.id" (click)="paymentMethodSelected.emit(paymentMethod.id)" [card]="paymentMethod.card" [index]="paymentMethod.id" [isPaymentSelectionMode]="!isPaymentMethodsPage"></app-payment-method-card>
 </div>
-<a mat-button class="black-btn" routerLink="/users/profile/paymentMethods/new">Add New Card</a>
-<app-loading-spinner *ngIf="loading"></app-loading-spinner>
+<a *ngIf="isPaymentMethodsPage" mat-button class="black-btn" routerLink="/users/profile/paymentMethods/new">Add New Card</a>
+<app-loading-spinner *ngIf="loading && isPaymentMethodsPage"></app-loading-spinner>

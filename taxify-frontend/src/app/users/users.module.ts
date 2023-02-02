@@ -62,5 +62,6 @@ import { MatSelectModule } from '@angular/material/select';
     MatSelectModule,
   ],
   providers: [ReauthGuard],
+  exports: [UserPaymentMethodsComponent, PaymentMethodCardComponent],
 })
 export class UsersModule {}

@@ -1,8 +1,8 @@
-<mat-card class="payment-card mb-3">
+<mat-card class="payment-card mb-3" [ngClass]="isSelected ? 'selected':null">
   <mat-card-header>
     <img class="card-brand" mat-card-avatar [src]="brandImage()" alt="">
     <mat-card-title class="mt-3">**** **** **** {{card.last4}}</mat-card-title>
     <mat-card-subtitle>Expires: {{card.expMonth}}/{{card.expYear}}</mat-card-subtitle>
-    <button class="ms-auto" mat-button (click)="removeCard()">Remove</button>
+    <button *ngIf="!isPaymentSelectionMode" class="ms-auto" mat-button (click)="removeCard()">Remove</button>
   </mat-card-header>
 </mat-card>

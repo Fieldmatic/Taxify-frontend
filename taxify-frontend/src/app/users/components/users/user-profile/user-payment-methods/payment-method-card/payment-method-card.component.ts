@@ -12,8 +12,10 @@ import { ConfirmationDialogComponent } from '../../../../../../shared/components
   styleUrls: ['./payment-method-card.component.scss'],
 })
 export class PaymentMethodCardComponent {
+  @Input() isSelected: boolean;
   @Input() card: PaymentCard;
   @Input() index: string;
+  @Input() isPaymentSelectionMode: boolean;
 
   constructor(
     private store: Store<fromApp.AppState>,

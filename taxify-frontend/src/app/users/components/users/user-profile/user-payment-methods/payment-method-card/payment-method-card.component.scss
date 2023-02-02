@@ -5,6 +5,14 @@
   background-color: #fafafa;
 }
 
+.payment-card:hover, .payment-card:focus {
+  background-color: gray;
+}
+
+.selected {
+  background-color: darkgray;
+}
+
 .payment-card:hover, .payment-card:active {
   transform: translateY(-0.25em);
 }

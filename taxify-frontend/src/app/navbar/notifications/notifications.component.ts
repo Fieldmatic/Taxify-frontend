@@ -5,6 +5,9 @@ import { Notification } from '../../shared/model/notification';
 import * as fromApp from '../../store/app.reducer';
 import * as PassengerActions from '../../passengers/store/passengers.actions';
 import * as CustomerSupportActions from '../../customer-support/store/customer-support.actions';
+import { PaymentMethodSelectionDialogComponent } from '../../maps/passenger-map-form/filter-drivers/payment-method-selection-dialog/payment-method-selection-dialog.component';
+import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-notifications',
@@ -14,9 +17,16 @@ import * as CustomerSupportActions from '../../customer-support/store/customer-s
 export class NotificationsComponent implements OnInit {
   @Input() role: string;
   notifications: Notification[] = [];
+  numberOfPaymentMethods: number = 0;
+  paymentMethodId: string;
   unreadNotifications: number = 0;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  constructor(
+    private store: Store<fromApp.AppState>,
+    public dialog: MatDialog,
+    private toastr: ToastrService
+  ) {}
+
   ngOnInit(): void {
     this.store
       .select('passengers')
@@ -32,6 +42,9 @@ export class NotificationsComponent implements OnInit {
         this.notifications = notifications;
         this.getNumberOfUnreadNotifications();
       });
+    this.store.select('users').subscribe((usersState) => {
+      this.numberOfPaymentMethods = usersState.loggedUserPaymentMethods.length;
+    });
   }
 
   getNotificationTime(notification: Notification) {
@@ -102,11 +115,36 @@ export class NotificationsComponent implements OnInit {
   }
 
   answerOnAddingToTheRide(notification: Notification, answer: string) {
-    this.store.dispatch(
-      new PassengerActions.AnswerOnAddingToTheRide({
-        notificationId: notification.id,
-        answer: answer,
-      })
-    );
+    if (this.numberOfPaymentMethods > 0 && answer !== 'reject') {
+      const dialogRef = this.dialog.open(
+        PaymentMethodSelectionDialogComponent,
+        {
+          disableClose: true,
+          data: this.paymentMethodId,
+        }
+      );
+
+      dialogRef.beforeClosed().subscribe((result) => {
+        this.store.dispatch(
+          new PassengerActions.AnswerOnAddingToTheRide({
+            notificationId: notification.id,
+            paymentMethodId: result,
+            answer: answer,
+          })
+        );
+      });
+    } else if (answer === 'reject') {
+      this.store.dispatch(
+        new PassengerActions.AnswerOnAddingToTheRide({
+          notificationId: notification.id,
+          paymentMethodId: null,
+          answer: answer,
+        })
+      );
+    } else {
+      this.toastr.warning(
+        'You have no payment methods added, go and add one first!'
+      );
+    }
   }
 }

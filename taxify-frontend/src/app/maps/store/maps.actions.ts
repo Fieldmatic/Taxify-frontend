@@ -152,6 +152,7 @@ export class SearchForDriver implements Action {
       babyFriendly: boolean;
       sender: string;
       linkedUsers: string[];
+      paymentMethodId: string;
     }
   ) {}
 }

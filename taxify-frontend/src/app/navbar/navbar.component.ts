@@ -24,6 +24,7 @@ import { MapsService } from '../maps/maps.service';
 import { Router } from '@angular/router';
 import { NotifierService } from '../shared/services/notifier.service';
 import * as CustomerSupportActions from '../customer-support/store/customer-support.actions';
+import * as UsersActions from '../users/store/users.actions';
 import { MatDialog } from '@angular/material/dialog';
 import { RideAssessmentDialogComponent } from '../maps/rideAssessmentDialog/ride-assessment-dialog/ride-assessment-dialog.component';
 
@@ -58,6 +59,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
       if (this.loggedInUser && this.role === 'PASSENGER') {
         this.subscribeOnWebSocketAsPassenger(this.loggedInUser.email);
+        this.store.dispatch(
+          new UsersActions.GetLoggedPassengerPaymentMethods()
+        );
         this.loadPassengerNotifications();
         this.mapService.loadActiveRide();
       } else if (this.loggedInUser && this.role === 'DRIVER') {

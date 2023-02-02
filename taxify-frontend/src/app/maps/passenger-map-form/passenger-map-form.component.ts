@@ -6,13 +6,7 @@ import {
   FormGroup,
   FormGroupDirective,
 } from '@angular/forms';
-import {
-  async,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  Observable,
-} from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
 import * as MapActions from '../store/maps.actions';

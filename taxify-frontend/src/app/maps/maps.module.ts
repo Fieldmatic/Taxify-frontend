@@ -8,16 +8,17 @@ import { RouterModule } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { SelectedDriverInfoComponent } from './active-drivers-map/selected-driver-info/selected-driver-info.component';
 import { PassengerMapFormComponent } from './passenger-map-form/passenger-map-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MapsService } from './maps.service';
 import { FilterDriversComponent } from './passenger-map-form/filter-drivers/filter-drivers/filter-drivers.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { FormsModule } from '@angular/forms';
 import { LinkUsersDialogComponent } from './passenger-map-form/filter-drivers/link-users-dialog/link-users-dialog.component';
 import { ToastrModule } from 'ngx-toastr';
 import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
 import { RideDriverInfoComponent } from './ride-driver-info/ride-driver-info.component';
+import { PaymentMethodSelectionDialogComponent } from './passenger-map-form/filter-drivers/payment-method-selection-dialog/payment-method-selection-dialog.component';
+import { UsersModule } from '../users/users.module';
 import { LeaveReasonDialogComponent } from './leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
 import { RideAssessmentDialogComponent } from './rideAssessmentDialog/ride-assessment-dialog/ride-assessment-dialog.component';
 
@@ -33,6 +34,7 @@ import { RideAssessmentDialogComponent } from './rideAssessmentDialog/ride-asses
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
     DirectivesModule,
+    UsersModule,
   ],
   declarations: [
     MapsComponent,
@@ -43,6 +45,7 @@ import { RideAssessmentDialogComponent } from './rideAssessmentDialog/ride-asses
     LinkUsersDialogComponent,
     DriverMapInfoComponent,
     RideDriverInfoComponent,
+    PaymentMethodSelectionDialogComponent,
     LeaveReasonDialogComponent,
     RideAssessmentDialogComponent,
   ],

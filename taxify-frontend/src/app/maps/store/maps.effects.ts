@@ -164,6 +164,7 @@ export class MapsEffects {
                 senderEmail: searchForRideData.payload.sender,
                 recipientsEmails: searchForRideData.payload.linkedUsers,
               },
+              paymentMethodId: searchForRideData.payload.paymentMethodId,
             }
           )
           .pipe(

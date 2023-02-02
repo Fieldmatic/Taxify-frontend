@@ -25,6 +25,7 @@ import { Router } from '@angular/router';
 import { NotifierService } from '../shared/services/notifier.service';
 import * as CustomerSupportActions from '../customer-support/store/customer-support.actions';
 import * as UsersActions from '../users/store/users.actions';
+import * as MapsActions from '../maps/store/maps.actions'
 import { MatDialog } from '@angular/material/dialog';
 import { RideAssessmentDialogComponent } from '../maps/rideAssessmentDialog/ride-assessment-dialog/ride-assessment-dialog.component';
 
@@ -174,6 +175,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
           })
         );
         return 'You have arrived on destination.';
+      case 'RESERVED_DRIVER':
+        return 'We reserved a first free driver for you'
       default:
         return 'Your ride has been scheduled.';
     }
@@ -224,12 +227,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe((rates) => {
-      if (
-        rates.comment !== '' ||
+      if ( rates != null &&
+        (rates.comment !== '' ||
         rates.driverRating !== 0 ||
-        rates.vehicleRating !== 0
+        rates.vehicleRating !== 0)
       ) {
-        console.log(rates);
         this.store.dispatch(
           new PassengerActions.LeaveReviewStart({
             comment: rates.comment,
@@ -237,6 +239,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
             vehicleRating: rates.vehicleRating,
           })
         );
+      }
+      else {
+        this.store.dispatch(new MapsActions.ResetStateAfterRideFinish());
       }
     });
   }

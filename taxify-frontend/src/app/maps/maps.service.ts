@@ -436,9 +436,11 @@ export class MapsService {
         let riderVehicle = this.vehicles.find(
           (vehicle) => vehicle.id === this.rideDriver.vehicle.id
         );
-        this.vehiclesVectorSource.addFeatures(
-          MapUtils.createVehicleFeatures([riderVehicle])
-        );
+        if (riderVehicle) {
+          this.vehiclesVectorSource.addFeatures(
+            MapUtils.createVehicleFeatures([riderVehicle])
+          );
+        }
         this.redrawRouteDuringRide(riderVehicle.location);
       }
       else {

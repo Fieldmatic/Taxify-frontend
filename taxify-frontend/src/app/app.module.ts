@@ -31,15 +31,9 @@ import { MapsService } from './maps/maps.service';
 import { CustomerSupportModule } from './customer-support/customer-support.module';
 import { CustomerSupportEffects } from './customer-support/store/customer-support.effects';
 import { ToastrModule } from 'ngx-toastr';
-import { NotificationsComponent } from './navbar/notifications/notifications.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavbarComponent,
-    NavbarProfileMenuComponent,
-    NotificationsComponent,
-  ],
+  declarations: [AppComponent, NavbarComponent, NotificationsComponent, NavbarProfileMenuComponent, DriversComponent],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -63,6 +57,8 @@ import { NotificationsComponent } from './navbar/notifications/notifications.com
     UsersModule,
     MapsModule,
     AuthModule,
+    PassengersModule,
+    DriversModule,
     AppRoutingModule,
     DirectivesModule,
   ],
@@ -80,5 +76,6 @@ import { NotificationsComponent } from './navbar/notifications/notifications.com
     },
   ],
   bootstrap: [AppComponent],
+
 })
 export class AppModule {}

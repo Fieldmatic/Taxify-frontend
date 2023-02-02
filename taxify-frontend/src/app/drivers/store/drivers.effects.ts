@@ -11,6 +11,7 @@ import { Ride } from 'src/app/shared/model/ride.model';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { DriverState } from '../model/driverState';
+import { RideHistoryResponse } from 'src/app/passengers/model/rideHistoryResponse';
 
 @Injectable()
 export class DriversEffects {
@@ -141,16 +142,18 @@ export class DriversEffects {
     );
   });
 
-  getDriverAssignedRide = createEffect(() => {
+  notifyOfArrivedVehicle = createEffect(() => {
     return this.actions$.pipe(
-      ofType(DriversActions.GET_DRIVER_ASSIGNED_RIDE),
+      ofType(DriversActions.NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED),
       switchMap(() => {
         return this.http
-          .get<Ride>(this.config.apiEndpoint + 'driver/assignedRide', {})
+          .put<void>(
+            this.config.apiEndpoint + 'notification/vehicleArrived',
+            {}
+          )
           .pipe(
-            map((ride: Ride) => {
-              return new DriversActions.SetAssignedRideToDriver({
-                ride: ride,
+            map(() => {
+              return new DriversActions.SetDriverState({
                 state: DriverState.ARRIVED_TO_CLIENT,
               });
             })
@@ -159,21 +162,22 @@ export class DriversEffects {
     );
   });
 
-  notifyPassengerVehicleHasArrived = createEffect(
-    () => {
-      return this.actions$.pipe(
-        ofType(DriversActions.SET_ASSIGNED_RIDE_TO_DRIVER),
-        switchMap((setAssignedRide: DriversActions.SetAssignedRideToDriver) => {
-          return this.http.put<void>(
-            this.config.apiEndpoint +
-              'notification/vehicleArrivedToClient/' +
-              setAssignedRide.payload.ride.sender,
-            {}
-          );
+  loadDriverRideHistory = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(DriversActions.LOAD_DRIVER_RIDE_HISTORY),
+        switchMap((loadDriverRideHistory: DriversActions.LoadDriverRideHistory) => {
+          return this.http
+            .get<RideHistoryResponse[]>(this.config.apiEndpoint + 'ride/rideHistory', {
+            })
+            .pipe(
+              map((rideHistoryResponse: RideHistoryResponse[]) => {
+               return new DriversActions.SetDriverRideHistory({rides: rideHistoryResponse})
+              })
+            );
         })
-      );
-    },
-    { dispatch: false }
+      ),
+
   );
 
   constructor(

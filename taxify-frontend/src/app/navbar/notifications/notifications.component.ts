@@ -20,7 +20,7 @@ export class NotificationsComponent implements OnInit {
   ngOnInit(): void {
     this.store
       .select('passengers')
-      .pipe(map((passengerState) => passengerState.notifications))
+      .pipe(map((rideStatus) => rideStatus.notifications))
       .subscribe((notifications) => {
         this.notifications = notifications;
         this.getNumberOfUnreadNotifications();
@@ -65,11 +65,11 @@ export class NotificationsComponent implements OnInit {
       case 'VEHICLE_ARRIVED':
         return 'Vehicle has arrived at your destination.';
       case 'RIDE_STARTED':
-        return 'Your ride has started.';
-      case 'RIDE_FINISHED':
-        return 'You have arrived at your destination.';
-      case 'CUSTOMER_SUPPORT_REQUIRED':
-        return 'I need help!';
+        return 'Your ride has started.'
+      case 'RIDE_FINISHED_PASSENGER':
+        return 'You have arrived at your destination.'
+      case 'RIDE_REJECTED':
+        return 'Your ride has been rejected.';
       default:
         return 'Your ride has been scheduled';
     }

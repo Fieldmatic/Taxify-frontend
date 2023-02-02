@@ -26,8 +26,14 @@
       </a>
       <a mat-button *ngIf="isAuthenticated && role === 'ADMIN'" routerLink="/users/all">Users</a>
 
-      <app-notifications *ngIf="isAuthenticated" [role]="role"></app-notifications>
-
+      <app-notifications *appHasRole="['PASSENGER']"></app-notifications>
+      <a mat-button *appHasRole="['PASSENGER']" routerLink="/passenger/ride-history"
+      >Ride History</a>
+      <a mat-button *appHasRole="['DRIVER']" routerLink="/driver/ride-history"
+      >Ride History</a>
+      <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile"
+        >Profile</a
+      >
       <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
       <app-navbar-profile-menu
         *ngIf="isAuthenticated"

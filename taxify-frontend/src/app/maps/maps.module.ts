@@ -17,8 +17,8 @@ import { FormsModule } from '@angular/forms';
 import { LinkUsersDialogComponent } from './passenger-map-form/filter-drivers/link-users-dialog/link-users-dialog.component';
 import { ToastrModule } from 'ngx-toastr';
 import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
-import { DriveRejectionReasonDialogComponent } from './driver-map/drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
 import { RideDriverInfoComponent } from './ride-driver-info/ride-driver-info.component';
+import { LeaveReasonDialogComponent } from './leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
 
 @NgModule({
   imports: [
@@ -41,8 +41,8 @@ import { RideDriverInfoComponent } from './ride-driver-info/ride-driver-info.com
     FilterDriversComponent,
     LinkUsersDialogComponent,
     DriverMapInfoComponent,
-    DriveRejectionReasonDialogComponent,
     RideDriverInfoComponent,
+    LeaveReasonDialogComponent,
   ],
   providers: [MapsService],
 })

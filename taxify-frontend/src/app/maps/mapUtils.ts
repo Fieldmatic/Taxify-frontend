@@ -115,6 +115,24 @@ export const createMapDriversOverlay = function (
   });
 };
 
+export const createEmptyMap = function (
+  mapCenter: Coordinate,
+): Map {
+  return new Map({
+    layers: [
+      new TileLayer({
+        source: new OSM(),
+      }),
+      createLocationsLayer(),
+      createRoutesLayer(),
+    ],
+    view: new View({
+      center: olProj.fromLonLat(mapCenter),
+      zoom: 14,
+    }),
+  });
+};
+
 export const createMapWithVehiclesLayer = function (
   mapCenter: Coordinate,
   vehicles: Vehicle[]

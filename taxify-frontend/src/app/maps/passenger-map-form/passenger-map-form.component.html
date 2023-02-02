@@ -1,7 +1,5 @@
 <app-filter-drivers
   *appHasRole="['PASSENGER']"
-  [clientLocation]="this.clientLocation"
-  [route]="this.routeArray"
   [hidden]="!filterDriversMode"
 ></app-filter-drivers>
 <mat-card [hidden]="filterDriversMode" *appHasRole="['PASSENGER']">
@@ -58,7 +56,7 @@
             let destination of additionalDestinations().controls;
             let i = index
           "
-          formGroupName="i"
+          formGroupName="additionalDestinations"
           appearance="fill"
           class="addressInput"
         >
@@ -90,7 +88,7 @@
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
-        <div class="routeInfo" *ngIf="routeArray.length > 1">
+        <div class="routeInfo" *ngIf="distance">
           <span>Distance: {{ distance }} km</span>
           <span>Duration: {{ duration }} min</span>
         </div>

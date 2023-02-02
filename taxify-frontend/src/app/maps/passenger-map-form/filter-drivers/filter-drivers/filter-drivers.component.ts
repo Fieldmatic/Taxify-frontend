@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import * as MapActions from '../../../store/maps.actions';
 import { PaymentMethodSelectionDialogComponent } from '../payment-method-selection-dialog/payment-method-selection-dialog.component';
 import { PaymentMethod } from '../../../../shared/model/payment-method.model';
+import { Router } from '@angular/router';
 
 export interface Task {
   name: string;
@@ -41,16 +42,32 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
   paymentMethodId: string;
 
   usersSubscription: Subscription;
+  locationNames: string[];
+  route: [longitude: number, latitude: number, stop: boolean][];
 
   constructor(
     private filterDriversService: FilterDriversService,
     public dialog: MatDialog,
     private store: Store<fromApp.AppState>,
     private stompService: StompService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.store
+      .select((store) => store.maps)
+      .subscribe((mapsState) => {
+        let sortedMap = new Map([...mapsState.selectedRoute].sort());
+        this.locationNames = mapsState.locationNames;
+        this.route = [];
+        sortedMap.forEach((value) => {
+          value.route.forEach((coordinates) => {
+            this.route.push([coordinates[0], coordinates[1], false]);
+          });
+          this.route[this.route.length - 1][2] = true;
+        });
+      });
     this.filterDriversService.getVehicleTypes().subscribe((types) => {
       for (let i = 0; i < types.length; i++) {
         let type = types.at(i);
@@ -122,6 +139,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
       this.sentNotificationToLinkedPassengers();
       this.subscribeOnWebSocket();
     } else {
+      this.router.navigate(['/maps']);
       this.searchForDriver();
     }
   }
@@ -161,8 +179,8 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
   searchForDriver() {
     this.store.dispatch(
       new MapActions.SearchForDriver({
-        clientLocation: this.clientLocation,
         route: this.route,
+        locationNames: this.locationNames,
         vehicleTypes: this.chosenVehicleTypes,
         petFriendly: this.petFriendly,
         babyFriendly: this.babyFriendly,

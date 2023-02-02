@@ -5,14 +5,18 @@ import { Router } from '@angular/router';
 import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import * as MapsActions from './maps.actions';
-import { map, mergeMap, switchMap } from 'rxjs';
+import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs';
 import { Location } from '../model/location';
 import { GeoJSONFeatureCollection } from 'ol/format/GeoJSON';
 import { Driver } from '../../shared/model/driver.model';
 import { Route } from '../model/route';
 import * as DriverActions from '../../drivers/store/drivers.actions';
 import { DriverState } from 'src/app/drivers/model/driverState';
-import { PassengerState } from '../model/passengerState';
+import { RideStatus } from '../model/rideStatus';
+import { RideRouteResponse } from '../model/rideRouteResponse';
+import { MapsService } from '../maps.service';
+import { Store } from '@ngrx/store';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable()
 export class MapsEffects {
@@ -26,7 +30,7 @@ export class MapsEffects {
           const headers = new HttpHeaders({
             'Content-Type': 'application/json',
             Authorization:
-              '5b3ce3597851110001cf6248b39bab9bc5c8470d9a7d66dd54e43ee5',
+              '5b3ce3597851110001cf6248430cba1a2c514c5294e49123b5656144',
             skip: 'true',
           });
           const requestOptions = { headers: headers };
@@ -44,9 +48,11 @@ export class MapsEffects {
               map((data: GeoJSONFeatureCollection) => {
                 let availableRoutes: Route[] = data.features.map((feature) => {
                   return new Route(
+                    feature.geometry['coordinates'].map((coordinates) => {
+                      return [coordinates[0], coordinates[1], false];
+                    }),
                     feature.properties['summary']['distance'],
-                    feature.properties['summary']['duration'],
-                    feature.geometry['coordinates']
+                    feature.properties['summary']['duration']
                   );
                 });
                 return new MapsActions.SetAvailableRoutesCoordinates({
@@ -70,7 +76,7 @@ export class MapsEffects {
           const headers = new HttpHeaders({
             'Content-Type': 'application/json',
             Authorization:
-              '5b3ce3597851110001cf6248b39bab9bc5c8470d9a7d66dd54e43ee5',
+              '5b3ce3597851110001cf6248430cba1a2c514c5294e49123b5656144',
             skip: 'true',
           });
           const requestOptions = { headers: headers };
@@ -140,17 +146,17 @@ export class MapsEffects {
     this.actions$.pipe(
       ofType(MapsActions.SEARCH_FOR_DRIVER),
       switchMap((searchForRideData: MapsActions.SearchForDriver) => {
-        let route = searchForRideData.payload.route.map((coordinates) => ({
-          longitude: coordinates[0],
-          latitude: coordinates[1],
-          isStop: false,
+        let route = searchForRideData.payload.route.map((data) => ({
+          longitude: data[0],
+          latitude: data[1],
+          stop: data[2],
         }));
         return this.http
           .post<Driver>(
             this.config.apiEndpoint + 'driver/suitableDriverForRide',
             {
-              clientLocation: searchForRideData.payload.clientLocation,
-              routeRequest: { waypoints: route },
+              clientLocation: {longitude: route[0]['longitude'], latitude: route[0]['latitude']},
+              routeRequest: { waypoints: route, locationNames: searchForRideData.payload.locationNames },
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,
@@ -165,7 +171,7 @@ export class MapsEffects {
             map((driver: Driver) => {
               return new MapsActions.SetRideDriver({
                 driver: driver,
-                passengerState: PassengerState.WAITING_FOR_DRIVER_TO_ARRIVE,
+                rideStatus: RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE,
               });
             })
           );
@@ -173,39 +179,47 @@ export class MapsEffects {
     )
   );
 
-  startRide = createEffect(() =>
+  loadActiveRoute = createEffect(() =>
     this.actions$.pipe(
-      ofType(MapsActions.START_RIDE_DRIVER),
-      switchMap((startRide: MapsActions.StartRideDriver) => {
+      ofType(MapsActions.LOAD_ACTIVE_ROUTE),
+      switchMap((loadActiveRoute: MapsActions.LoadActiveRoute) => {
         return this.http
-          .post(
-            this.config.apiEndpoint +
-              'simulation/through-route/' +
-              startRide.payload.assignedRideId,
-            {}
+          .get<RideRouteResponse>(
+            this.config.apiEndpoint + 'ride/assignedRideRoute'
           )
           .pipe(
-            map(() => {
-              return new MapsActions.FinishRide({
-                assignedRideId: startRide.payload.assignedRideId,
-              });
+            map((rideRouteResponse: RideRouteResponse) => {
+              if (!rideRouteResponse) return { type: 'DUMMY' };
+              else
+                return new MapsActions.SetActiveRideAndDriver({
+                  rideRouteInfo: rideRouteResponse,
+                });
             })
           );
       })
     )
+  );
+
+  startRide = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(MapsActions.START_RIDE_DRIVER),
+        switchMap(() => {
+          return this.http.post(
+            this.config.apiEndpoint + 'simulation/through-route',
+            {}
+          );
+        })
+      ),
+    { dispatch: false }
   );
 
   finishRide = createEffect(() =>
     this.actions$.pipe(
       ofType(MapsActions.FINISH_RIDE_DRIVER),
-      switchMap((finishRide: MapsActions.FinishRide) => {
+      switchMap(() => {
         return this.http
-          .put(
-            this.config.apiEndpoint +
-              'driver/finishRide/' +
-              finishRide.payload.assignedRideId,
-            {}
-          )
+          .put(this.config.apiEndpoint + 'driver/finishRide', {})
           .pipe(
             map(() => {
               return new DriverActions.SetDriverState({
@@ -217,20 +231,39 @@ export class MapsEffects {
     )
   );
 
-  rideStarted = createEffect(() =>
+  rejectRide = createEffect(() =>
     this.actions$.pipe(
-      ofType(MapsActions.RIDE_STARTED_PASSENGER),
-      map(() => {
-        return new MapsActions.SetPassengerState(PassengerState.RIDING);
+      ofType(MapsActions.REJECT_RIDE_DRIVER),
+      switchMap((rejectRide: MapsActions.RejectRideDriver) => {
+        return this.http
+          .put(this.config.apiEndpoint + 'driver/rejectRide', {
+            rejectionReason: rejectRide.payload.rejectReason,
+          })
+          .pipe(
+            map(() => {
+              return new DriverActions.SetDriverState({
+                state: DriverState.RIDE_REJECTED,
+              });
+            })
+          );
       })
     )
   );
 
-  rideFinish = createEffect(() =>
+  rideStarted = createEffect(() =>
     this.actions$.pipe(
-      ofType(MapsActions.RIDE_FINISH_PASSENGER),
+      ofType(MapsActions.RIDE_STARTED_PASSENGER),
       map(() => {
-        return new MapsActions.SetPassengerState(PassengerState.FORM_FILL);
+        return new MapsActions.SetRideStatus(RideStatus.RIDING);
+      })
+    )
+  );
+
+  resetStateAfterRideFinish = createEffect(() =>
+    this.actions$.pipe(
+      ofType(MapsActions.RESET_STATE_AFTER_RIDE_FINISH),
+      map(() => {
+        return new MapsActions.SetRideStatus(RideStatus.FORM_FILL);
       })
     )
   );
@@ -280,12 +313,38 @@ export class MapsEffects {
       ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT),
       switchMap(() => {
         return this.http
-          .post<Driver>(this.config.apiEndpoint + 'simulation/to-client', {})
+          .post<number>(this.config.apiEndpoint + 'simulation/to-client', {})
           .pipe(
-            map(() => {
-              return new DriverActions.GetDriverAssignedRide();
+            map((result) => {
+              return new MapsActions.SimulateDriverRideToClientEnd({
+                simulationResult: result,
+              });
             })
           );
+      })
+    );
+  });
+
+  simulateDriverRideToClientEnd = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(MapsActions.SIMULATE_DRIVER_RIDE_TO_CLIENT_END),
+      map((simulationEnd: MapsActions.SimulateDriverRideToClientEnd) => {
+        if (simulationEnd.payload.simulationResult === 0) {
+          return new DriverActions.NotifyPassengerOfVehicleArrivedToClient();
+        } else {
+          this.toastr.info(
+            'The ride was successfully cancelled.',
+            'Notification',
+            {
+              timeOut: 5000,
+              closeButton: true,
+              tapToDismiss: true,
+              newestOnTop: true,
+              positionClass: 'toast-top-center',
+            }
+          );
+          return { type: 'Dummy' };
+        }
       })
     );
   });
@@ -294,6 +353,9 @@ export class MapsEffects {
     private actions$: Actions,
     private http: HttpClient,
     private router: Router,
-    @Inject(APP_SERVICE_CONFIG) private config: AppConfig
+    private mapService: MapsService,
+    private store: Store,
+    @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
+    private toastr: ToastrService
   ) {}
 }

@@ -1,4 +1,4 @@
-import { DriveRejectionReasonDialogComponent } from '../drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
+import { GetDriverRemainingWorkTime } from './../../../drivers/store/drivers.actions';
 import { LoggedInUser } from 'src/app/auth/model/logged-in-user';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DriverState } from '../../../drivers/model/driverState';
 import * as MapsActions from '../../store/maps.actions';
 import { Ride } from 'src/app/shared/model/ride.model';
+import { LeaveReasonDialogComponent } from '../../leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
 
 @Component({
   selector: 'app-driver-map-info',
@@ -102,23 +103,35 @@ export class DriverMapInfoComponent implements OnInit {
   }
 
   leaveDriveRejectionReason() {
-    const dialogRef = this.dialog.open(DriveRejectionReasonDialogComponent, {
+    const dialogRef = this.dialog.open(LeaveReasonDialogComponent, {
       disableClose: true,
+      data: {
+        title: 'Drive rejection',
+        subtitleQuestion: "What's your reason for rejecting a drive?",
+        buttonContent: 'Save reason',
+      },
     });
 
     dialogRef.afterClosed().subscribe((rejectionReason) => {
-      console.log(rejectionReason);
+      if (rejectionReason) {
+        this.store.dispatch(
+          new MapsActions.RejectRideDriver({ rejectReason: rejectionReason })
+        );
+        this.store.dispatch(new MapsActions.ResetStateAfterRideFinish());
+      }
     });
   }
 
-  startRide() {
-    this.ride$.pipe(take(1)).subscribe((ride) => {
-      this.store.dispatch(
-        new DriversActions.SetDriverState({ state: DriverState.RIDE_START })
-      );
-      this.store.dispatch(
-        new MapsActions.StartRideDriver({ assignedRideId: ride.id })
-      );
+  handleRide() {
+    this.driverState$.pipe(take(1)).subscribe((driverState) => {
+      if (driverState === DriverState.ARRIVED_TO_CLIENT) {
+        this.store.dispatch(
+          new DriversActions.SetDriverState({ state: DriverState.RIDE_START })
+        );
+        this.store.dispatch(new MapsActions.StartRideDriver());
+      } else if (driverState === DriverState.ARRIVED_TO_DESTINATION) {
+        this.store.dispatch(new MapsActions.FinishRide());
+      }
     });
   }
 }

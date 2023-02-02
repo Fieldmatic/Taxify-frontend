@@ -1,14 +1,14 @@
 import { AuthService } from 'src/app/auth/services/auth/auth.service';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { Actions, ofType, createEffect } from '@ngrx/effects';
+import { catchError, map, of, switchMap, tap, EMPTY } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { LoggedInUser } from '../model/logged-in-user';
 import { LoginResponseData } from '../model/login-response-data';
-import { NotifierService } from '../../shared/services/notifier.service';
+import { NotifierService } from 'src/app/shared/services/notifier.service';
 import * as AuthActions from './auth.actions';
 import * as UsersActions from '../../users/store/users.actions';
 
@@ -402,7 +402,51 @@ export class AuthEffects {
           localStorage.removeItem('oldPassword');
         })
       );
-    },
+    },)
+
+  sendForgotPasswordResetLink = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.SEND_FORGOT_PASSWORD_RESET_LINK),
+        switchMap(
+          (
+            sendForgotPasswordResetLink: AuthActions.SendForgotPasswordResetLink
+          ) => {
+            let queryParams = new HttpParams().append(
+              'email',
+              sendForgotPasswordResetLink.payload.email
+            );
+            return this.http.get(
+              this.config.apiEndpoint + `password/request-change`,
+              { params: queryParams }
+            );
+          }
+        )
+      ),
+    { dispatch: false }
+  );
+
+  resetPassword = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.RESET_PASSWORD),
+        switchMap((resetPassword: AuthActions.ResetPassword) => {
+          return this.http
+            .put<void>(
+              this.config.apiEndpoint + `password/change`,
+              resetPassword.payload
+            )
+            .pipe(
+              tap(() => {
+                this.router.navigate(['auth/login']);
+              }),
+              catchError((err) => {
+                console.error(err);
+                return EMPTY;
+              })
+            );
+        })
+      ),
     { dispatch: false }
   );
 

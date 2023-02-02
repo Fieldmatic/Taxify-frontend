@@ -2,6 +2,7 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -14,19 +15,19 @@ import * as DriversActions from '../../drivers/store/drivers.actions';
 import * as MapUtils from '../mapUtils';
 import { MapsService } from '../maps.service';
 import { ToastrService } from 'ngx-toastr';
-import { PassengerState } from '../model/passengerState';
+import { RideStatus } from '../model/rideStatus';
 
 @Component({
   selector: 'app-active-drivers-map',
   templateUrl: './active-drivers-map.component.html',
   styleUrls: ['./active-drivers-map.component.scss'],
 })
-export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
+export class ActiveDriversMapComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('popup') popup: ElementRef;
   loading: boolean;
   driver: Driver;
-  passengerState$: Observable<PassengerState>;
-  passengerStateEnum: typeof PassengerState = PassengerState;
+  rideStatus$: Observable<RideStatus>;
+  rideStatusEnum: typeof RideStatus = RideStatus;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -34,16 +35,20 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit {
     private mapsService: MapsService,
     private toastr: ToastrService
   ) {}
+  
+  ngOnDestroy(): void {
+    this.mapsService.setTarget(null);
+  }
 
   ngOnInit(): void {
+    this.mapsService.setTarget('map');
     this.store.select('maps').subscribe((mapsState) => {
       this.loading = mapsState.loading;
       this.driver = mapsState.chosenDriverInfo;
       this.mapsService.updateMapVehicleLayer();
     });
-    this.mapsService.setTarget('map');
-    this.passengerState$ = this.store.select(
-      (store) => store.maps.passengerState
+    this.rideStatus$ = this.store.select(
+      (store) => store.maps.rideStatus
     );
     this.subscribeToWebSocket();
   }

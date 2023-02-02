@@ -1,0 +1,25 @@
+<div class="wrapper">
+  <div mat-dialog-content>
+    <app-view-driver-details [driver] = "rideDetailsDriver$ | async"></app-view-driver-details>
+    <div id="ride-details-map" class="ride-details-map col-12"></div>
+    <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+  </div>
+  <div mat-dialog-actions>
+    <button
+      mat-button
+      class="border border-1 border-dark"
+      (click)="closeDialogOnNo()"
+    >
+      Close
+    </button>
+    <button
+      mat-button
+      cdkFocusInitial
+      class="bg-black text-white"
+      (click) = "reorderRide()"
+    >
+      Reorder
+    </button>
+  </div>
+</div>
+

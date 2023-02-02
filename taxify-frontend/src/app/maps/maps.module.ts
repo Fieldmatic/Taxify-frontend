@@ -16,10 +16,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { LinkUsersDialogComponent } from './passenger-map-form/filter-drivers/link-users-dialog/link-users-dialog.component';
 import { ToastrModule } from 'ngx-toastr';
 import { DriverMapInfoComponent } from './driver-map/driver-map-info/driver-map-info.component';
-import { DriveRejectionReasonDialogComponent } from './driver-map/drive-rejection-reason-dialog/drive-rejection-reason-dialog/drive-rejection-reason-dialog.component';
 import { RideDriverInfoComponent } from './ride-driver-info/ride-driver-info.component';
 import { PaymentMethodSelectionDialogComponent } from './passenger-map-form/filter-drivers/payment-method-selection-dialog/payment-method-selection-dialog.component';
 import { UsersModule } from '../users/users.module';
+import { LeaveReasonDialogComponent } from './leaveReasonDialog/leave-reason-dialog/leave-reason-dialog.component';
+import { RideAssessmentDialogComponent } from './rideAssessmentDialog/ride-assessment-dialog/ride-assessment-dialog.component';
 
 @NgModule({
   imports: [
@@ -43,9 +44,10 @@ import { UsersModule } from '../users/users.module';
     FilterDriversComponent,
     LinkUsersDialogComponent,
     DriverMapInfoComponent,
-    DriveRejectionReasonDialogComponent,
     RideDriverInfoComponent,
     PaymentMethodSelectionDialogComponent,
+    LeaveReasonDialogComponent,
+    RideAssessmentDialogComponent,
   ],
   providers: [MapsService],
 })

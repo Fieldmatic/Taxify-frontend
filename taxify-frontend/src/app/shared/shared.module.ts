@@ -16,6 +16,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import  {MatTableModule} from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [
@@ -38,6 +41,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatMenuModule,
     MatTooltipModule,
     MatRadioModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTableModule,
   ],
   exports: [
     CommonModule,
@@ -54,6 +60,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatTooltipModule,
     MatRadioModule,
     MatInputModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTableModule,
   ],
 })
 export class SharedModule {}

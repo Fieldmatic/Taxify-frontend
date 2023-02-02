@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
-import { Notification } from 'src/app/shared/model/notification';
+import { Notification } from '../../shared/model/notification';
 import * as fromApp from '../../store/app.reducer';
 import * as PassengerActions from '../../passengers/store/passengers.actions';
 import * as CustomerSupportActions from '../../customer-support/store/customer-support.actions';
@@ -30,7 +30,7 @@ export class NotificationsComponent implements OnInit {
   ngOnInit(): void {
     this.store
       .select('passengers')
-      .pipe(map((passengerState) => passengerState.notifications))
+      .pipe(map((rideStatus) => rideStatus.notifications))
       .subscribe((notifications) => {
         this.notifications = notifications;
         this.getNumberOfUnreadNotifications();
@@ -79,10 +79,12 @@ export class NotificationsComponent implements OnInit {
         return 'Vehicle has arrived at your destination.';
       case 'RIDE_STARTED':
         return 'Your ride has started.';
-      case 'RIDE_FINISHED':
+      case 'RIDE_FINISHED_PASSENGER':
+        return 'Your ride has finished.';
+      case 'RIDE_REJECTED':
+        return 'Your ride has been rejected.';
+      case 'ON_DESTINATION':
         return 'You have arrived at your destination.';
-      case 'CUSTOMER_SUPPORT_REQUIRED':
-        return 'I need help!';
       default:
         return 'Your ride has been scheduled';
     }

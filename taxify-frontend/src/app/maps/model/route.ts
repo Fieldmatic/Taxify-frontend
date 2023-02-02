@@ -1,14 +1,3 @@
 export class Route {
-  distance: number;
-  duration: number;
-  route: [longitude: number, latitude: number][];
-  constructor(
-    distance: number,
-    duration: number,
-    route: [longitude: number, latitude: number][]
-  ) {
-    this.distance = distance;
-    this.duration = duration;
-    this.route = route;
-  }
+  constructor(public route : [longitude: number, latitude: number, stop: boolean][], public distance? : number, public duration? : number){}
 }

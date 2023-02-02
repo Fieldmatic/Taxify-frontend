@@ -2,11 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, switchMap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { switchMap, map } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
+import { Ride } from 'src/app/shared/ride.model';
+import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
 import { Notification } from '../../shared/model/notification';
+import { RideHistoryResponse} from '../../shared/model/rideHistoryResponse'
 import * as PassengerActions from './passengers.actions';
+import * as MapsActions from '../../maps/store/maps.actions';
 
 @Injectable()
 export class PassengerEffects {
@@ -95,10 +100,129 @@ export class PassengerEffects {
     )
   );
 
+  makeComplaint = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(PassengerActions.MAKE_COMPLAINT),
+        switchMap((makeComplaint: PassengerActions.MakeComplaint) => {
+          return this.http
+            .post(this.config.apiEndpoint + 'passenger/complaint', {
+              complaintReason: makeComplaint.payload.complaint,
+            })
+            .pipe(
+              map(() => {
+                this.showToast('Your complaint has been saved.');
+              })
+            );
+        })
+      ),
+    { dispatch: false }
+  );
+
+  leaveReviewStart = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LEAVE_REVIEW_START),
+      switchMap((leaveReview: PassengerActions.LeaveReviewStart) => {
+        return this.http
+          .get<Ride>(this.config.apiEndpoint + 'ride/lastFinishedRide')
+          .pipe(
+            map((ride) => {
+              return new PassengerActions.LeaveReview({
+                rideId: ride.id,
+                comment: leaveReview.payload.comment,
+                driverRating: leaveReview.payload.driverRating,
+                vehicleRating: leaveReview.payload.vehicleRating,
+              });
+            })
+          );
+      })
+    )
+  );
+
+  leaveReview = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LEAVE_REVIEW),
+      switchMap((leaveReview: PassengerActions.LeaveReview) => {
+        return this.http
+          .post(this.config.apiEndpoint + 'passenger/review', {
+            rideId: leaveReview.payload.rideId,
+            driverRating: leaveReview.payload.driverRating,
+            vehicleRating: leaveReview.payload.vehicleRating,
+            comment: leaveReview.payload.comment,
+          })
+          .pipe(
+            map(() => {
+              this.showToast('You have successfully rated the driver.');
+              return new MapsActions.ResetStateAfterRideFinish();
+            })
+          );
+      })
+    )
+  );
+
+  showToast(message: string) {
+    this.toastr.info(message, 'Notification', {
+      timeOut: 5000,
+      closeButton: true,
+      tapToDismiss: true,
+      newestOnTop: true,
+      positionClass: 'toast-top-center',
+    });
+  }
+  loadPassengerRideHistory = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LOAD_PASSENGER_RIDE_HISTORY),
+      switchMap(
+        (
+          loadPassengerRideHistory: PassengerActions.LoadPassengerRideHistory
+        ) => {
+          return this.http
+            .get<RideHistoryResponse[]>(
+              this.config.apiEndpoint + 'ride/rideHistory',
+              {}
+            )
+            .pipe(
+              map((rideHistoryResponse: RideHistoryResponse[]) => {
+                return new PassengerActions.SetPassengerRideHistory({
+                  rides: rideHistoryResponse,
+                });
+              })
+            );
+        }
+      )
+    )
+  );
+
+  loadSelectedRouteDetails = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.LOAD_SELECTED_ROUTE_DETAILS),
+      switchMap(
+        (
+          loadSelectedRouteDetails: PassengerActions.LoadSelectedRouteDetails
+        ) => {
+          return this.http
+            .get<RideRouteResponse>(
+              this.config.apiEndpoint +
+                'ride/getRouteDetails/' +
+                loadSelectedRouteDetails.payload.id
+            )
+            .pipe(
+              map((rideRouteResponse: RideRouteResponse) => {
+                return new PassengerActions.SetSelectedRouteDetails({
+                  rideRouteInfo: rideRouteResponse,
+                });
+              })
+            );
+        }
+      )
+    )
+  );
+
   constructor(
     private actions$: Actions,
     private http: HttpClient,
     private router: Router,
-    @Inject(APP_SERVICE_CONFIG) private config: AppConfig
+    @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
+    private toastr: ToastrService
   ) {}
 }

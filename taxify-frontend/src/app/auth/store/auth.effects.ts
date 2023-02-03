@@ -46,6 +46,7 @@ export class AuthEffects {
           .pipe(
             map((resData) => {
               this.authService.setLogoutTimer(resData.expiresIn);
+              this.notifierService.notifySuccess("You successfully logged in.");
               return handleAuthentication(
                 resData.token,
                 resData.expiresIn,
@@ -54,6 +55,7 @@ export class AuthEffects {
               );
             }),
             catchError((errorResp) => {
+              this.notifierService.notifyError(errorResp);
               return handleError(errorResp);
             })
           );
@@ -103,6 +105,7 @@ export class AuthEffects {
           })
           .pipe(
             map(() => {
+              this.notifierService.notifySuccess("You successfully signed up. Check your email for confirmation link");
               return new AuthActions.SignupSuccess();
             }),
             catchError((errorResp) => {
@@ -226,10 +229,13 @@ export class AuthEffects {
           )
           .pipe(
             map((resData) => {
+              this.notifierService.notifySuccess("You successfully logged with google signup.")
+              console.log(resData)
               return handleAuthentication(
                 resData.token,
                 resData.expiresIn,
-                resData.role
+                resData.role,
+                resData.email
               );
             })
           );
@@ -248,10 +254,12 @@ export class AuthEffects {
           )
           .pipe(
             map((resData) => {
+              this.notifierService.notifySuccess("You successfully signed up with google signup.")
               return handleAuthentication(
                 resData.token,
                 resData.expiresIn,
-                resData.role
+                resData.role,
+                resData.email
               );
             })
           );
@@ -270,6 +278,8 @@ export class AuthEffects {
           )
           .pipe(
             map((resData) => {
+              this.notifierService.notifySuccess("You successfully logged with facebook signup.")
+
               return handleAuthentication(
                 resData.token,
                 resData.expiresIn,
@@ -404,27 +414,27 @@ export class AuthEffects {
       );
     },)
 
-  sendForgotPasswordResetLink = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.SEND_FORGOT_PASSWORD_RESET_LINK),
-        switchMap(
-          (
-            sendForgotPasswordResetLink: AuthActions.SendForgotPasswordResetLink
-          ) => {
-            let queryParams = new HttpParams().append(
-              'email',
-              sendForgotPasswordResetLink.payload.email
-            );
-            return this.http.get(
-              this.config.apiEndpoint + `password/request-change`,
-              { params: queryParams }
-            );
-          }
-        )
-      ),
-    { dispatch: false }
-  );
+  sendForgotPasswordResetLink = createEffect(() =>
+  this.actions$.pipe(
+    ofType(AuthActions.SEND_FORGOT_PASSWORD_RESET_LINK),
+    switchMap((sendForgotPasswordResetLink: AuthActions.SendForgotPasswordResetLink) => {
+      let queryParams = new HttpParams().append('email',sendForgotPasswordResetLink.payload.email);
+      return this.http.get<string>(
+        this.config.apiEndpoint + `password/request-change`,
+        { params: queryParams }
+      ).pipe(map((message) => {
+        this.notifierService.notifySuccess(message);
+        return {type:"DUMMY"}
+      }), catchError((errorRes) => {
+        this.notifierService.notifyError(errorRes);
+        return of()
+      }))
+    }
+    )
+     
+  ), 
+);
+
 
   resetPassword = createEffect(
     () =>

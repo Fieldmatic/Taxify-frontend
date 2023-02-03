@@ -23,7 +23,7 @@
       <mat-grid-tile colspan="2">
         <mat-form-field appearance="fill">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" />
+          <input matInput formControlName="email" id="loginEmail" />
           <mat-error
             *ngIf="
               this.authForm.get('email')?.hasError('required') && !isLoginMode
@@ -42,7 +42,7 @@
       <mat-grid-tile colspan="2">
         <mat-form-field appearance="fill">
           <mat-label>Password</mat-label>
-          <input matInput formControlName="password" type="password" />
+          <input matInput formControlName="password" type="password" id="loginPassword" />
           <mat-error
             *ngIf="
               this.authForm.get('password')?.hasError('required') &&

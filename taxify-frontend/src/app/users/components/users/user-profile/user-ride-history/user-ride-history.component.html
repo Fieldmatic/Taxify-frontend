@@ -1,1 +1,3 @@
-<p>user-ride-history works!</p>
+<app-passenger-ride-history *ngIf="role==='PASSENGER'"></app-passenger-ride-history>
+<app-driver-ride-history *ngIf="role==='DRIVER'"></app-driver-ride-history>
+

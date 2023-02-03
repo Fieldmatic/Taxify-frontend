@@ -64,6 +64,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
           if (previousPart !== 'profile') {
             this.activeRoute = previousPart;
           }
+        } else if(this.activeRoute === "history") {
+          //this.activeRoute
         }
       }
     });

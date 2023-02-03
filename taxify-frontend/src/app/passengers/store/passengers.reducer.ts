@@ -11,6 +11,7 @@ export interface State {
   rideDetailsMapLoading: boolean;
   rideDetailsDriver: Driver;
   rideDetailsRoute: Map<string, Route>;
+  distance: number;
 }
 
 const initialState: State = {
@@ -20,6 +21,7 @@ const initialState: State = {
   rideDetailsMapLoading: false,
   rideDetailsDriver: null,
   rideDetailsRoute: new Map<string, Route>(),
+  distance: null
 };
 
 export function passengersReducer(
@@ -61,11 +63,12 @@ export function passengersReducer(
           routeArray.push([action.payload.rideRouteInfo.route[key][index]['longitude'],action.payload.rideRouteInfo.route[key][index]['latitude'], action.payload.rideRouteInfo.route[key][index]['stop']])
         }
         route.set(key,new Route(routeArray))
-      }  
+      }
       return {
         ...state,
         rideDetailsDriver: action.payload.rideRouteInfo.driver,
         rideDetailsRoute: route,
+        distance: action.payload.rideRouteInfo.distance
       };
     default:
       return state;

@@ -55,7 +55,6 @@ export class UsersCrudComponent implements OnInit, AfterViewInit {
       this.blockedUsers +
       '|' +
       this.selectedRole.value;
-    console.log(filterValue);
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
     if (this.dataSource.paginator) {
@@ -65,12 +64,9 @@ export class UsersCrudComponent implements OnInit, AfterViewInit {
 
   getFilterPredicate() {
     return (row: User, filters: string) => {
-      console.log(filters);
-      console.log(row);
       const filterArray = filters.split('|');
       const searchFilters = filterArray[0].split(' ');
       const showBlockedUsers = filterArray[1] === 'true';
-      console.log(showBlockedUsers);
       const roleFilters = filterArray[2].split(',');
 
       let matchFilter = [];
@@ -96,7 +92,6 @@ export class UsersCrudComponent implements OnInit, AfterViewInit {
       if (showBlockedUsers) {
         matchFilter.push(showBlockedUsers === row.blocked);
       }
-      console.log(matchFilter);
       return matchFilter.every(Boolean);
     };
   }
@@ -121,7 +116,6 @@ export class UsersCrudComponent implements OnInit, AfterViewInit {
 
   toggleBlockedUsers() {
     this.blockedUsers = !this.blockedUsers;
-    console.log('Blocked Users:' + this.blockedUsers);
     this.applyFilter();
   }
 }

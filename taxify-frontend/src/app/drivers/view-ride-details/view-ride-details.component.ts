@@ -44,7 +44,6 @@ export class ViewRideDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.initMap();
     this.passengers = this.data['passengers'];
-    console.log(this.passengers)
     this.mapSource.value.setTarget('ride-details-map');
     this.locationsVectorSource = <VectorSource>(
       this.mapSource.value.getAllLayers()[1].getSource()
@@ -52,8 +51,8 @@ export class ViewRideDetailsComponent implements OnInit {
     this.routesVectorSource = <VectorSource>(
       this.mapSource.value.getAllLayers()[2].getSource()
     );
-    this.rideDetailsRoute$ = this.store.select((store) => store.passengers.rideDetailsRoute)
-    this.rideDetailsDriver$ = this.store.select((store) => store.passengers.rideDetailsDriver)
+    this.rideDetailsRoute$ = this.store.select((store) => store.drivers.rideDetailsRoute)
+    this.rideDetailsDriver$ = this.store.select((store) => store.drivers.rideDetailsDriver)
     this.drawRoute()
   }
 

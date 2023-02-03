@@ -28,7 +28,6 @@ export class ConfirmationDialogWithNotesComponent {
   ) {}
 
   confirm() {
-    console.log(this.data);
     switch (this.data.actionType) {
       case UsersActions.TOGGLE_USER_IS_BLOCKED:
         this.store.dispatch(

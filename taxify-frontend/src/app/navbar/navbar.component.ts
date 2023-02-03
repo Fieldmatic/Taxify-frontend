@@ -95,7 +95,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
         '/topic/passenger-notification/' + email,
         (response): any => {
           let message = this.getNotificationMessageFromWebSocket(response.body);
-          console.log(message)
           this.showNotificationToast(message);
           this.loadPassengerNotifications();
         }
@@ -212,7 +211,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   showNotificationToast(message: string) {
-    console.log(message)
     this.notifierService.notifyInfo(message)
   }
 

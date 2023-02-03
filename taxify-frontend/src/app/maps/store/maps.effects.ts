@@ -152,7 +152,6 @@ export class MapsEffects {
           latitude: data[1],
           stop: data[2],
         }));
-        console.log(searchForRideData);
         return this.http
           .post<Driver>(
             this.config.apiEndpoint + 'driver/suitableDriverForRide',

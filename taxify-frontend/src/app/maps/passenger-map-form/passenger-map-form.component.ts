@@ -63,9 +63,11 @@ export class PassengerMapFormComponent implements OnInit {
         this.locationNames = this.getLocationNameList();
         this.distance = Number((this.distance / 1000).toFixed(2));
         this.duration = Number((this.duration / 60).toFixed(2));
-        this.store.dispatch(
-          new MapActions.SetRouteDistance({ routeDistance: this.distance })
-        );
+        if (this.distance > 0){ 
+          this.store.dispatch(
+            new MapActions.SetRouteDistance({ routeDistance: this.distance })
+          );
+        }
       });
   }
 
@@ -152,7 +154,6 @@ export class PassengerMapFormComponent implements OnInit {
   }
 
   onSubmit(formDirective: FormGroupDirective) {
-    console.log(this.locationNames.length)
     if (this.locationNames.length < 2) {
       this.notifierService.notifyInfo("You cant continue without selecting atleast two places!")
       return;

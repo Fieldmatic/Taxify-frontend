@@ -36,7 +36,7 @@ export class DriverRideHistoryComponent implements OnInit {
   }
 
   openRideDetails(index:number) {
-    //this.store.dispatch(new PassengerActions.LoadSelectedRouteDetails({id: this.rideHistory.at(index).id}))
+    this.store.dispatch(new DriverActions.LoadSelectedRouteDetails({id: this.rideHistory.at(index).id}))
     const dialogRef = this.dialog.open(ViewRideDetailsComponent, {
       disableClose: true,
       data: {

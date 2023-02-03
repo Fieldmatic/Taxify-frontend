@@ -59,7 +59,6 @@ export class ResetPasswordComponent {
     if (!this.resetPasswordForm.valid) {
       return;
     }
-    console.log('gg');
     this.store.dispatch(
       new AuthActions.ResetPassword({
         newPassword: this.resetPasswordForm.getRawValue()['password'],

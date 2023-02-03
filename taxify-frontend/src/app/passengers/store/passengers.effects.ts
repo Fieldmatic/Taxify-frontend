@@ -69,6 +69,7 @@ export class PassengerEffects {
                 this.config.apiEndpoint +
                   'notification/acceptAddingToTheRide/' +
                   answerOnAddingToTheRide.payload.notificationId +
+                  '/' +
                   answerOnAddingToTheRide.payload.paymentMethodId,
                 {}
               )

@@ -24,7 +24,8 @@ export const LOAD_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Load destination autocomplete results';
 export const SET_DESTINATION_AUTOCOMPLETE_RESULTS =
   '[Maps] Set destination autocomplete results';
-export const RESET_STATE_AFTER_RIDE_FINISH = '[Maps] Reset state after ride finish';
+export const RESET_STATE_AFTER_RIDE_FINISH =
+  '[Maps] Reset state after ride finish';
 
 export const START_RIDE_DRIVER = '[Maps] Start ride driver';
 export const SET_RIDE_STATUS = '[Maps] Set ride status';
@@ -52,7 +53,7 @@ export const SUBTRACT_TIME_LEFT = '[Maps] Subtract time left';
 
 export const FINISH_RIDE_DRIVER = '[Maps] Finish ride';
 export const LOAD_ACTIVE_ROUTE = '[Maps] Load active route';
-export const SET_ACTIVE_RIDE_AND_DRIVER = '[Maps] Set active ride and driver'
+export const SET_ACTIVE_RIDE_AND_DRIVER = '[Maps] Set active ride and driver';
 
 export const REJECT_RIDE_DRIVER = '[Maps] Reject ride driver';
 
@@ -60,6 +61,7 @@ export const SIMULATE_DRIVER_RIDE_TO_CLIENT_END =
   '[Maps] End of driver ride to client simulation';
 
 export const SET_LOCATION_NAMES = '[Maps] Set location names';
+export const SET_ROUTE_DISTANCE = '[Maps] Set route distance';
 
 export class MapLoadStart implements Action {
   readonly type = MAP_LOAD_START;
@@ -145,7 +147,7 @@ export class SearchForDriver implements Action {
 
   constructor(
     public payload: {
-      route: [longitude: number, latitude: number, stop:boolean][];
+      route: [longitude: number, latitude: number, stop: boolean][];
       locationNames: string[];
       vehicleTypes: string[];
       petFriendly: boolean;
@@ -153,6 +155,7 @@ export class SearchForDriver implements Action {
       sender: string;
       linkedUsers: string[];
       paymentMethodId: string;
+      routeDistance: number;
     }
   ) {}
 }
@@ -196,9 +199,7 @@ export class SimulateDriverRideToClientEnd implements Action {
 export class SetRideDriver implements Action {
   readonly type = SET_RIDE_DRIVER;
 
-  constructor(
-    public payload: { driver: Driver; rideStatus: RideStatus }
-  ) {}
+  constructor(public payload: { driver: Driver; rideStatus: RideStatus }) {}
 }
 
 export class RideStartedPassenger implements Action {
@@ -231,17 +232,15 @@ export class SubtractTimeLeft implements Action {
   constructor(public payload: { value: number }) {}
 }
 
-export class LoadActiveRoute implements Action{
+export class LoadActiveRoute implements Action {
   readonly type = LOAD_ACTIVE_ROUTE;
   constructor() {}
 }
 
-export class SetActiveRideAndDriver implements Action{
+export class SetActiveRideAndDriver implements Action {
   readonly type = SET_ACTIVE_RIDE_AND_DRIVER;
-  constructor(public payload: {rideRouteInfo: RideRouteResponse}) {}
-
+  constructor(public payload: { rideRouteInfo: RideRouteResponse }) {}
 }
-
 
 export class RejectRideDriver implements Action {
   readonly type = REJECT_RIDE_DRIVER;
@@ -250,7 +249,12 @@ export class RejectRideDriver implements Action {
 
 export class SetLocationNames implements Action {
   readonly type = SET_LOCATION_NAMES;
-  constructor(public payload: {locationNames: string[]}){}
+  constructor(public payload: { locationNames: string[] }) {}
+}
+
+export class SetRouteDistance implements Action {
+  readonly type = SET_ROUTE_DISTANCE;
+  constructor(public payload: { routeDistance: number }) {}
 }
 
 export type MapsActions =
@@ -280,4 +284,5 @@ export type MapsActions =
   | LoadActiveRoute
   | SetActiveRideAndDriver
   | RejectRideDriver
-  | SetLocationNames;
+  | SetLocationNames
+  | SetRouteDistance;

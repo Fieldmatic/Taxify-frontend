@@ -43,11 +43,9 @@ export class PassengerMapFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams
-    .subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.filterDriversMode = params['filterDriversMode'];
-    }
-  );
+    });
     this.selectStoreStates();
     this.initForm();
     this.initPickupLocationsAutocompleteOnChange();
@@ -65,6 +63,9 @@ export class PassengerMapFormComponent implements OnInit {
         this.locationNames = this.getLocationNameList();
         this.distance = Number((this.distance / 1000).toFixed(2));
         this.duration = Number((this.duration / 60).toFixed(2));
+        this.store.dispatch(
+          new MapActions.SetRouteDistance({ routeDistance: this.distance })
+        );
       });
   }
 
@@ -75,7 +76,7 @@ export class PassengerMapFormComponent implements OnInit {
     for (let i = 0; i< this.additionalDestinations().value.length; i++) {
       locationNames.push(this.additionalDestinations().value[i])
     }
-   return locationNames;
+    return locationNames;
   }
 
   public additionalDestinations(): FormArray {
@@ -169,7 +170,8 @@ export class PassengerMapFormComponent implements OnInit {
     this.mapsService.drawLocation(
       location,
       'location0',
-      '../assets/pickup.png', true
+      '../assets/pickup.png',
+      true
     );
   }
   markDestination(location: Location, index: number) {

@@ -19,6 +19,7 @@ export interface State {
   rideStatus: RideStatus;
   timeLeft: number;
   locationNames: string[];
+  routeDistance: number;
 }
 
 const createInitialState = function (): State {
@@ -34,7 +35,8 @@ const createInitialState = function (): State {
     availableRoutes: new Map<string, Route[]>(),
     rideStatus: RideStatus.FORM_FILL,
     timeLeft: null,
-    locationNames: []
+    locationNames: [],
+    routeDistance: 0,
   };
 };
 
@@ -91,7 +93,7 @@ export function mapsReducer(
         availableRoutes: new Map<string, Route[]>(),
         selectedRoute: new Map<string, Route>(),
         timeLeft: null,
-        locationNames: []
+        locationNames: [],
       };
     }
     case MapsActions.SET_RIDE_STATUS: {
@@ -161,15 +163,27 @@ export function mapsReducer(
     case MapsActions.SET_ACTIVE_RIDE_AND_DRIVER: {
       let route: Map<string, Route> = new Map<string, Route>();
       for (let key in action.payload.rideRouteInfo.route) {
-        let routeArray : [longitude: number, latitude: number, stop: boolean][] = []
+        let routeArray: [longitude: number, latitude: number, stop: boolean][] =
+          [];
         for (let index in action.payload.rideRouteInfo.route[key]) {
-          routeArray.push([action.payload.rideRouteInfo.route[key][index]['longitude'],action.payload.rideRouteInfo.route[key][index]['latitude'], action.payload.rideRouteInfo.route[key][index]['stop']])
+          routeArray.push([
+            action.payload.rideRouteInfo.route[key][index]['longitude'],
+            action.payload.rideRouteInfo.route[key][index]['latitude'],
+            action.payload.rideRouteInfo.route[key][index]['stop'],
+          ]);
         }
-        route.set(key,new Route(routeArray))
-      }  
-      let rideStatus: RideStatus = Object.assign({}, state.rideStatus)
-      if (action.payload.rideRouteInfo.rideStatus === 'STARTED') {rideStatus = RideStatus.RIDING;}
-      if ((action.payload.rideRouteInfo.rideStatus === 'ACCEPTED') || (action.payload.rideRouteInfo.rideStatus === 'ARRIVED')) {rideStatus = RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE;}
+        route.set(key, new Route(routeArray));
+      }
+      let rideStatus: RideStatus = Object.assign({}, state.rideStatus);
+      if (action.payload.rideRouteInfo.rideStatus === 'STARTED') {
+        rideStatus = RideStatus.RIDING;
+      }
+      if (
+        action.payload.rideRouteInfo.rideStatus === 'ACCEPTED' ||
+        action.payload.rideRouteInfo.rideStatus === 'ARRIVED'
+      ) {
+        rideStatus = RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE;
+      }
       return {
         ...state,
         rideDriver: action.payload.rideRouteInfo.driver,
@@ -180,8 +194,14 @@ export function mapsReducer(
     case MapsActions.SET_LOCATION_NAMES: {
       return {
         ...state,
-        locationNames: action.payload.locationNames
-      }
+        locationNames: action.payload.locationNames,
+      };
+    }
+    case MapsActions.SET_ROUTE_DISTANCE: {
+      return {
+        ...state,
+        routeDistance: action.payload.routeDistance,
+      };
     }
     default:
       return state;

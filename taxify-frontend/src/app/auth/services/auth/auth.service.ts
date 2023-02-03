@@ -10,6 +10,7 @@ import { GoogleSignUpRequest } from '../../model/google-signup-request';
 import { LoginResponseData } from '../../model/login-response-data';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducer';
+import * as MapActions from '../../../maps/store/maps.actions'
 
 @Injectable({
   providedIn: 'root',

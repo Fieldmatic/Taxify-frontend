@@ -17,6 +17,7 @@
             matInput
             formControlName="pickupLocation"
             [matAutocomplete]="pickupLocations"
+            id = "pickupLocation"
           />
           <mat-autocomplete #pickupLocations="matAutocomplete">
             <mat-option
@@ -33,6 +34,7 @@
           <input
             matInput
             formControlName="destination"
+            id = "destination"
             [matAutocomplete]="destinations"
           />
           <button
@@ -88,7 +90,7 @@
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
-        <div class="routeInfo" *ngIf="distance">
+        <div class="routeInfo" *ngIf="distance" id = "rideInfo">
           <span>Distance: {{ distance }} km</span>
           <span>Duration: {{ duration }} min</span>
         </div>

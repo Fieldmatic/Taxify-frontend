@@ -15,6 +15,7 @@ import OLMap from 'ol/Map';
 
 import { MapsService } from '../maps.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotifierService } from 'src/app/shared/services/notifier.service';
 
 @Component({
   selector: 'app-passenger-map-form',
@@ -37,7 +38,8 @@ export class PassengerMapFormComponent implements OnInit {
     private store: Store<fromApp.AppState>,
     private mapsService: MapsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private notifierService: NotifierService
   ) {}
 
   ngOnInit(): void {
@@ -68,8 +70,8 @@ export class PassengerMapFormComponent implements OnInit {
 
   public getLocationNameList(): string[] {
     let locationNames: string[] = []
-    locationNames.push(this.ridingForm.getRawValue()['pickupLocation'])
-    locationNames.push(this.ridingForm.getRawValue()['destination'])
+    if (this.ridingForm.getRawValue()['pickupLocation'] != '') locationNames.push(this.ridingForm.getRawValue()['pickupLocation'])
+    if (this.ridingForm.getRawValue()['destination'] != '') locationNames.push(this.ridingForm.getRawValue()['destination'])
     for (let i = 0; i< this.additionalDestinations().value.length; i++) {
       locationNames.push(this.additionalDestinations().value[i])
     }
@@ -149,11 +151,17 @@ export class PassengerMapFormComponent implements OnInit {
   }
 
   onSubmit(formDirective: FormGroupDirective) {
+    console.log(this.locationNames.length)
+    if (this.locationNames.length < 2) {
+      this.notifierService.notifyInfo("You cant continue without selecting atleast two places!")
+      return;
+    }
     this.store.dispatch(new MapActions.SetLocationNames({locationNames: this.locationNames}))
     this.router.navigate(['/maps'],  {
       queryParams: { filterDriversMode: true },
       queryParamsHandling: 'merge' }
     );
+    
   }
 
   markPickupLocation(location: Location) {

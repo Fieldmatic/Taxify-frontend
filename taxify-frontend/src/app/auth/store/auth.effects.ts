@@ -157,7 +157,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.LOGOUT_END),
         tap(() => {
-          localStorage.removeItem('userData');
+          localStorage.clear()
           this.authService.clearLogoutTimer();
           this.router.navigate(['/']);
         })

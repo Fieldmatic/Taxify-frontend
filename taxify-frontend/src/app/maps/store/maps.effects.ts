@@ -17,6 +17,7 @@ import { RideRouteResponse } from '../model/rideRouteResponse';
 import { MapsService } from '../maps.service';
 import { Store } from '@ngrx/store';
 import { ToastrService } from 'ngx-toastr';
+import { NotifierService } from 'src/app/shared/services/notifier.service';
 
 @Injectable()
 export class MapsEffects {
@@ -174,6 +175,9 @@ export class MapsEffects {
                 driver: driver,
                 rideStatus: RideStatus.WAITING_FOR_DRIVER_TO_ARRIVE,
               });
+            }),catchError((errResponse) => {
+              this.notifierService.notifyError(errResponse)
+              return of();
             })
           );
       })
@@ -333,17 +337,7 @@ export class MapsEffects {
         if (simulationEnd.payload.simulationResult === 0) {
           return new DriverActions.NotifyPassengerOfVehicleArrivedToClient();
         } else {
-          this.toastr.info(
-            'The ride was successfully cancelled.',
-            'Notification',
-            {
-              timeOut: 5000,
-              closeButton: true,
-              tapToDismiss: true,
-              newestOnTop: true,
-              positionClass: 'toast-top-center',
-            }
-          );
+          this.notifierService.notifyInfo('The ride was successfully cancelled.')
           return { type: 'Dummy' };
         }
       })
@@ -357,6 +351,6 @@ export class MapsEffects {
     private mapService: MapsService,
     private store: Store,
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
-    private toastr: ToastrService
+    private notifierService: NotifierService
   ) {}
 }

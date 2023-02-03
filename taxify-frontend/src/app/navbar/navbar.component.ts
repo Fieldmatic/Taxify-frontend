@@ -40,15 +40,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   role: string = null;
   isLoginMode: boolean;
   loggedInUser: LoggedInUser = null;
+  websocketByRoleConnected: boolean = false;
+  websocketMessagesBlocksConnected: boolean = false;
 
   constructor(
     private store: Store<fromApp.AppState>,
     private stompService: StompService,
-    private toastr: ToastrService,
     private router: Router,
     private notifierService: NotifierService,
     private mapService: MapsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -57,36 +58,43 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.loggedInUser = authState.user;
       this.isLoginMode = authState.isLoginMode;
       this.role = authState.user?.role;
-
-      if (this.loggedInUser && this.role === 'PASSENGER') {
-        this.subscribeOnWebSocketAsPassenger(this.loggedInUser.email);
+      if (this.loggedInUser && this.role === 'PASSENGER' && !this.websocketByRoleConnected) {
+        if (!this.websocketByRoleConnected) {
+          this.subscribeOnWebSocketAsPassenger(this.loggedInUser.email);
+        }
         this.store.dispatch(
           new UsersActions.GetLoggedPassengerPaymentMethods()
         );
         this.loadPassengerNotifications();
         this.mapService.loadActiveRide();
-      } else if (this.loggedInUser && this.role === 'DRIVER') {
+      } else if (this.loggedInUser && this.role === 'DRIVER' && !this.websocketByRoleConnected) {
+        if (!this.websocketByRoleConnected) {
         this.subscribeOnWebSocketAsDriver(this.loggedInUser.email);
+        }
         this.mapService.loadActiveRide();
-      } else if (this.loggedInUser && this.role === 'ADMIN') {
+      } else if (this.loggedInUser && this.role === 'ADMIN' && !this.websocketByRoleConnected) {
         this.subscribeOnWebSocketAsAdmin();
       }
-      if (this.loggedInUser) {
+      if (this.loggedInUser && !this.websocketMessagesBlocksConnected) {
         this.subscribeOnWebSocketForMessages(this.loggedInUser.email);
         this.subscribeOnWebSocketForBlockedStatusChange(
           this.loggedInUser.email
         );
+        this.websocketByRoleConnected = true;
       }
+
     });
   }
 
   subscribeOnWebSocketAsPassenger(email: string) {
     const stompClient = this.stompService.connect();
+    this.websocketByRoleConnected = true;
     stompClient.connect({}, () => {
       stompClient.subscribe(
         '/topic/passenger-notification/' + email,
         (response): any => {
           let message = this.getNotificationMessageFromWebSocket(response.body);
+          console.log(message)
           this.showNotificationToast(message);
           this.loadPassengerNotifications();
         }
@@ -96,6 +104,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   subscribeOnWebSocketAsDriver(email: string) {
     const stompClient = this.stompService.connect();
+    this.websocketByRoleConnected = true;
     stompClient.connect({}, () => {
       stompClient.subscribe('/topic/driver/' + email, (response): any => {
         let message = this.getNotificationMessageFromWebSocket(response.body);
@@ -106,6 +115,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   subscribeOnWebSocketAsAdmin() {
     const stompClient = this.stompService.connect();
+    this.websocketByRoleConnected = true;
     stompClient.connect({}, () => {
       stompClient.subscribe('/topic/admin-required', () => {
         this.store.dispatch(new CustomerSupportActions.GetAdminNotifications());
@@ -191,13 +201,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   showNotificationToast(message: string) {
-    this.toastr.info(message, 'Notification', {
-      timeOut: 5000,
-      closeButton: true,
-      tapToDismiss: true,
-      newestOnTop: true,
-      positionClass: 'toast-top-center',
-    });
+    console.log(message)
+    this.notifierService.notifyInfo(message)
   }
 
   ngOnDestroy(): void {
@@ -206,6 +211,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.store.dispatch(new AuthActions.LogoutStart());
+    this.store.dispatch(new MapActions.ResetStateAfterRideFinish());
   }
 
   loadPassengerNotifications() {

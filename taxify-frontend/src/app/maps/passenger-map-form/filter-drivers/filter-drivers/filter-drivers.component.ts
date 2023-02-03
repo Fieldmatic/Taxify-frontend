@@ -36,6 +36,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
   chosenVehicleTypes: string[] = [];
   paymentMethods: PaymentMethod[];
   paymentMethodId: string;
+  distance: number;
 
   usersSubscription: Subscription;
   locationNames: string[];
@@ -56,6 +57,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
       .subscribe((mapsState) => {
         let sortedMap = new Map([...mapsState.selectedRoute].sort());
         this.locationNames = mapsState.locationNames;
+        this.distance = mapsState.routeDistance;
         this.route = [];
         sortedMap.forEach((value) => {
           value.route.forEach((coordinates) => {
@@ -183,6 +185,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
         sender: this.loggedInUser.email,
         linkedUsers: this.linkedUsers,
         paymentMethodId: this.paymentMethodId,
+        routeDistance: this.distance,
       })
     );
   }

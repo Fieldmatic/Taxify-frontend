@@ -41,11 +41,9 @@ export class PassengerMapFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams
-    .subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.filterDriversMode = params['filterDriversMode'];
-    }
-  );
+    });
     this.selectStoreStates();
     this.initForm();
     this.initPickupLocationsAutocompleteOnChange();
@@ -63,17 +61,20 @@ export class PassengerMapFormComponent implements OnInit {
         this.locationNames = this.getLocationNameList();
         this.distance = Number((this.distance / 1000).toFixed(2));
         this.duration = Number((this.duration / 60).toFixed(2));
+        this.store.dispatch(
+          new MapActions.SetRouteDistance({ routeDistance: this.distance })
+        );
       });
   }
 
   public getLocationNameList(): string[] {
-    let locationNames: string[] = []
-    locationNames.push(this.ridingForm.getRawValue()['pickupLocation'])
-    locationNames.push(this.ridingForm.getRawValue()['destination'])
-    for (let i = 0; i< this.additionalDestinations().value.length; i++) {
-      locationNames.push(this.additionalDestinations().value[i])
+    let locationNames: string[] = [];
+    locationNames.push(this.ridingForm.getRawValue()['pickupLocation']);
+    locationNames.push(this.ridingForm.getRawValue()['destination']);
+    for (let i = 0; i < this.additionalDestinations().value.length; i++) {
+      locationNames.push(this.additionalDestinations().value[i]);
     }
-   return locationNames;
+    return locationNames;
   }
 
   public additionalDestinations(): FormArray {
@@ -149,11 +150,13 @@ export class PassengerMapFormComponent implements OnInit {
   }
 
   onSubmit(formDirective: FormGroupDirective) {
-    this.store.dispatch(new MapActions.SetLocationNames({locationNames: this.locationNames}))
-    this.router.navigate(['/maps'],  {
-      queryParams: { filterDriversMode: true },
-      queryParamsHandling: 'merge' }
+    this.store.dispatch(
+      new MapActions.SetLocationNames({ locationNames: this.locationNames })
     );
+    this.router.navigate(['/maps'], {
+      queryParams: { filterDriversMode: true },
+      queryParamsHandling: 'merge',
+    });
   }
 
   markPickupLocation(location: Location) {
@@ -161,7 +164,8 @@ export class PassengerMapFormComponent implements OnInit {
     this.mapsService.drawLocation(
       location,
       'location0',
-      '../assets/pickup.png', true
+      '../assets/pickup.png',
+      true
     );
   }
   markDestination(location: Location, index: number) {

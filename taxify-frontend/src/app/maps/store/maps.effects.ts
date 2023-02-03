@@ -151,13 +151,20 @@ export class MapsEffects {
           latitude: data[1],
           stop: data[2],
         }));
-        console.log(searchForRideData)
+        console.log(searchForRideData);
         return this.http
           .post<Driver>(
             this.config.apiEndpoint + 'driver/suitableDriverForRide',
             {
-              clientLocation: {longitude: route[0]['longitude'], latitude: route[0]['latitude']},
-              routeRequest: { waypoints: route, locationNames: searchForRideData.payload.locationNames },
+              clientLocation: {
+                longitude: route[0]['longitude'],
+                latitude: route[0]['latitude'],
+              },
+              routeRequest: {
+                waypoints: route,
+                locationNames: searchForRideData.payload.locationNames,
+                routeDistance: searchForRideData.payload.routeDistance,
+              },
               vehicleTypes: searchForRideData.payload.vehicleTypes,
               petFriendly: searchForRideData.payload.petFriendly,
               babyFriendly: searchForRideData.payload.babyFriendly,

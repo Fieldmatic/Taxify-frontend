@@ -4,7 +4,6 @@ import { LoggedInUser } from '../model/logged-in-user';
 export interface State {
   isLoginMode: boolean;
   user: LoggedInUser;
-  authError: string;
   loading: boolean;
   authenticationConfirmed: boolean;
   userExists: boolean;
@@ -13,7 +12,6 @@ export interface State {
 const initialState: State = {
   isLoginMode: true,
   user: null,
-  authError: null,
   loading: false,
   authenticationConfirmed: false,
   userExists: null,
@@ -32,7 +30,6 @@ export function authReducer(
     case AuthActions.LOGIN_SUCCESS:
       return {
         ...state,
-        authError: null,
         user: action.user,
         loading: false,
       };
@@ -44,14 +41,12 @@ export function authReducer(
     case AuthActions.LOGIN_START:
       return {
         ...state,
-        authError: null,
         loading: true,
       };
     case AuthActions.AUTHENTICATE_FAIL:
       return {
         ...state,
         user: null,
-        authError: action.payload,
         loading: false,
       };
     case AuthActions.REAUTHENTICATE_SUCCESS:

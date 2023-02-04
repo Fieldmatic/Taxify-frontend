@@ -1,6 +1,8 @@
 export class LoginResponseData {
-  token: string;
-  expiresIn: number;
-  role: string;
-  email?: string;
+  constructor(
+    public token: string,
+    public expiresIn: number,
+    public role: string,
+    public email?: string
+  ) {}
 }

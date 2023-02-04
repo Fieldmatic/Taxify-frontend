@@ -1,0 +1,18 @@
+<hr style="width: 100%">
+<form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="row ps-4 pe-4">
+  <div class="col-10 pt-1 ps-0 pe-4">
+    <mat-form-field appearance="outline">
+      <mat-label>Your Message</mat-label>
+      <input placeholder="Type here..." id="messageInput" formControlName="message" matInput/>
+    </mat-form-field>
+  </div>
+  <div class="col-2 ps-0 pe-2 text-center">
+    <button
+      type="submit"
+      class="image-btn"
+      matTooltip="Send Message"
+      matTooltipPosition="below"
+      id="sendBtn"
+      [disabled]="!messageForm.valid"></button>
+  </div>
+</form>

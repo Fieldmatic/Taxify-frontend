@@ -25,7 +25,7 @@
         Sign up
       </a>
       <a mat-button *ngIf="isAuthenticated && role === 'ADMIN'" routerLink="/users/all">Users</a>
-
+      <a mat-button *ngIf="isAuthenticated" routerLink="/reports">Reports</a>
       <app-notifications *appHasRole="['PASSENGER']"></app-notifications>
       <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile"
         >Profile</a

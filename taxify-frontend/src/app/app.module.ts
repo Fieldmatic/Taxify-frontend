@@ -31,13 +31,20 @@ import { MapsService } from './maps/maps.service';
 import { CustomerSupportModule } from './customer-support/customer-support.module';
 import { CustomerSupportEffects } from './customer-support/store/customer-support.effects';
 import { ToastrModule } from 'ngx-toastr';
-import { PassengersModule} from './passengers/passengers.module';
-import {DriversModule} from './drivers/drivers.module'
+import { PassengersModule } from './passengers/passengers.module';
+import { DriversModule } from './drivers/drivers.module';
 import { DriversComponent } from './drivers/drivers.component';
-import {NotificationsComponent} from './navbar/notifications/notifications.component'
+import { NotificationsComponent } from './navbar/notifications/notifications.component';
+import { ReportsModule } from './reports/reports.module';
 
 @NgModule({
-  declarations: [AppComponent, NavbarComponent, NotificationsComponent, NavbarProfileMenuComponent, DriversComponent],
+  declarations: [
+    AppComponent,
+    NavbarComponent,
+    NotificationsComponent,
+    NavbarProfileMenuComponent,
+    DriversComponent,
+  ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -62,6 +69,7 @@ import {NotificationsComponent} from './navbar/notifications/notifications.compo
     MapsModule,
     AuthModule,
     PassengersModule,
+    ReportsModule,
     DriversModule,
     AppRoutingModule,
     DirectivesModule,
@@ -80,6 +88,5 @@ import {NotificationsComponent} from './navbar/notifications/notifications.compo
     },
   ],
   bootstrap: [AppComponent],
-
 })
 export class AppModule {}

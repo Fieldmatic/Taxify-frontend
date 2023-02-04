@@ -1,1 +1,23 @@
-<p>reports-view works!</p>
+<div *ngIf="chartData">
+  <div class="row">
+    <div class="row">
+      <h4>Average rides per day: {{chartData.averageNumberOfRidesPerDate}}</h4>
+      <h4>Total number of rides: {{chartData.averageNumberOfRidesPerDate}}</h4>
+    </div>
+    <sc-line-chart [chartPoints]="rideChartPoints"></sc-line-chart>
+  </div>
+  <div class="row">
+    <div class="row">
+      <h4>Average distance in km per day: {{chartData.averageNumberOfKilometersPerDate}}</h4>
+      <h4>Total distance in km: {{chartData.totalNumberOfKilometersForPeriod}}</h4>
+    </div>
+    <sc-line-chart [chartPoints]="kmChartPoints"></sc-line-chart>
+  </div>
+  <div class="row">
+    <div class="row">
+      <h4>Average money usage: {{chartData.averageMoneyAmountPerDate}}</h4>
+      <h4>Total money usage: {{chartData.totalMoneyAmountForPeriod}}</h4>
+    </div>
+    <sc-line-chart [chartPoints]="moneyChartPoints"></sc-line-chart>
+  </div>
+</div>

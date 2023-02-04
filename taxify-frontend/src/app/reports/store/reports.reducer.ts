@@ -1,16 +1,17 @@
 import * as ReportsActions from './reports.actions';
+import { ReportData } from '../model/report-data.model';
 
 export interface State {
   loading: boolean;
-  reportData: string;
+  reportData: ReportData;
 }
 
 const initialState: State = {
   loading: false,
-  reportData: '',
+  reportData: null,
 };
 
-export function authReducer(
+export function reportsReducer(
   state = initialState,
   action: ReportsActions.ReportsActions
 ) {

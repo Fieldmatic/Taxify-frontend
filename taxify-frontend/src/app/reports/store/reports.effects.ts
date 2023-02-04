@@ -6,6 +6,7 @@ import { APP_SERVICE_CONFIG } from '../../appConfig/appconfig.service';
 import { AppConfig } from '../../appConfig/appconfig.interface';
 import * as ReportsActions from './reports.actions';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { ReportData } from '../model/report-data.model';
 
 @Injectable()
 export class ReportsEffects {
@@ -17,7 +18,7 @@ export class ReportsEffects {
         params = params.append('initDate', action.payload.initDate.getTime());
         params = params.append('termDate', action.payload.initDate.getTime());
         return this.http
-          .get<string>(this.config.apiEndpoint + 'ride/report', {
+          .get<ReportData>(this.config.apiEndpoint + 'ride/report', {
             params: params,
           })
           .pipe(

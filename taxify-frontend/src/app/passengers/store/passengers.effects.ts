@@ -12,6 +12,7 @@ import { Notification } from '../../shared/model/notification';
 import { RideHistoryResponse } from '../../shared/model/rideHistoryResponse';
 import * as PassengerActions from './passengers.actions';
 import * as MapsActions from '../../maps/store/maps.actions';
+import { NotifierService } from 'src/app/shared/services/notifier.service';
 
 @Injectable()
 export class PassengerEffects {
@@ -112,7 +113,7 @@ export class PassengerEffects {
             })
             .pipe(
               map(() => {
-                this.showToast('Your complaint has been saved.');
+                this.notifierService.notifySuccess('Your complaint has been saved.');
               })
             );
         })
@@ -153,7 +154,7 @@ export class PassengerEffects {
           })
           .pipe(
             map(() => {
-              this.showToast('You have successfully rated the driver.');
+              this.notifierService.notifySuccess('You have successfully rated the driver.')
               return new MapsActions.ResetStateAfterRideFinish();
             })
           );
@@ -161,15 +162,6 @@ export class PassengerEffects {
     )
   );
 
-  showToast(message: string) {
-    this.toastr.info(message, 'Notification', {
-      timeOut: 5000,
-      closeButton: true,
-      tapToDismiss: true,
-      newestOnTop: true,
-      positionClass: 'toast-top-center',
-    });
-  }
   loadPassengerRideHistory = createEffect(() =>
     this.actions$.pipe(
       ofType(PassengerActions.LOAD_PASSENGER_RIDE_HISTORY),
@@ -224,6 +216,6 @@ export class PassengerEffects {
     private http: HttpClient,
     private router: Router,
     @Inject(APP_SERVICE_CONFIG) private config: AppConfig,
-    private toastr: ToastrService
+    private notifierService: NotifierService
   ) {}
 }

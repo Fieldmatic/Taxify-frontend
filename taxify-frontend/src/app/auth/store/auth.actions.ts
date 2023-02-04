@@ -185,5 +185,4 @@ export type AuthActions =
   | ReauthenticateSuccess
   | ReauthenticateFail
   | LogoutStartDriver
-  | LogoutStartDriver
   | ResetPassword;

@@ -30,7 +30,7 @@
       <a mat-button *ngIf="isAuthenticated" routerLink="/users/profile"
         >Profile</a
       >
-      <a mat-button *ngIf="isAuthenticated" (click)="onLogout()">Log out</a>
+      <a mat-button *ngIf="isAuthenticated" (click)="onLogout()" id="logoutButton">Log out</a>
       <app-navbar-profile-menu
         *ngIf="isAuthenticated"
         matTooltip="Visit Profile"

@@ -8,6 +8,7 @@ import * as CustomerSupportActions from '../../customer-support/store/customer-s
 import { PaymentMethodSelectionDialogComponent } from '../../maps/passenger-map-form/filter-drivers/payment-method-selection-dialog/payment-method-selection-dialog.component';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
+import { NotifierService } from 'src/app/shared/services/notifier.service';
 
 @Component({
   selector: 'app-notifications',
@@ -24,7 +25,7 @@ export class NotificationsComponent implements OnInit {
   constructor(
     private store: Store<fromApp.AppState>,
     public dialog: MatDialog,
-    private toastr: ToastrService
+    private notifierService: NotifierService,
   ) {}
 
   ngOnInit(): void {
@@ -142,8 +143,7 @@ export class NotificationsComponent implements OnInit {
         })
       );
     } else {
-      this.toastr.warning(
-        'You have no payment methods added, go and add one first!'
+      this.notifierService.notifyInfo('You have no payment methods added, go and add one first!'
       );
     }
   }

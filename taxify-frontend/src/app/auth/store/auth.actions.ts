@@ -12,8 +12,8 @@ export const LOGOUT_END = '[Auth] Logout End';
 export const LOGOUT_START = '[Auth] Logout Start';
 export const LOGOUT_START_DRIVER = '[Auth] Logout_Start_Driver';
 export const AUTO_LOGIN = '[Auth] Auto Login';
-export const SIGNUP_START = '[Auth] Singup Start';
-export const SIGNUP_SUCCESS = '[Auth] Singup Success';
+export const SIGNUP_START = '[Auth] Signup Start';
+export const SIGNUP_SUCCESS = '[Auth] Signup Success';
 export const EMAIL_ACTIVATION = '[Auth] Email Activation';
 
 export const GOOGLE_SIGNUP = '[Auth] Google SignUp';

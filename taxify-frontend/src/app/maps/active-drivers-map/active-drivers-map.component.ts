@@ -14,7 +14,6 @@ import * as fromApp from '../../store/app.reducer';
 import * as DriversActions from '../../drivers/store/drivers.actions';
 import * as MapUtils from '../mapUtils';
 import { MapsService } from '../maps.service';
-import { ToastrService } from 'ngx-toastr';
 import { RideStatus } from '../model/rideStatus';
 
 @Component({
@@ -33,7 +32,6 @@ export class ActiveDriversMapComponent implements OnInit, AfterViewInit, OnDestr
     private store: Store<fromApp.AppState>,
     private stompService: StompService,
     private mapsService: MapsService,
-    private toastr: ToastrService
   ) {}
   
   ngOnDestroy(): void {

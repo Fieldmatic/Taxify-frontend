@@ -36,7 +36,7 @@ describe('Auth Effects', () => {
     user: null,
     loading: false,
     authenticationConfirmed: false,
-    userExists: null,
+    userExists: null
   };
 
   beforeEach(async () => {
@@ -249,6 +249,7 @@ describe('Auth Effects', () => {
       actions$ = of(action);
 
       effects.authSignup.subscribe((value) => {
+        console.log(value);
         expect(value).toEqual(completion);
       });
       expect(notifierServiceSpy.calls.count()).toEqual(1);

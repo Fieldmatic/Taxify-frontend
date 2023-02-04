@@ -58,11 +58,10 @@ export class PassengerMapFormComponent implements OnInit {
         this.duration = 0;
         sortedMap.forEach((value) => {
           this.distance += value.distance;
-          this.duration += value.duration;
         });
         this.locationNames = this.getLocationNameList();
         this.distance = Number((this.distance / 1000).toFixed(2));
-        this.duration = Number((this.duration / 60).toFixed(2));
+        this.duration = Number((this.distance * 120 + 120).toFixed(2));
         if (this.distance > 0){ 
           this.store.dispatch(
             new MapActions.SetRouteDistance({ routeDistance: this.distance })

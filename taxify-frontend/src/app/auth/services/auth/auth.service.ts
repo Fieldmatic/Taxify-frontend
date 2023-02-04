@@ -34,6 +34,40 @@ export class AuthService {
     this.store.dispatch(new AuthActions.LoginSuccess(user));
   }
 
+  postLogin(email: string, password: string) {
+    return this.http.post<LoginResponseData>(
+      this.config.apiEndpoint + 'auth/login',
+      {
+        email: email,
+        password: password,
+      }
+    );
+  }
+
+  postSignUp(
+    email: string,
+    password: string,
+    name: string,
+    surname: string,
+    city: string,
+    phoneNumber: string,
+    profilePicture: string
+  ) {
+    return this.http.post<{
+      email: string;
+      name: string;
+      surname: string;
+    }>(this.config.apiEndpoint + 'passenger/create', {
+      email: email,
+      password: password,
+      name: name,
+      surname: surname,
+      city: city,
+      phoneNumber: phoneNumber,
+      profilePicture: profilePicture,
+    });
+  }
+
   setLogoutTimer(expirationDuration: number) {
     this.tokenExpirationTimer = setTimeout(() => {
       this.store.dispatch(new AuthActions.LogoutStart());

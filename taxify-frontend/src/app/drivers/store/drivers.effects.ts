@@ -12,6 +12,7 @@ import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { DriverState } from '../model/driverState';
 import { RideHistoryResponse } from 'src/app/shared/model/rideHistoryResponse';
+import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
 
 @Injectable()
 export class DriversEffects {
@@ -179,6 +180,31 @@ export class DriversEffects {
       ),
 
   );
+
+  loadSelectedRouteDetails = createEffect(() =>
+  this.actions$.pipe(
+    ofType(DriversActions.LOAD_SELECTED_ROUTE_DETAILS),
+    switchMap(
+      (
+        loadSelectedRouteDetails: DriversActions.LoadSelectedRouteDetails
+      ) => {
+        return this.http
+          .get<RideRouteResponse>(
+            this.config.apiEndpoint +
+              'ride/getRouteDetails/' +
+              loadSelectedRouteDetails.payload.id
+          )
+          .pipe(
+            map((rideRouteResponse: RideRouteResponse) => {
+              return new DriversActions.SetSelectedRouteDetails({
+                rideRouteInfo: rideRouteResponse,
+              });
+            })
+          );
+      }
+    )
+  )
+);
 
   constructor(
     private actions$: Actions,

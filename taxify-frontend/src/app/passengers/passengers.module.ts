@@ -20,6 +20,9 @@ import {PassengersRoutingModule} from './passengers-routing.module'
     CommonModule,
     SharedModule,
     PassengersRoutingModule,
+  ],
+  exports: [
+    PassengerRideHistoryComponent
   ]
 })
 export class PassengersModule {}

@@ -27,6 +27,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { PassengersModule } from '../passengers/passengers.module';
+import { DriversModule } from '../drivers/drivers.module';
 
 @NgModule({
   declarations: [
@@ -60,6 +62,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatCheckboxModule,
     FormsModule,
     MatSelectModule,
+    PassengersModule,
+    DriversModule
   ],
   providers: [ReauthGuard],
   exports: [UserPaymentMethodsComponent, PaymentMethodCardComponent],

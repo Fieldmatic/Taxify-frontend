@@ -18,6 +18,7 @@ import { ViewRideDetailsComponent } from "./view-ride-details/view-ride-details.
     CommonModule,
     DriversRoutingModule,
     SharedModule
-  ]
+  ],
+  exports:[DriverRideHistoryComponent]
 })
 export class DriversModule { }

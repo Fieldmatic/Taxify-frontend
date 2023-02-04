@@ -3,6 +3,7 @@ import { Driver } from '../../shared/model/driver.model';
 import { DriverState } from 'src/app/drivers/model/driverState';
 import { Ride } from 'src/app/shared/model/ride.model';
 import { RideHistoryResponse } from 'src/app/shared/model/rideHistoryResponse';
+import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
 
 
 export const FETCH_ACTIVE_DRIVERS_IN_AREA =
@@ -25,6 +26,10 @@ export const NOTIFY_PASSENGER_VEHICLE_HAS_ARRIVED_TO_DESTINATION =
   '[Drivers] Notify passenger that vehicle has arrived to destination';
 export const LOAD_DRIVER_RIDE_HISTORY = '[Passenger] Load driver ride history';
 export const SET_DRIVER_RIDE_HISTORY = '[Passenger] Set driver ride history';
+export const LOAD_SELECTED_ROUTE_DETAILS =
+  '[Passenger] Load selected route details';
+export const SET_SELECTED_ROUTE_DETAILS =
+  '[Passenger] Set selected route details';
 
 export class FetchActiveDriversInArea implements Action {
   readonly type = FETCH_ACTIVE_DRIVERS_IN_AREA;
@@ -102,6 +107,16 @@ export class SetDriverRideHistory implements Action {
   constructor(public payload: { rides: RideHistoryResponse[] }) {}
 }
 
+export class LoadSelectedRouteDetails implements Action {
+  readonly type = LOAD_SELECTED_ROUTE_DETAILS;
+  constructor(public payload: { id: string }) {}
+}
+
+export class SetSelectedRouteDetails implements Action {
+  readonly type = SET_SELECTED_ROUTE_DETAILS;
+  constructor(public payload: { rideRouteInfo: RideRouteResponse }) {}
+}
+
 export type DriversActions =
   | FetchActiveDriversInArea
   | SetDrivers
@@ -115,4 +130,6 @@ export type DriversActions =
   | SetAssignedRideToDriver
   | NotifyPassengerOfVehicleArrivedToClient
   | LoadDriverRideHistory
-  | SetDriverRideHistory;
+  | SetDriverRideHistory
+  | SetSelectedRouteDetails
+  | LoadSelectedRouteDetails;

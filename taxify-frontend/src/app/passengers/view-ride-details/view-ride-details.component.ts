@@ -31,6 +31,7 @@ export class ViewRideDetailsComponent implements OnInit {
   loading: boolean;
   rideDetailsRoute$: Observable<Map<string,Route>>;
   rideDetailsDriver$: Observable<Driver>;
+  distance$: Observable<number>;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -51,6 +52,7 @@ export class ViewRideDetailsComponent implements OnInit {
     );
     this.rideDetailsRoute$ = this.store.select((store) => store.passengers.rideDetailsRoute)
     this.rideDetailsDriver$ = this.store.select((store) => store.passengers.rideDetailsDriver)
+    this.distance$ = this.store.select((store) => store.passengers.distance)
     this.drawRoute()
   }
 
@@ -119,6 +121,9 @@ export class ViewRideDetailsComponent implements OnInit {
         queryParams: { filterDriversMode: true },
         queryParamsHandling: 'merge' }
       );
+    })
+    this.distance$.pipe(take(1)).subscribe(distance => {
+      this.store.dispatch(new MapActions.SetRouteDistance({routeDistance: distance}))
     })
   }
 

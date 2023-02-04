@@ -157,7 +157,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.LOGOUT_END),
         tap(() => {
-          localStorage.removeItem('userData');
+          localStorage.clear()
           this.authService.clearLogoutTimer();
           this.router.navigate(['/']);
         })
@@ -197,7 +197,6 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.EMAIL_ACTIVATION),
       switchMap((emailActivationAction: AuthActions.EmailActivation) => {
-        console.log('token 2 ', emailActivationAction.payload.token);
         return this.http
           .put<void>(
             this.config.apiEndpoint +
@@ -230,7 +229,6 @@ export class AuthEffects {
           .pipe(
             map((resData) => {
               this.notifierService.notifySuccess("You successfully logged with google signup.")
-              console.log(resData)
               return handleAuthentication(
                 resData.token,
                 resData.expiresIn,

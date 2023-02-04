@@ -6,7 +6,7 @@
         <mat-label>Enter email</mat-label>
         <input id="linkedUserInput" matInput [(ngModel)]="linkedUser" />
       </mat-form-field>
-      <div class="p-2" (click)="linkUser()" style="cursor: pointer">
+      <div class="p-2" id="moveLinkedUser" (click)="linkUser()" style="cursor: pointer">
         <i class="arrow right ms-1"></i>
       </div>
     </div>
@@ -30,6 +30,7 @@
     <button
       style="left: 25%"
       mat-button
+      id ="continueLinkedUsers"
       class="me-4 bg-black text-white w-50"
       (click)="saveLinkedUsers()"
     >

@@ -17,7 +17,6 @@ export class EmailActivationComponent implements OnInit {
 
   ngOnInit(): void {
     let token = this.activatedRoute.snapshot.paramMap.get('token');
-    console.log(token)
     this.store.dispatch(new AuthActions.EmailActivation({ token }));
   }
 }

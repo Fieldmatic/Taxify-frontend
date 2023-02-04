@@ -13,6 +13,7 @@ import * as MapActions from '../../../store/maps.actions';
 import { PaymentMethodSelectionDialogComponent } from '../payment-method-selection-dialog/payment-method-selection-dialog.component';
 import { PaymentMethod } from '../../../../shared/model/payment-method.model';
 import { Router } from '@angular/router';
+import { NotifierService } from 'src/app/shared/services/notifier.service';
 
 export interface Task {
   name: string;
@@ -36,6 +37,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
   chosenVehicleTypes: string[] = [];
   paymentMethods: PaymentMethod[];
   paymentMethodId: string;
+  distance: number;
 
   usersSubscription: Subscription;
   locationNames: string[];
@@ -46,7 +48,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private store: Store<fromApp.AppState>,
     private stompService: StompService,
-    private toastr: ToastrService,
+    private notifierService: NotifierService,
     private router: Router
   ) {}
 
@@ -56,6 +58,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
       .subscribe((mapsState) => {
         let sortedMap = new Map([...mapsState.selectedRoute].sort());
         this.locationNames = mapsState.locationNames;
+        this.distance = mapsState.routeDistance;
         this.route = [];
         sortedMap.forEach((value) => {
           value.route.forEach((coordinates) => {
@@ -129,8 +132,11 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
   }
 
   continue() {
+    if (!this.paymentMethodId) {
+      this.notifierService.notifyInfo("You must select a payment type before searching a ride!")
+      return;
+    }
     this.setChosenVehicleTypes();
-
     if (this.linkedUsers.length > 0) {
       this.sentNotificationToLinkedPassengers();
       this.subscribeOnWebSocket();
@@ -146,20 +152,10 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
       stompClient.subscribe(
         '/topic/acceptedRideByLinkedPassengers/' + this.loggedInUser.email,
         (response): any => {
-          this.showNotificationToast(response.body);
+          this.notifierService.notifyInfo(response.body);
           this.searchForDriver();
         }
       );
-    });
-  }
-
-  showNotificationToast(message: string) {
-    this.toastr.info(message, 'Notification', {
-      disableTimeOut: true,
-      closeButton: true,
-      tapToDismiss: true,
-      newestOnTop: true,
-      positionClass: 'toast-top-center',
     });
   }
 
@@ -183,6 +179,7 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
         sender: this.loggedInUser.email,
         linkedUsers: this.linkedUsers,
         paymentMethodId: this.paymentMethodId,
+        routeDistance: this.distance,
       })
     );
   }
@@ -202,12 +199,11 @@ export class FilterDriversComponent implements OnInit, OnDestroy {
           data: this.paymentMethodId,
         }
       );
-
       dialogRef.beforeClosed().subscribe((result) => {
         this.paymentMethodId = result;
       });
     } else {
-      this.toastr.warning(
+      this.notifierService.notifyInfo(
         'You have no payment methods added, go and add one first!'
       );
     }

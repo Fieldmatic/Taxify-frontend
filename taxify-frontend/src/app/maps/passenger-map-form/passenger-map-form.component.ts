@@ -15,6 +15,7 @@ import OLMap from 'ol/Map';
 
 import { MapsService } from '../maps.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotifierService } from 'src/app/shared/services/notifier.service';
 
 @Component({
   selector: 'app-passenger-map-form',
@@ -37,15 +38,14 @@ export class PassengerMapFormComponent implements OnInit {
     private store: Store<fromApp.AppState>,
     private mapsService: MapsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private notifierService: NotifierService
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams
-    .subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       this.filterDriversMode = params['filterDriversMode'];
-    }
-  );
+    });
     this.selectStoreStates();
     this.initForm();
     this.initPickupLocationsAutocompleteOnChange();
@@ -63,17 +63,22 @@ export class PassengerMapFormComponent implements OnInit {
         this.locationNames = this.getLocationNameList();
         this.distance = Number((this.distance / 1000).toFixed(2));
         this.duration = Number((this.duration / 60).toFixed(2));
+        if (this.distance > 0){ 
+          this.store.dispatch(
+            new MapActions.SetRouteDistance({ routeDistance: this.distance })
+          );
+        }
       });
   }
 
   public getLocationNameList(): string[] {
     let locationNames: string[] = []
-    locationNames.push(this.ridingForm.getRawValue()['pickupLocation'])
-    locationNames.push(this.ridingForm.getRawValue()['destination'])
+    if (this.ridingForm.getRawValue()['pickupLocation'] != '') locationNames.push(this.ridingForm.getRawValue()['pickupLocation'])
+    if (this.ridingForm.getRawValue()['destination'] != '') locationNames.push(this.ridingForm.getRawValue()['destination'])
     for (let i = 0; i< this.additionalDestinations().value.length; i++) {
       locationNames.push(this.additionalDestinations().value[i])
     }
-   return locationNames;
+    return locationNames;
   }
 
   public additionalDestinations(): FormArray {
@@ -149,11 +154,16 @@ export class PassengerMapFormComponent implements OnInit {
   }
 
   onSubmit(formDirective: FormGroupDirective) {
+    if (this.locationNames.length < 2) {
+      this.notifierService.notifyInfo("You cant continue without selecting atleast two places!")
+      return;
+    }
     this.store.dispatch(new MapActions.SetLocationNames({locationNames: this.locationNames}))
     this.router.navigate(['/maps'],  {
       queryParams: { filterDriversMode: true },
       queryParamsHandling: 'merge' }
     );
+    
   }
 
   markPickupLocation(location: Location) {
@@ -161,7 +171,8 @@ export class PassengerMapFormComponent implements OnInit {
     this.mapsService.drawLocation(
       location,
       'location0',
-      '../assets/pickup.png', true
+      '../assets/pickup.png',
+      true
     );
   }
   markDestination(location: Location, index: number) {

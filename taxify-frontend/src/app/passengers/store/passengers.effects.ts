@@ -113,7 +113,9 @@ export class PassengerEffects {
             })
             .pipe(
               map(() => {
-                this.notifierService.notifySuccess('Your complaint has been saved.');
+                this.notifierService.notifySuccess(
+                  'Your complaint has been saved.'
+                );
               })
             );
         })
@@ -154,7 +156,9 @@ export class PassengerEffects {
           })
           .pipe(
             map(() => {
-              this.notifierService.notifySuccess('You have successfully rated the driver.')
+              this.notifierService.notifySuccess(
+                'You have successfully rated the driver.'
+              );
               return new MapsActions.ResetStateAfterRideFinish();
             })
           );
@@ -203,6 +207,33 @@ export class PassengerEffects {
               map((rideRouteResponse: RideRouteResponse) => {
                 return new PassengerActions.SetSelectedRouteDetails({
                   rideRouteInfo: rideRouteResponse,
+                  rideId: loadSelectedRouteDetails.payload.id,
+                });
+              })
+            );
+        }
+      )
+    )
+  );
+
+  setRouteDetails = createEffect(() =>
+    this.actions$.pipe(
+      ofType(PassengerActions.SET_SELECTED_ROUTE_DETAILS),
+      switchMap(
+        (
+          loadSelectedRouteDetails: PassengerActions.SetSelectedRouteDetails
+        ) => {
+          console.log(loadSelectedRouteDetails.payload.rideId);
+          return this.http
+            .get<boolean>(
+              this.config.apiEndpoint +
+                'passenger/reviewAvailable/' +
+                loadSelectedRouteDetails.payload.rideId
+            )
+            .pipe(
+              map((response) => {
+                return new PassengerActions.SetReviewAvailable({
+                  reviewAvailable: response,
                 });
               })
             );

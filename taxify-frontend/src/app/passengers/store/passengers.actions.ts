@@ -1,8 +1,7 @@
 import { Action } from '@ngrx/store';
 import { RideRouteResponse } from 'src/app/maps/model/rideRouteResponse';
-import { RideHistoryResponse} from '../../shared/model/rideHistoryResponse'
+import { RideHistoryResponse } from '../../shared/model/rideHistoryResponse';
 import { Notification } from 'src/app/shared/model/notification';
-
 
 export const ADD_LINKED_PASSENGERS = '[Passenger] Add Linked Passengers';
 export const GET_PASSENGER_NOTIFICATIONS =
@@ -30,6 +29,7 @@ export const REORDER_RIDE = '[Passenger] Reorder ride';
 
 export const LEAVE_REVIEW_START = '[Passenger] Leave review start';
 export const LEAVE_REVIEW = '[Passenger] Leave review';
+export const SET_IS_REVIEW_AVAILABLE = '[Passenger] Set review available';
 
 export class AddLinkedPassengers implements Action {
   readonly type = ADD_LINKED_PASSENGERS;
@@ -115,12 +115,19 @@ export class LoadSelectedRouteDetails implements Action {
 
 export class SetSelectedRouteDetails implements Action {
   readonly type = SET_SELECTED_ROUTE_DETAILS;
-  constructor(public payload: { rideRouteInfo: RideRouteResponse }) {}
+  constructor(
+    public payload: { rideRouteInfo: RideRouteResponse; rideId: string }
+  ) {}
 }
 
 export class ReorderRide implements Action {
   readonly type = REORDER_RIDE;
   constructor(public payload: { rideId: string }) {}
+}
+
+export class SetReviewAvailable implements Action {
+  readonly type = SET_IS_REVIEW_AVAILABLE;
+  constructor(public payload: { reviewAvailable: boolean }) {}
 }
 
 export type PassengerActions =
@@ -133,4 +140,5 @@ export type PassengerActions =
   | SetPassengerRideHistory
   | LoadSelectedRouteDetails
   | SetSelectedRouteDetails
-  | ReorderRide;
+  | ReorderRide
+  | SetReviewAvailable;

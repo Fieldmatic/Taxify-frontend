@@ -36,7 +36,7 @@ describe('Auth Effects', () => {
     user: null,
     loading: false,
     authenticationConfirmed: false,
-    userExists: null
+    userExists: null,
   };
 
   beforeEach(async () => {

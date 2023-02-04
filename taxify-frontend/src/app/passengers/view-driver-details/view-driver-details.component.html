@@ -22,5 +22,14 @@
           driver.vehicle.type | titlecase
       }}
     </p>
+    <button
+      mat-button
+      class="bg-black text-white"
+      style="left: 30%"
+      *ngIf="reviewAvailable"
+      (click)="openRateDialog()"
+    >
+      Rate draver
+    </button>
   </mat-card-content>
 </mat-card>

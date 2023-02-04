@@ -1,7 +1,7 @@
-import { Route } from '../../maps/model/route'
+import { Route } from '../../maps/model/route';
 import { Driver } from 'src/app/shared/model/driver.model';
 import { Notification } from 'src/app/shared/model/notification';
-import { RideHistoryResponse} from '../../shared/model/rideHistoryResponse'
+import { RideHistoryResponse } from '../../shared/model/rideHistoryResponse';
 import * as PassengerActions from '../store/passengers.actions';
 
 export interface State {
@@ -12,16 +12,18 @@ export interface State {
   rideDetailsDriver: Driver;
   rideDetailsRoute: Map<string, Route>;
   distance: number;
+  reviewAvailable: boolean;
 }
 
 const initialState: State = {
   notifications: [],
   error: null,
-  rideHistory:[],
+  rideHistory: [],
   rideDetailsMapLoading: false,
   rideDetailsDriver: null,
   rideDetailsRoute: new Map<string, Route>(),
-  distance: null
+  distance: null,
+  reviewAvailable: null,
 };
 
 export function passengersReducer(
@@ -54,21 +56,31 @@ export function passengersReducer(
       return {
         ...state,
         rideHistory: action.payload.rides,
-      }
+      };
     case PassengerActions.SET_SELECTED_ROUTE_DETAILS:
       let route: Map<string, Route> = new Map<string, Route>();
       for (let key in action.payload.rideRouteInfo.route) {
-        let routeArray : [longitude: number, latitude: number, stop: boolean][] = []
+        let routeArray: [longitude: number, latitude: number, stop: boolean][] =
+          [];
         for (let index in action.payload.rideRouteInfo.route[key]) {
-          routeArray.push([action.payload.rideRouteInfo.route[key][index]['longitude'],action.payload.rideRouteInfo.route[key][index]['latitude'], action.payload.rideRouteInfo.route[key][index]['stop']])
+          routeArray.push([
+            action.payload.rideRouteInfo.route[key][index]['longitude'],
+            action.payload.rideRouteInfo.route[key][index]['latitude'],
+            action.payload.rideRouteInfo.route[key][index]['stop'],
+          ]);
         }
-        route.set(key,new Route(routeArray))
+        route.set(key, new Route(routeArray));
       }
       return {
         ...state,
         rideDetailsDriver: action.payload.rideRouteInfo.driver,
         rideDetailsRoute: route,
-        distance: action.payload.rideRouteInfo.distance
+        distance: action.payload.rideRouteInfo.distance,
+      };
+    case PassengerActions.SET_IS_REVIEW_AVAILABLE:
+      return {
+        ...state,
+        reviewAvailable: action.payload.reviewAvailable,
       };
     default:
       return state;

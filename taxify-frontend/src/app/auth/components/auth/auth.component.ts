@@ -1,6 +1,6 @@
 import { CustomValidators } from '../../validators/custom-validators';
 import * as AuthActions from '../../store/auth.actions';
-import { filter, first, Observable, Subscription } from 'rxjs';
+import { filter, first, Subject, Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import {
   AfterViewInit,
@@ -27,8 +27,7 @@ import { FacebookSignupRequest } from '../../model/facebook-signup-request';
 import { FacebookUserResponse } from '../../model/facebook-user-response';
 import { GoogleSignUpRequest } from '../../model/google-signup-request';
 import * as fromApp from '../../../store/app.reducer';
-import { select, Store } from '@ngrx/store';
-import { getUserExistsSelector } from 'src/app/auth/store/auth.selectors';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-login',
@@ -40,7 +39,7 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoginMode: boolean;
   authForm!: FormGroup;
   error: string = null;
-  userExists$: Observable<boolean>;
+  userExists$: Subject<boolean> = new Subject<boolean>();
 
   callback = null;
   constructor(
@@ -137,11 +136,9 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.storeSub = this.store.select('auth').subscribe((authState) => {
-      this.error = authState.authError;
       this.isLoginMode = authState.isLoginMode;
+      this.userExists$.next(authState.userExists);
     });
-
-    this.userExists$ = this.store.pipe(select(getUserExistsSelector));
   }
   private reloadIfNecessary() {
     var isLoadedBefore = localStorage.getItem('IsLoadedBefore');
@@ -149,8 +146,12 @@ export class AuthComponent implements OnInit, AfterViewInit, OnDestroy {
       localStorage.removeItem('IsLoadedBefore');
     } else {
       localStorage.setItem('IsLoadedBefore', 'true');
-      location.reload();
+      this.reloadPage();
     }
+  }
+
+  reloadPage() {
+    location.reload();
   }
 
   private initFacebookSignIn() {

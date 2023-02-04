@@ -182,7 +182,7 @@ export class MapsEffects {
               });
             }),catchError((errResponse) => {
               this.notifierService.notifyError(errResponse)
-              return of();
+              return of(new MapsActions.ResetStateAfterRideFinish());
             })
           );
       })

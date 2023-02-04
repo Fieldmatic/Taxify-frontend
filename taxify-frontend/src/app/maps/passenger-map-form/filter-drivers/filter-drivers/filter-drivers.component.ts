@@ -8,7 +8,6 @@ import { Store } from '@ngrx/store';
 import * as fromApp from '../../../../store/app.reducer';
 import * as PassengerActions from '../../../../passengers/store/passengers.actions';
 import { StompService } from 'src/app/stomp.service';
-import { ToastrService } from 'ngx-toastr';
 import * as MapActions from '../../../store/maps.actions';
 import { PaymentMethodSelectionDialogComponent } from '../payment-method-selection-dialog/payment-method-selection-dialog.component';
 import { PaymentMethod } from '../../../../shared/model/payment-method.model';

@@ -16,7 +16,6 @@ import { RideStatus } from '../model/rideStatus';
 import { RideRouteResponse } from '../model/rideRouteResponse';
 import { MapsService } from '../maps.service';
 import { Store } from '@ngrx/store';
-import { ToastrService } from 'ngx-toastr';
 import { NotifierService } from 'src/app/shared/services/notifier.service';
 
 @Injectable()

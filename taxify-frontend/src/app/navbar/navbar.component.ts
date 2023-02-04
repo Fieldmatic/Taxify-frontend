@@ -15,7 +15,6 @@ import {
 import { map, Subscription } from 'rxjs';
 import * as fromApp from '../store/app.reducer';
 import { StompService } from '../stomp.service';
-import { ToastrService } from 'ngx-toastr';
 import { Notification } from '../shared/model/notification';
 import * as MapActions from '../maps/store/maps.actions';
 import * as DriversActions from '../drivers/store/drivers.actions';

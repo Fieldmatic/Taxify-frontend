@@ -1,9 +1,9 @@
 import { AuthService } from 'src/app/auth/services/auth/auth.service';
-import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { catchError, map, of, switchMap, tap, EMPTY } from 'rxjs';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { catchError, EMPTY, map, of, switchMap, tap } from 'rxjs';
 import { AppConfig } from 'src/app/appConfig/appconfig.interface';
 import { APP_SERVICE_CONFIG } from 'src/app/appConfig/appconfig.service';
 import { LoggedInUser } from '../model/logged-in-user';
@@ -14,14 +14,14 @@ import * as UsersActions from '../../users/store/users.actions';
 
 @Injectable()
 export class AuthEffects {
-  handleError(errorRes: any){
+  handleError(errorRes: any) {
     if (errorRes.hasOwnProperty('error')) {
       return of(new AuthActions.AuthenticateFail(errorRes.error.message));
     }
     return of(new AuthActions.AuthenticateFail('An unknown error occurred'));
-  };
-  
-  handleAuthentication (
+  }
+
+  handleAuthentication(
     token: string,
     expiresIn: number,
     role?: string,
@@ -31,17 +31,18 @@ export class AuthEffects {
     const user = new LoggedInUser(email, role, token, expirationDate);
     localStorage.setItem('userData', JSON.stringify(user));
     return new AuthActions.LoginSuccess(user);
-  };
+  }
 
   authLogin = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.LOGIN_START),
       switchMap((authData: AuthActions.LoginStart) => {
-        return this.authService.postLogin(authData.payload.email, authData.payload.password)
+        return this.authService
+          .postLogin(authData.payload.email, authData.payload.password)
           .pipe(
             map((resData) => {
               this.authService.setLogoutTimer(resData.expiresIn);
-              this.notifierService.notifySuccess("You successfully logged in.");
+              this.notifierService.notifySuccess('You successfully logged in.');
               return this.handleAuthentication(
                 resData.token,
                 resData.expiresIn,
@@ -84,18 +85,21 @@ export class AuthEffects {
     this.actions$.pipe(
       ofType(AuthActions.SIGNUP_START),
       switchMap((signUpAction: AuthActions.SignupStart) => {
-        return this.authService.postSignUp(
-          signUpAction.payload.email,
-          signUpAction.payload.password,
-          signUpAction.payload.firstName,
-          signUpAction.payload.lastName,
-          signUpAction.payload.city,
-          signUpAction.payload.phoneNumber,
-          signUpAction.payload.profilePicture
-        )
+        return this.authService
+          .postSignUp(
+            signUpAction.payload.email,
+            signUpAction.payload.password,
+            signUpAction.payload.firstName,
+            signUpAction.payload.lastName,
+            signUpAction.payload.city,
+            signUpAction.payload.phoneNumber,
+            signUpAction.payload.profilePicture
+          )
           .pipe(
             map(() => {
-              this.notifierService.notifySuccess("You successfully signed up. Check your email for confirmation link");
+              this.notifierService.notifySuccess(
+                'You successfully signed up. Check your email for confirmation link'
+              );
               return new AuthActions.SignupSuccess();
             }),
             catchError((errorResp) => {
@@ -147,7 +151,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.LOGOUT_END),
         tap(() => {
-          localStorage.clear()
+          localStorage.clear();
           this.authService.clearLogoutTimer();
           this.router.navigate(['/']);
         })
@@ -218,7 +222,9 @@ export class AuthEffects {
           )
           .pipe(
             map((resData) => {
-              this.notifierService.notifySuccess("You successfully logged with google signup.")
+              this.notifierService.notifySuccess(
+                'You successfully logged with google signup.'
+              );
               return this.handleAuthentication(
                 resData.token,
                 resData.expiresIn,
@@ -242,7 +248,9 @@ export class AuthEffects {
           )
           .pipe(
             map((resData) => {
-              this.notifierService.notifySuccess("You successfully signed up with google signup.")
+              this.notifierService.notifySuccess(
+                'You successfully signed up with google signup.'
+              );
               return this.handleAuthentication(
                 resData.token,
                 resData.expiresIn,
@@ -266,7 +274,9 @@ export class AuthEffects {
           )
           .pipe(
             map((resData) => {
-              this.notifierService.notifySuccess("You successfully logged with facebook signup.")
+              this.notifierService.notifySuccess(
+                'You successfully logged with facebook signup.'
+              );
 
               return this.handleAuthentication(
                 resData.token,
@@ -400,29 +410,39 @@ export class AuthEffects {
           localStorage.removeItem('oldPassword');
         })
       );
-    },)
+    },
+    { dispatch: false }
+  );
 
   sendForgotPasswordResetLink = createEffect(() =>
-  this.actions$.pipe(
-    ofType(AuthActions.SEND_FORGOT_PASSWORD_RESET_LINK),
-    switchMap((sendForgotPasswordResetLink: AuthActions.SendForgotPasswordResetLink) => {
-      let queryParams = new HttpParams().append('email',sendForgotPasswordResetLink.payload.email);
-      return this.http.get<string>(
-        this.config.apiEndpoint + `password/request-change`,
-        { params: queryParams }
-      ).pipe(map((message) => {
-        this.notifierService.notifySuccess(message);
-        return {type:"DUMMY"}
-      }), catchError((errorRes) => {
-        this.notifierService.notifyError(errorRes);
-        return of()
-      }))
-    }
+    this.actions$.pipe(
+      ofType(AuthActions.SEND_FORGOT_PASSWORD_RESET_LINK),
+      switchMap(
+        (
+          sendForgotPasswordResetLink: AuthActions.SendForgotPasswordResetLink
+        ) => {
+          let queryParams = new HttpParams().append(
+            'email',
+            sendForgotPasswordResetLink.payload.email
+          );
+          return this.http
+            .get<string>(this.config.apiEndpoint + `password/request-change`, {
+              params: queryParams,
+            })
+            .pipe(
+              map((message) => {
+                this.notifierService.notifySuccess(message);
+                return { type: 'DUMMY' };
+              }),
+              catchError((errorRes) => {
+                this.notifierService.notifyError(errorRes);
+                return of();
+              })
+            );
+        }
+      )
     )
-     
-  ), 
-);
-
+  );
 
   resetPassword = createEffect(
     () =>

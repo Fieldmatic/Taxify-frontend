@@ -5,6 +5,7 @@ import * as fromUsers from '../users/store/users.reducer';
 import * as fromAuth from '../auth/store/auth.reducer';
 import * as fromCustomerSupport from '../customer-support/store/customer-support.reducer';
 import * as fromPassengers from '../passengers/store/passengers.reducer';
+import * as fromReports from '../reports/store/reports.reducer';
 
 export interface AppState {
   auth: fromAuth.State;
@@ -13,6 +14,7 @@ export interface AppState {
   drivers: fromDrivers.State;
   customerSupport: fromCustomerSupport.State;
   passengers: fromPassengers.State;
+  reports: fromReports.State;
 }
 
 export const appReducer: ActionReducerMap<AppState> = {
@@ -22,4 +24,5 @@ export const appReducer: ActionReducerMap<AppState> = {
   drivers: fromDrivers.driversReducer,
   customerSupport: fromCustomerSupport.customerSupportReducer,
   passengers: fromPassengers.passengersReducer,
+  reports: fromReports.reportsReducer,
 };
